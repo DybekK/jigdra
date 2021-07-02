@@ -1,0 +1,52 @@
+version: '3'
+services:
+    postgres:
+        image: postgres
+        restart: always
+        ports:
+            - "5432:5432"
+        env_file:
+            - .env
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - apps-network
+
+    mongodb:
+        image: 'mongo:4.4-bionic'
+        env_file:
+            - .env
+        ports:
+            - "27017:27017"
+        volumes:
+            - 'mongo_data:/bitnami/mongodb'
+        networks:
+            - apps-network
+
+    nestjs:
+        build:
+            context: .
+            dockerfile: ./nestjs/Dockerfile
+        ports:
+            - "8080:8080"
+        networks:
+            - apps-network
+
+    angular:
+        build:
+            context: .
+            dockerfile: ./angular/Dockerfile
+        ports:
+            - "4200:4200"
+        networks:
+            - apps-network
+
+networks:
+    apps-network:
+        driver: bridge
+
+volumes:
+    postgres_data:
+        driver: local
+    mongo_data:
+        driver: local
