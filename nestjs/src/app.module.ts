@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { PrismaService } from './domain/prisma.service';
+import { EntityManager } from './domain/entityManager.service';
 
 @Module({
   imports: [
@@ -10,6 +10,6 @@ import { PrismaService } from './domain/prisma.service';
     }),
   ],
   controllers: [],
-  providers: [PrismaService],
+  providers: [EntityManager],
 })
 export class AppModule {}
