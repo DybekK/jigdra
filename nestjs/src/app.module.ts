@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { PrismaService } from './domain/prisma.service';
+import { EntityManager } from './domain/entityManager.service';
+import {TestController} from "./controller/test.controller";
 
 @Module({
   imports: [
@@ -9,7 +10,7 @@ import { PrismaService } from './domain/prisma.service';
       isGlobal: true,
     }),
   ],
-  controllers: [],
-  providers: [PrismaService],
+  controllers: [TestController],
+  providers: [EntityManager],
 })
 export class AppModule {}
