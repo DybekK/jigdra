@@ -12,5 +12,28 @@ generator client {
 
 model WorkspaceUser {
     id String @default(uuid()) @id
-    nickname String 
+    userId String
+    nickname String
+
+    workspace Workspace @relation(fields: [workspaceId], references: [id])
+    workspaceId String
+
+    tasks Task[]
+}
+
+model Workspace {
+  id String @default(uuid()) @id
+
+  workspaceUsers WorkspaceUser[]
+  tasks Task[]
+}
+
+model Task {
+  id String @default(uuid()) @id
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+
+  workspaceUser WorkspaceUser @relation(fields: [workspaceUserId], references: [id])
+  workspaceUserId String
 }
