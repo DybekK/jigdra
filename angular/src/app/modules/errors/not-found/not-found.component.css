@@ -1,0 +1,13 @@
+nz-header{
+  background: white;
+}
+nz-content{
+  background: white;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  flex-direction: column;
+}
+nz-footer{
+  background: white;
+}

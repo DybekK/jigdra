@@ -15,6 +15,7 @@ import {NzButtonModule} from "ng-zorro-antd/button";
 import {NzSpaceModule} from "ng-zorro-antd/space";
 import {NzLayoutModule} from "ng-zorro-antd/layout";
 import {NzBreadCrumbModule} from "ng-zorro-antd/breadcrumb";
+import {ErrorsModule} from "./modules/errors/errors.module";
 
 
 registerLocaleData(en);
@@ -25,6 +26,7 @@ registerLocaleData(en);
   ],
   imports: [
     AuthModule,
+    ErrorsModule,
     BrowserModule,
     AppRoutingModule,
     FormsModule,
