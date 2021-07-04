@@ -1,0 +1,10 @@
+.auth-view {
+  height: 100vh;
+  display: flex;
+  &__inner-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}

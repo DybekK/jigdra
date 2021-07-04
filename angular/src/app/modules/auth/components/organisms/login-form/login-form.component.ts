@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {emailRegExp} from "../../../../../common/regexps/regexps";
+import {emailRegExp} from "../../../../../shared/regexps/regexps";
 
 @Component({
   selector: 'app-login-form',
