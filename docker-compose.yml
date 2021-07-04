@@ -11,11 +11,11 @@ services:
             - postgres_data:/var/lib/postgresql/data
         networks:
             - apps-network
-
-    rust:
+            
+    golang:
         build:
             context: .
-            dockerfile: ./rust/Dockerfile
+            dockerfile: ./golang/Dockerfile
         env_file:
             - .env
         ports:
