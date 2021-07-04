@@ -11,18 +11,7 @@ services:
             - postgres_data:/var/lib/postgresql/data
         networks:
             - apps-network
-
-    rust:
-        build:
-            context: .
-            dockerfile: ./rust/Dockerfile
-        env_file:
-            - .env
-        ports:
-            - "4201:4201"
-        networks:
-            - apps-network
-
+            
     golang:
         build:
             context: .
