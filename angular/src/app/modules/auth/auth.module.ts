@@ -18,6 +18,7 @@ import { AuthHeaderComponent } from './components/atoms/auth-header/auth-header.
 import {SharedModule} from "../../shared/shared.module";
 import {NzDatePickerModule} from "ng-zorro-antd/date-picker";
 import {NzSelectModule} from "ng-zorro-antd/select";
+import {NzIconModule} from "ng-zorro-antd/icon";
 
 
 
@@ -42,6 +43,7 @@ import {NzSelectModule} from "ng-zorro-antd/select";
     NzCheckboxModule,
     NzButtonModule,
     NzLayoutModule,
+    NzIconModule,
     RouterModule,
     NzSpaceModule,
     NzCardModule,
