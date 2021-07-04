@@ -6,8 +6,8 @@ POST http://localhost:4201/v1/add
 Content-Type: application/json
 
 {
-    "username": "chuj",
-    "email": "chuj@mail.com",
+    "username": "test",
+    "email": "uwa3@mail.com",
     "password": "potezne"
 }
 
