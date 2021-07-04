@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {emailRegExp} from "../../../../../common/regexps/regexps";
 
 @Component({
   selector: 'app-login-form',
   template: `
     <form nz-form [formGroup]="validateForm" class="login-form" (ngSubmit)="submitForm()">
       <nz-form-item>
-        <nz-form-control nzErrorTip="Please input your username!">
+        <nz-form-control nzErrorTip="The input is not valid E-mail!">
           <nz-input-group nzPrefixIcon="user">
-            <input type="text" nz-input formControlName="userName" placeholder="Username" />
+            <input type="text" nz-input formControlName="email" placeholder="Email" />
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
@@ -71,7 +72,7 @@ export class LoginFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.validateForm = this.fb.group({
-      userName: [null, [Validators.required]],
+      email: [null, [Validators.required, Validators.pattern(emailRegExp)]],
       password: [null, [Validators.required]],
       remember: [true]
     });
