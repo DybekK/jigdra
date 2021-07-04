@@ -15,6 +15,7 @@ import {NzButtonModule} from "ng-zorro-antd/button";
 import {NzSpaceModule} from "ng-zorro-antd/space";
 import {NzLayoutModule} from "ng-zorro-antd/layout";
 import {NzBreadCrumbModule} from "ng-zorro-antd/breadcrumb";
+import {NzCardModule} from "ng-zorro-antd/card";
 
 
 registerLocaleData(en);
@@ -23,19 +24,20 @@ registerLocaleData(en);
   declarations: [
     AppComponent
   ],
-  imports: [
-    AuthModule,
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    NzButtonModule,
-    NzButtonModule,
-    NzSpaceModule,
-    NzLayoutModule,
-    NzBreadCrumbModule
-  ],
+    imports: [
+        AuthModule,
+        BrowserModule,
+        AppRoutingModule,
+        FormsModule,
+        HttpClientModule,
+        BrowserAnimationsModule,
+        NzButtonModule,
+        NzButtonModule,
+        NzSpaceModule,
+        NzLayoutModule,
+        NzBreadCrumbModule,
+        NzCardModule
+    ],
   providers: [{ provide: NZ_I18N, useValue: en_US }],
   bootstrap: [AppComponent]
 })

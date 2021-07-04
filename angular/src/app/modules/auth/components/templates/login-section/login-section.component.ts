@@ -7,17 +7,7 @@ import { Component, OnInit } from '@angular/core';
       <app-login-form></app-login-form>
     </div>
   `,
-  styles: [
-    `
-      .login-section-container {
-        height: 100%;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-    `
-  ]
+  styleUrls: ["login-section.component.scss"]
 })
 export class LoginSectionComponent implements OnInit {
 
