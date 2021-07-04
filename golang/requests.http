@@ -1,0 +1,15 @@
+GET http://localhost:4201/v1
+
+####
+
+POST http://localhost:4201/v1/add
+Content-Type: application/json
+
+{
+    "username": "chuj",
+    "email": "chuj@mail.com",
+    "password": "potezne"
+}
+
+####
+GET http://localhost:4201/v1/users
