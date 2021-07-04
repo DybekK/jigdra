@@ -5,17 +5,17 @@ import { Component } from '@angular/core';
   template: `
     <nz-layout>
       <nz-header>
-        <div class="logo"><img src="assets/img/logo.png" alt="jigdra logo"></div>
+        <div class="logo"><img [src]=assetsPath alt="jigdra logo" [routerLink]="'/'"></div>
         <nz-space [nzSize]="size" class="auth">
-          <button *nzSpaceItem nz-button nzType="primary">Login</button>
-          <button *nzSpaceItem nz-button nzType="default">Register</button>
+          <button *nzSpaceItem nz-button nzType="primary" [routerLink]="'/login'">Login</button>
+          <button *nzSpaceItem nz-button nzType="default" >Register</button>
         </nz-space>
       </nz-header>
       <nz-content>
         <nz-breadcrumb>
           <nz-breadcrumb-item>Home</nz-breadcrumb-item>
         </nz-breadcrumb>
-        <div class="inner-content">Content</div>
+        <div class="inner-content"><router-outlet></router-outlet></div>
       </nz-content>
       <nz-footer>Jigdra @2021 Implemented By Angular</nz-footer>
     </nz-layout>
@@ -41,7 +41,9 @@ import { Component } from '@angular/core';
     .inner-content {
       background: #fff;
       padding: 24px;
-      min-height: 100vh;
+      min-height: 80vh;
+      display: flex;
+      justify-content: center;
     }
     .auth{
       float: right;
@@ -57,11 +59,11 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
 
-  assetsPath: string;
+  assetsPath: string = 'assets/img/logo.png';
 
-  constructor() {
-    this.assetsPath = '/assets/img/logo.png'
-  }
+  // constructor() {
+  //   this.assetsPath = '/assets/img/logo.png';
+  // }
 
   size: 'small' | 'middle' | 'large' | number = "small";
 }
