@@ -11,22 +11,30 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {AuthModule} from "./modules/auth/auth.module";
+import {ErrorsModule} from "./modules/errors/errors.module";
+import { FooterComponent } from './shared/components/atoms/footer/footer.component';
+import {NzLayoutModule} from "ng-zorro-antd/layout";
+import {SharedModule} from "./shared/shared.module";
+
 
 registerLocaleData(en);
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
+    SharedModule,
     AuthModule,
     BrowserModule,
-    AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    ErrorsModule,
+    AppRoutingModule,
+    NzLayoutModule,
   ],
-  providers: [{ provide: NZ_I18N, useValue: en_US }],
+  providers: [{provide: NZ_I18N, useValue: en_US}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

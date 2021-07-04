@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {emailRegExp} from "../../../../../common/regexps/regexps";
+import {emailRegExp} from "../../../../../shared/regexps/regexps";
 
 @Component({
   selector: 'app-login-form',
@@ -34,25 +34,7 @@ import {emailRegExp} from "../../../../../common/regexps/regexps";
       Or <a> register now! </a>
     </form>
   `,
-  styles: [
-    `
-      .login-form {
-        width: 300px;
-      }
-
-      .login-form-margin {
-        margin-bottom: 16px;
-      }
-
-      .login-form-forgot {
-        float: right;
-      }
-
-      .login-form-button {
-        width: 100%;
-      }
-    `
-  ]
+  styleUrls: ["login-form.component.scss"]
 })
 export class LoginFormComponent implements OnInit {
   validateForm!: FormGroup;
