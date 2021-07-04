@@ -11,6 +11,11 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {AuthModule} from "./modules/auth/auth.module";
+import {NzButtonModule} from "ng-zorro-antd/button";
+import {NzSpaceModule} from "ng-zorro-antd/space";
+import {NzLayoutModule} from "ng-zorro-antd/layout";
+import {NzBreadCrumbModule} from "ng-zorro-antd/breadcrumb";
+
 
 registerLocaleData(en);
 
@@ -24,7 +29,12 @@ registerLocaleData(en);
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    NzButtonModule,
+    NzButtonModule,
+    NzSpaceModule,
+    NzLayoutModule,
+    NzBreadCrumbModule
   ],
   providers: [{ provide: NZ_I18N, useValue: en_US }],
   bootstrap: [AppComponent]
