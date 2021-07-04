@@ -9,6 +9,7 @@ edition = "2018"
 [dependencies]
 rocket = { version = "0.5.0-rc.1", features = ["secrets", "tls", "json"] }
 serde = "1.0.126"
+rocket_contrib = "0.4.2"
 
 [dependencies.mongodb]
 version = "2.0.0-beta.2"
