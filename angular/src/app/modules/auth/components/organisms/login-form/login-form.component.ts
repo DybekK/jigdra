@@ -34,25 +34,7 @@ import {emailRegExp} from "../../../../../common/regexps/regexps";
       Or <a> register now! </a>
     </form>
   `,
-  styles: [
-    `
-      .login-form {
-        width: 300px;
-      }
-
-      .login-form-margin {
-        margin-bottom: 16px;
-      }
-
-      .login-form-forgot {
-        float: right;
-      }
-
-      .login-form-button {
-        width: 100%;
-      }
-    `
-  ]
+  styleUrls: ["login-form.component.scss"]
 })
 export class LoginFormComponent implements OnInit {
   validateForm!: FormGroup;
