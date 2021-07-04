@@ -14,6 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
@@ -36,21 +37,31 @@ func getUwa(c *gin.Context) {
 func addUser(c *gin.Context) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 
-	var user User
-
-	if err := c.BindJSON(&user); err != nil {
+	var req_user User
+	if err := c.BindJSON(&req_user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	validationError := validate.Struct(user)
+	validationError := validate.Struct(req_user)
 	if validationError != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": validationError.Error()})
 		return
 	}
+	var hash, hash_error = HashPassword(*req_user.Password)
+	if hash_error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "shit broke once more",
+		})
+		return
+	}
+	var insert_user User
+	insert_user.ID = primitive.NewObjectID()
+	insert_user.Username = req_user.Username
+	insert_user.Email = req_user.Email
+	insert_user.Password = &hash
 
-	user.ID = primitive.NewObjectID()
-	result, insertError := userCollection.InsertOne(ctx, user)
+	result, insertError := userCollection.InsertOne(ctx, insert_user)
 	if insertError != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": insertError.Error(),
@@ -112,6 +123,16 @@ func createIndex(coll *mongo.Collection) {
 	}
 
 	fmt.Println(index)
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func VerifyPassword(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
 
 func getConnection() *mongo.Client {
