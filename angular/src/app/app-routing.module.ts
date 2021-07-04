@@ -3,7 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import {LoginSectionComponent} from "./modules/auth/components/templates/login-section/login-section.component";
 
 const routes: Routes = [
-  {path: 'login', component: LoginSectionComponent}
+  {path: 'login', component: LoginSectionComponent},
+  {path: '', redirectTo: '/login', pathMatch: 'full'}
 ];
 
 @NgModule({
