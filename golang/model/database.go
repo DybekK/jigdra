@@ -23,6 +23,7 @@ type UserInterface interface {
 	CreateUser(*User, context.Context) (*mongo.InsertOneResult, error)
 	GetCollection(string) *mongo.Collection
 	GetUser(*LoginUser, context.Context) (*User, error)
+	GetUserById(string, context.Context) (*GetUserStruct, error)
 	GetMiddleWare() *jwt.GinJWTMiddleware
 }
 

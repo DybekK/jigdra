@@ -30,7 +30,7 @@ func main() {
 	r.POST("/v1/login", middleware.LoginHandler)
 	r.POST("/v1/logout", middleware.LogoutHandler)
 	r.GET("/v1/refresh", middleware.RefreshHandler)
-	//needs to be changed to "mongodb://mongodb:27017" if you want to run it in docker
+	r.GET("/v1/user/:id", h.getUserById)
 	db_user := os.Getenv("MONGO_INITDB_ROOT_USERNAME")
 	db_passwd := os.Getenv("MONGO_INITDB_ROOT_PASSWORD")
 	uri := fmt.Sprintf("mongodb://%s:%s@mongodb:27017", db_user, db_passwd)

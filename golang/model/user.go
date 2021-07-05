@@ -16,7 +16,7 @@ import (
 )
 
 type User struct {
-	ID       primitive.ObjectID `bson:"_id"`
+	Id       primitive.ObjectID `bson:"_id" json:"id"`
 	Username *string            `json:"username" validate:"required"`
 	Email    *string            `json:"email" validate:"required"`
 	Password *string            `json:"password" validate:"required"`
@@ -25,6 +25,12 @@ type User struct {
 type LoginUser struct {
 	Email    *string `json:"email" validate: "required"`
 	Password *string `json:"password" validate:"required"`
+}
+
+type GetUserStruct struct {
+	Id       primitive.ObjectID `bson:"_id" json:"id"`
+	Username *string            `json:"username" validate:"required"`
+	Email    *string            `json:"email" validate:"required"`
 }
 
 func (d *Database) ValidateEmail(email string) error {
@@ -57,7 +63,7 @@ func (d *Database) GetUser(login *LoginUser, ctx context.Context) (*User, error)
 
 func (d *Database) CreateUser(req_user *User, ctx context.Context) (*mongo.InsertOneResult, error) {
 	var user User
-	user.ID = primitive.NewObjectID()
+	user.Id = primitive.NewObjectID()
 	email_err := d.ValidateEmail(*req_user.Email)
 	if email_err != nil {
 		return nil, email_err
@@ -99,19 +105,20 @@ func (d *Database) GetMiddleWare() *jwt.GinJWTMiddleware {
 		// CookieSameSite: http.SameSiteDefaultMode,
 		Timeout:     time.Minute * 2,
 		MaxRefresh:  time.Minute * 10,
-		IdentityKey: "username",
+		IdentityKey: "_id",
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*User); ok {
 				return jwt.MapClaims{
-					"identityKey": v.Username,
+					"identityKey": v.Id.Hex(),
 				}
 			}
 			return jwt.MapClaims{}
 		},
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
+			objid, _ := primitive.ObjectIDFromHex(claims["_id"].(string))
 			return &User{
-				Username: claims["username"].(*string),
+				Id: objid,
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
@@ -139,6 +146,20 @@ func (d *Database) GetMiddleWare() *jwt.GinJWTMiddleware {
 			})
 		},
 	}
+}
+
+func (d *Database) GetUserById(id string, ctx context.Context) (*GetUserStruct, error) {
+	coll := d.GetCollection("users")
+	objId, _ := primitive.ObjectIDFromHex(id)
+	res := coll.FindOne(ctx, bson.M{"_id": objId})
+	var user GetUserStruct
+	decode_err := res.Decode(&user)
+	if decode_err != nil {
+		return nil, decode_err
+	}
+
+	return &user, nil
+
 }
 
 func hashPassword(password string) (string, error) {

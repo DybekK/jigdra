@@ -36,7 +36,7 @@ func (h *handler) addUser(c *gin.Context) {
 	}
 	defer cancel()
 
-	result, err := model.Interface.CreateUser(&req_user, ctx)
+	res, err := model.Interface.CreateUser(&req_user, ctx)
 
 	if err != nil {
 		if err.Error() == "409" {
@@ -50,6 +50,22 @@ func (h *handler) addUser(c *gin.Context) {
 		}
 		return
 	}
-	c.JSON(http.StatusOK, result)
+
+	c.JSON(http.StatusOK, res)
+
+}
+
+func (h *handler) getUserById(c *gin.Context) {
+	id := c.Param("id")
+	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	user, err := model.Interface.GetUserById(id, ctx)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	defer cancel()
+
+	c.JSON(http.StatusOK, user)
 
 }
