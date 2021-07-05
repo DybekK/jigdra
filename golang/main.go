@@ -33,7 +33,8 @@ func main() {
 	r.GET("/v1/user/:id", h.getUserById)
 	db_user := os.Getenv("MONGO_INITDB_ROOT_USERNAME")
 	db_passwd := os.Getenv("MONGO_INITDB_ROOT_PASSWORD")
-	uri := fmt.Sprintf("mongodb://%s:%s@mongodb:27017", db_user, db_passwd)
+	db_host := os.Getenv("MONGO_HOST")
+	uri := fmt.Sprintf("mongodb://%s:%s@%s:27017", db_user, db_passwd, db_host)
 	_, err := model.Interface.Initialize(uri)
 	if err != nil {
 		panic(err)
