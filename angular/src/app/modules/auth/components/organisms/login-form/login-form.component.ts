@@ -20,18 +20,18 @@ import {emailRegExp} from "../../../../../shared/regexps/regexps";
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
-      <div nz-row class="login-form-margin">
+      <div nz-row class="login-form--margin">
         <div nz-col [nzSpan]="12">
           <label nz-checkbox formControlName="remember">
             <span>Remember me</span>
           </label>
         </div>
-        <div nz-col [nzSpan]="12">
+        <div nz-col>
           <a class="login-form-forgot">Forgot password</a>
         </div>
       </div>
-      <button nz-button class="login-form-button login-form-margin" [nzType]="'primary'">Log in</button>
-      Or <a> register now! </a>
+        <button nz-button class="login-form__button" [nzType]="'primary'">Log in</button>
+        Or <a> register now! </a>
     </form>
   `,
   styleUrls: ["login-form.component.scss"]
