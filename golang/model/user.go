@@ -27,8 +27,6 @@ type LoginUser struct {
 	Password *string `json:"password" validate:"required"`
 }
 
-var email_regex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
-
 func (d *Database) ValidateEmail(email string) error {
 	match := email_regex.MatchString(email)
 	if match {
@@ -53,7 +51,7 @@ func (d *Database) GetUser(login *LoginUser, ctx context.Context) (*User, error)
 	if verifyPassword(*login.Password, *result.Password) {
 		return &result, nil
 	} else {
-		return nil, errors.New("Invalid password")
+		return nil, errors.New("invalid password")
 	}
 }
 
@@ -73,12 +71,11 @@ func (d *Database) CreateUser(req_user *User, ctx context.Context) (*mongo.Inser
 	}
 
 	user.Password = &hash
-
-	result, insertError := d.GetCollection("temp_users").InsertOne(ctx, user)
+	result, insertError := d.GetCollection("users").InsertOne(ctx, user)
 	if insertError != nil {
 		matched, _ := regexp.MatchString(`duplicate key`, insertError.Error())
 		if matched {
-			return nil, errors.New("email already in use")
+			return nil, errors.New("409")
 
 		} else {
 			return nil, errors.New(insertError.Error())

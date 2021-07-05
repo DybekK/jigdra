@@ -37,8 +37,9 @@ func (h *handler) addUser(c *gin.Context) {
 	defer cancel()
 
 	result, err := model.Interface.CreateUser(&req_user, ctx)
+
 	if err != nil {
-		if err.Error() == "email already in use" {
+		if err.Error() == "409" {
 			c.JSON(http.StatusConflict, gin.H{
 				"error": err.Error(),
 			})
