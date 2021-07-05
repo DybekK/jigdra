@@ -7,7 +7,7 @@ Content-Type: application/json
 
 {
     "username": "test",
-    "email": "uwa3@mail.com",
+    "email": "uwa3mail.com",
     "password": "potezne"
 }
 
@@ -16,7 +16,7 @@ POST http://localhost:4201/v1/login
 Content-Type: application/json
 
 {
-    "email": "uwa3@mail.com",
+    "email": "uwa4@mail.com",
     "password": "potezne"
 }
 
