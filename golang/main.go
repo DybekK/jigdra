@@ -15,6 +15,7 @@ func main() {
 	r.Use(gin.Logger())
 	r.GET("/v1", h.getUwa)
 	r.POST("/v1/register", h.addUser)
+	r.POST("/v1/login", h.login)
 	uri := "mongodb://localhost:27017"
 	_, err := model.Interface.Initialize(uri)
 	if err != nil {
