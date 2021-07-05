@@ -15,6 +15,8 @@ import {ErrorsModule} from "./modules/errors/errors.module";
 import { FooterComponent } from './shared/components/atoms/footer/footer.component';
 import {NzLayoutModule} from "ng-zorro-antd/layout";
 import {SharedModule} from "./shared/shared.module";
+import {NzButtonModule} from "ng-zorro-antd/button";
+import {NzIconModule} from "ng-zorro-antd/icon";
 
 
 registerLocaleData(en);
