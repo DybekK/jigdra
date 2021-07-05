@@ -20,7 +20,7 @@ type UserInterface interface {
 	ValidateEmail(string) error
 	CreateUser(*User, context.Context) (*mongo.InsertOneResult, error)
 	GetCollection(string) *mongo.Collection
-	GetUser(*LoginUser) (*User, error)
+	GetUser(*LoginUser, context.Context) (*User, error)
 }
 
 var (
@@ -28,7 +28,6 @@ var (
 )
 
 func getConnection(uri string) (*mongo.Client, error) {
-	//needs to be changed to "mongodb://mongodb:27017" if you want to run it in docker
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
@@ -59,7 +58,8 @@ func createIndex(coll *mongo.Collection) {
 	index, err := coll.Indexes().CreateOne(
 		context.Background(),
 		mongo.IndexModel{
-			Keys:    bson.D{{Key: "email", Value: 1}},
+			//Username should also be unique
+			Keys:    bson.D{{Key: "email", Value: 1}, {Key: "username", Value: 1}},
 			Options: options.Index().SetUnique(true),
 		},
 	)

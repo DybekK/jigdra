@@ -16,6 +16,7 @@ func main() {
 	r.GET("/v1", h.getUwa)
 	r.POST("/v1/register", h.addUser)
 	r.POST("/v1/login", h.login)
+	//needs to be changed to "mongodb://mongodb:27017" if you want to run it in docker
 	uri := "mongodb://localhost:27017"
 	_, err := model.Interface.Initialize(uri)
 	if err != nil {
