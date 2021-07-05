@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -17,11 +18,12 @@ type Database struct {
 }
 
 type UserInterface interface {
-	Initialize(string) (*mongo.Client, error)
+	Initialize() (*mongo.Client, error)
 	ValidateEmail(string) error
 	CreateUser(*User, context.Context) (*mongo.InsertOneResult, error)
 	GetCollection(string) *mongo.Collection
 	GetUser(*LoginUser, context.Context) (*User, error)
+	GetUserById(string, context.Context) (*GetUserStruct, error)
 	GetMiddleWare() *jwt.GinJWTMiddleware
 }
 
@@ -43,7 +45,11 @@ func getConnection(uri string) (*mongo.Client, error) {
 	return client, nil
 }
 
-func (d *Database) Initialize(uri string) (*mongo.Client, error) {
+func (d *Database) Initialize() (*mongo.Client, error) {
+	db_user := os.Getenv("MONGO_INITDB_ROOT_USERNAME")
+	db_passwd := os.Getenv("MONGO_INITDB_ROOT_PASSWORD")
+	db_host := os.Getenv("MONGO_HOST")
+	uri := fmt.Sprintf("mongodb://%s:%s@%s:27017", db_user, db_passwd, db_host)
 	var err error
 	d.Client, err = getConnection(uri)
 	createIndex(d.GetCollection("users"))
@@ -51,7 +57,7 @@ func (d *Database) Initialize(uri string) (*mongo.Client, error) {
 }
 
 func (d *Database) GetCollection(collectionName string) *mongo.Collection {
-	var collection *mongo.Collection = (*mongo.Collection)(d.Client.Database("temp_users").Collection(collectionName))
+	var collection *mongo.Collection = (*mongo.Collection)(d.Client.Database(os.Getenv("MONGO_INITDB_DATABASE")).Collection(collectionName))
 	return collection
 }
 
