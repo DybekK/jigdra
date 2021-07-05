@@ -12,6 +12,7 @@ const routes: Routes = [
   {
     path: 'error', component: NotFoundComponent
   },
+  { path: 'user', loadChildren: () => import('./modules/user/user.module').then(m => m.UserModule) },
   {
     path: '**', redirectTo: '/error'
   }
