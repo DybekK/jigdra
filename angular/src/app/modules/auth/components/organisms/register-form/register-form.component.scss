@@ -1,16 +1,18 @@
-.login-form {
+.register-form {
   width: 300px;
-}
 
-.login-form-margin {
-  margin-bottom: 16px;
-}
+  &--margin {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
 
-.login-form-forgot {
-  float: right;
-}
-.register-form-select,
-.register-form-datepicker,
-.login-form-button {
-  width: 100%;
+  &__button {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+
+  &__full-width {
+    width: 100%;
+  }
 }

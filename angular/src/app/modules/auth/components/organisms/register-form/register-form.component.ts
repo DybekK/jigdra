@@ -50,18 +50,18 @@ import {emailRegExp} from "../../../../../shared/regexps/regexps";
       </nz-form-item>
       <nz-form-item>
         <nz-form-control nzErrorTip="Please enter your Date of Birth!">
-          <nz-date-picker class="register-form-datepicker" formControlName="dateOfBirth"></nz-date-picker>
+          <nz-date-picker class="register-form__full-width" formControlName="dateOfBirth"></nz-date-picker>
         </nz-form-control>
       </nz-form-item>
-      <nz-select class="register-form-select" formControlName="gender" nzPlaceHolder="Select your gender">
+      <nz-select class="register-form__full-width" formControlName="gender" nzPlaceHolder="Select your gender">
         <nz-option nzValue="Male" nzLabel="Male"></nz-option>
         <nz-option nzValue="Female" nzLabel="Female"></nz-option>
         <nz-option nzValue="Other" nzLabel="Other"></nz-option>
         <nz-option nzValue="Unknown" nzLabel="Prefer not to say"></nz-option>
       </nz-select>
-      <div nz-row class="login-form-margin">
+      <div nz-row class="register-form--margin">
       </div>
-      <button nz-button class="login-form-button login-form-margin" [nzType]="'primary'">Register</button>
+      <button nz-button class="register-form__button" [nzType]="'primary'">Register</button>
       Have an account? <a> Login now! </a>
     </form>
   `,
