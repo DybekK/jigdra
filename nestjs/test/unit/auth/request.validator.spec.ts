@@ -1,6 +1,6 @@
 import {Request} from "express";
 import {sign} from 'jsonwebtoken';
-import {validateRequest} from "../../../src/auth/request.validator";
+import {validateRequest} from "../../../src/modules/auth/request.validator";
 import {config} from 'dotenv';
 import {UnauthorizedException} from "@nestjs/common";
 

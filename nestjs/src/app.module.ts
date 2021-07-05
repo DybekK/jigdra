@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { EntityManager } from './domain/entityManager.service';
+import { EntityManager } from './database/entityManager.service';
 import {TestController} from "./controller/test.controller";
 
 @Module({

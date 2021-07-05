@@ -1,4 +1,4 @@
-import {UserContext} from "../../src/auth/auth.context";
+import {UserContext} from "../../src/modules/auth/auth.context";
 
 declare global {
     namespace Express {
