@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"golang/model"
 	"log"
-	"os"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
@@ -27,15 +26,12 @@ func main() {
 
 	r.GET("/v1", h.getUwa)
 	r.POST("/v1/register", h.addUser)
-	r.POST("/v1/login", middleware.LoginHandler)
+	r.GET("/v1/login", middleware.LoginHandler)
 	r.POST("/v1/logout", middleware.LogoutHandler)
 	r.GET("/v1/refresh", middleware.RefreshHandler)
 	r.GET("/v1/user/:id", h.getUserById)
-	db_user := os.Getenv("MONGO_INITDB_ROOT_USERNAME")
-	db_passwd := os.Getenv("MONGO_INITDB_ROOT_PASSWORD")
-	db_host := os.Getenv("MONGO_HOST")
-	uri := fmt.Sprintf("mongodb://%s:%s@%s:27017", db_user, db_passwd, db_host)
-	_, err := model.Interface.Initialize(uri)
+	//Connect to database
+	_, err := model.Interface.Initialize()
 	if err != nil {
 		panic(err)
 	}

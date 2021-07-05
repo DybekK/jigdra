@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"regexp"
+	"strings"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -122,22 +123,39 @@ func (d *Database) GetMiddleWare() *jwt.GinJWTMiddleware {
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
+			q := c.Query("redirect")
 			var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
-			var req_login LoginUser
-			if err := c.BindJSON(&req_login); err != nil {
-				return nil, err
-			}
-			validation_error := validate.Struct(req_login)
-			if validation_error != nil {
-				return nil, validation_error
-			}
-			defer cancel()
+			if q != "" {
+				objid, err := primitive.ObjectIDFromHex(strings.Split(q, "\"")[1])
+				if err != nil {
+					return nil, err
+				}
+				res := d.GetCollection("users").FindOne(ctx, bson.M{"_id": objid})
+				var user User
+				decode_err := res.Decode(&user)
+				if decode_err != nil {
+					return nil, decode_err
+				}
+				defer cancel()
+				return user, nil
+			} else {
+				var req_login LoginUser
+				if err := c.BindJSON(&req_login); err != nil {
+					return nil, err
+				}
+				validation_error := validate.Struct(req_login)
+				if validation_error != nil {
+					return nil, validation_error
+				}
+				defer cancel()
 
-			user, user_err := Interface.GetUser(&req_login, ctx)
-			if user_err != nil {
-				return nil, jwt.ErrFailedAuthentication
+				user, user_err := Interface.GetUser(&req_login, ctx)
+				if user_err != nil {
+					return nil, jwt.ErrFailedAuthentication
+				}
+				return user, nil
 			}
-			return user, nil
+
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
 			c.JSON(code, gin.H{
