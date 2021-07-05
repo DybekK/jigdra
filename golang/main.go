@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"golang/model"
 	"log"
+	"os"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
@@ -30,7 +31,9 @@ func main() {
 	r.POST("/v1/logout", middleware.LogoutHandler)
 	r.GET("/v1/refresh", middleware.RefreshHandler)
 	//needs to be changed to "mongodb://mongodb:27017" if you want to run it in docker
-	uri := "mongodb://localhost:27017"
+	db_user := os.Getenv("MONGO_INITDB_ROOT_USERNAME")
+	db_passwd := os.Getenv("MONGO_INITDB_ROOT_PASSWORD")
+	uri := fmt.Sprintf("mongodb://%s:%s@mongodb:27017", db_user, db_passwd)
 	_, err := model.Interface.Initialize(uri)
 	if err != nil {
 		panic(err)

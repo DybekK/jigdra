@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -51,7 +52,7 @@ func (d *Database) Initialize(uri string) (*mongo.Client, error) {
 }
 
 func (d *Database) GetCollection(collectionName string) *mongo.Collection {
-	var collection *mongo.Collection = (*mongo.Collection)(d.Client.Database("temp_users").Collection(collectionName))
+	var collection *mongo.Collection = (*mongo.Collection)(d.Client.Database(os.Getenv("MONGO_INITDB_DATABASE")).Collection(collectionName))
 	return collection
 }
 
