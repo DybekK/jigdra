@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	jwt "github.com/appleboy/gin-jwt/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -21,6 +22,7 @@ type UserInterface interface {
 	CreateUser(*User, context.Context) (*mongo.InsertOneResult, error)
 	GetCollection(string) *mongo.Collection
 	GetUser(*LoginUser, context.Context) (*User, error)
+	GetMiddleWare() *jwt.GinJWTMiddleware
 }
 
 var (

@@ -18,30 +18,6 @@ func (h *handler) getUwa(c *gin.Context) {
 	})
 }
 
-func (h *handler) login(c *gin.Context) {
-	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
-	var req_login model.LoginUser
-	if err := c.BindJSON(&req_login); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "could not bind"})
-		return
-	}
-	validation_error := validate.Struct(req_login)
-	if validation_error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "struct validation fail"})
-		return
-	}
-	defer cancel()
-
-	user, user_err := model.Interface.GetUser(&req_login, ctx)
-	if user_err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": user_err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, user)
-
-}
-
 var validate = validator.New()
 
 func (h *handler) addUser(c *gin.Context) {
