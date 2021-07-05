@@ -6,7 +6,7 @@ import {filter} from "rxjs/operators";
   selector: 'app-auth-content',
   template: `
     <nz-content class="auth-content">
-      <nz-card class="auth-content__container__card" [nzTitle]="cardTitle">
+      <nz-card class="box-shadow" [nzTitle]="cardTitle">
         <router-outlet></router-outlet>
       </nz-card>
     </nz-content>
