@@ -5,6 +5,7 @@ import {NzLayoutModule} from "ng-zorro-antd/layout";
 import {NzTypographyModule} from "ng-zorro-antd/typography";
 import {NzButtonModule} from "ng-zorro-antd/button";
 import {AppRoutingModule} from "../../app-routing.module";
+import {SharedModule} from "../../shared/shared.module";
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import {AppRoutingModule} from "../../app-routing.module";
     NzLayoutModule,
     NzTypographyModule,
     NzButtonModule,
-    AppRoutingModule
+    AppRoutingModule,
+    SharedModule
   ]
 })
 export class ErrorsModule { }
