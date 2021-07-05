@@ -37,18 +37,14 @@ func (d *Database) ValidateEmail(email string) error {
 func (d *Database) GetUser(login *LoginUser, ctx context.Context) (*User, error) {
 	coll := d.GetCollection("users")
 
-	cursor, err := coll.Find(ctx, bson.M{
+	res := coll.FindOne(ctx, bson.M{
 		"email": login.Email,
 	})
 
-	if err != nil {
-		return nil, err
-	}
-
 	var result User
-	decode_err := cursor.Decode(&result)
+	decode_err := res.Decode(&result)
 	if decode_err != nil {
-		return nil, decode_err
+		return nil, errors.New("decode error")
 	}
 	if verifyPassword(*login.Password, *result.Password) {
 		return &result, nil
@@ -60,6 +56,10 @@ func (d *Database) GetUser(login *LoginUser, ctx context.Context) (*User, error)
 func (d *Database) CreateUser(req_user *User, ctx context.Context) (*mongo.InsertOneResult, error) {
 	var user User
 	user.ID = primitive.NewObjectID()
+	email_err := d.ValidateEmail(*req_user.Email)
+	if email_err != nil {
+		return nil, email_err
+	}
 	user.Username = req_user.Username
 	user.Email = req_user.Email
 

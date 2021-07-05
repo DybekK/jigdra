@@ -2,7 +2,7 @@ GET http://localhost:4201/v1
 
 ####
 
-POST http://localhost:4201/v1/add
+POST http://localhost:4201/v1/register
 Content-Type: application/json
 
 {
@@ -12,4 +12,10 @@ Content-Type: application/json
 }
 
 ####
-GET http://localhost:4201/v1/users
+POST http://localhost:4201/v1/login
+Content-Type: application/json
+
+{
+    "email": "uwa3@mail.com",
+    "password": "potezne"
+}

@@ -22,12 +22,12 @@ func (h *handler) login(c *gin.Context) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 	var req_login model.LoginUser
 	if err := c.BindJSON(&req_login); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "could not bind"})
 		return
 	}
 	validation_error := validate.Struct(req_login)
 	if validation_error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": validation_error.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "struct validation fail"})
 		return
 	}
 	defer cancel()
@@ -67,10 +67,11 @@ func (h *handler) addUser(c *gin.Context) {
 				"error": err.Error(),
 			})
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{
+			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),
 			})
 		}
+		return
 	}
 	c.JSON(http.StatusOK, result)
 
