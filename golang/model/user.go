@@ -73,12 +73,16 @@ func (d *Database) CreateUser(req_user *User, ctx context.Context) (*mongo.Inser
 		return nil, errors.New("hashing error")
 	}
 
+	if availible := d.isUsernameAvailable(user.Username, ctx); !availible {
+		return nil, errors.New("username taken")
+	}
+
 	user.Password = hash
 	result, insertError := d.GetCollection("users").InsertOne(ctx, user)
 	if insertError != nil {
 		matched, _ := regexp.MatchString(`duplicate key`, insertError.Error())
 		if matched {
-			return nil, errors.New("409")
+			return nil, errors.New("email in use")
 
 		} else {
 			return nil, errors.New(insertError.Error())
@@ -100,6 +104,13 @@ func (d *Database) GetUserById(id string, ctx context.Context) (*GetUserStruct, 
 	}
 
 	return &user, nil
+
+}
+
+func (d *Database) isUsernameAvailable(username string, ctx context.Context) bool {
+	coll := d.GetCollection("users")
+	result := coll.FindOne(ctx, bson.M{"username": username})
+	return result.Err() == mongo.ErrNoDocuments
 
 }
 

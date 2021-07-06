@@ -64,19 +64,18 @@ func (d *Database) GetCollection(collectionName string) *mongo.Collection {
 //this shouldn't be done programatically, will be removed later
 func createIndex(coll *mongo.Collection) {
 	//Username should also be unique
-	for _, key := range []string{"username", "email"} {
-		index, err := coll.Indexes().CreateOne(
-			context.Background(),
-			mongo.IndexModel{
-				Keys:    bson.D{{Key: key, Value: 1}},
-				Options: options.Index().SetUnique(true),
-			},
-		)
+	index, err := coll.Indexes().CreateOne(
+		context.Background(),
+		mongo.IndexModel{
+			Keys:    bson.D{{Key: "email", Value: 1}},
+			Options: options.Index().SetUnique(true),
+		},
+	)
 
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Println(index)
+	if err != nil {
+		panic(err)
 	}
+
+	fmt.Println(index)
+
 }
