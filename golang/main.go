@@ -27,6 +27,7 @@ func main() {
 	r.GET("/v1", h.getUwa)
 	r.POST("/v1/register", h.addUser)
 	r.GET("/v1/login", middleware.LoginHandler)
+	r.POST("/v1/login", middleware.LoginHandler)
 	r.POST("/v1/logout", middleware.LogoutHandler)
 	r.GET("/v1/refresh", middleware.RefreshHandler)
 	r.GET("/v1/user/:id", h.getUserById)

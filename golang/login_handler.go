@@ -53,7 +53,7 @@ func (h *handler) addUser(c *gin.Context) {
 		}
 		return
 	}
-	id := strings.Split(fmt.Sprintf("%v", res.InsertedID), "(")[1]
+	id := strings.Split(fmt.Sprintf("%v", res.InsertedID), "\"")[1]
 	q := url.Values{}
 	q.Add("redirect", strings.Split(id, ")")[0])
 	location := url.URL{Path: "/v1/login", RawQuery: q.Encode()}
