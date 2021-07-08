@@ -5,7 +5,7 @@ import {UserViewComponent} from "./components/views/user-view/user-view.componen
 const routes: Routes = [
   {
     path: '', component: UserViewComponent
-  }
+  },
 ];
 
 @NgModule({

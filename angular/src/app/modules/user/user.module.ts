@@ -10,7 +10,10 @@ import {NzBreadCrumbModule} from "ng-zorro-antd/breadcrumb";
 import {NzMenuModule} from "ng-zorro-antd/menu";
 import {NzIconModule} from "ng-zorro-antd/icon";
 import {SharedModule} from "../../shared/shared.module";
+import {IconDefinition} from "@ant-design/icons-angular";
+import {LockOutline, UserOutline} from "@ant-design/icons-angular/icons";
 
+const icons: IconDefinition[] = [ UserOutline, LockOutline ];
 
 @NgModule({
   declarations: [
@@ -25,7 +28,8 @@ import {SharedModule} from "../../shared/shared.module";
     NzBreadCrumbModule,
     NzMenuModule,
     NzIconModule,
-    SharedModule
+    SharedModule,
+    NzIconModule.forChild(icons)
   ]
 })
 export class UserModule {

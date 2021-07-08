@@ -21,8 +21,9 @@ import {NzSelectModule} from "ng-zorro-antd/select";
 import {NzIconModule} from "ng-zorro-antd/icon";
 import { UserOutline, LockOutline } from '@ant-design/icons-angular/icons';
 import { IconDefinition } from '@ant-design/icons-angular';
+import {NzTypographyModule} from "ng-zorro-antd/typography";
 
-const icons: IconDefinition[] = [ UserOutline, LockOutline ];
+const icons: IconDefinition[] = [UserOutline, LockOutline];
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ const icons: IconDefinition[] = [ UserOutline, LockOutline ];
     SharedModule,
     NzDatePickerModule,
     NzSelectModule,
-    NzIconModule.forChild(icons)
+    NzIconModule.forChild(icons),
+    NzTypographyModule
   ]
 })
 export class AuthModule { }

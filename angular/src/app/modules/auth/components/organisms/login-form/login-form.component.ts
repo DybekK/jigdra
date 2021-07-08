@@ -31,7 +31,7 @@ import StatusValidator, {ValidateStatus} from "../../../../../shared/validators/
           <a [routerLink]="'/forgot-password'" class="login-form-forgot">Forgot password</a>
         </div>
       </div>
-        <button [nzLoading]="isLoading" nz-button class="login-form__button" [nzType]="'primary'">Log in</button>
+        <button  [nzLoading]="isLoading" nz-button class="login-form__button" [nzType]="'primary'">Log in</button>
         Or <a [routerLink]="'/register'"> register now! </a>
     </form>
   `,
