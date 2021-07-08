@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {emailRegExp} from "../../../../../shared/regexps/regexps";
-import customValidator from "../../../../../shared/validators/customValidator";
+import customValidator from "../../../../../shared/validators/custom-validator";
 
 @Component({
   selector: 'app-register-form',
@@ -44,14 +44,20 @@ import customValidator from "../../../../../shared/validators/customValidator";
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
-        <nz-form-control nzErrorTip="Confirm Your Password!">
+        <nz-form-control [nzErrorTip]="errorTpl">
           <nz-input-group nzPrefixIcon="lock">
-            <input type="password" nz-input formControlName="confirmPassword"
-                   placeholder="Confirm Password"/>
+            <input type="password" nz-input formControlName="confirmPassword" placeholder="Confirm Password"/>
           </nz-input-group>
+          <ng-template #errorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">
+              Please confirm your password!
+            </ng-container>
+            <ng-container *ngIf="control.hasError('matching')">
+              Two passwords that you enter is inconsistent!
+            </ng-container>
+          </ng-template>
         </nz-form-control>
       </nz-form-item>
-      <!--      </div>-->
       <nz-form-item>
         <nz-form-control nzErrorTip="Please enter your Date of Birth!">
           <nz-date-picker class="register-form__full-width" formControlName="dateOfBirth"></nz-date-picker>
@@ -86,6 +92,7 @@ export class RegisterFormComponent implements OnInit {
 
     console.log(this.validateForm.valid ? "Works" : "Doesn't work");
   }
+
 
   ngOnInit(): void {
     this.validateForm = this.fb.group({
