@@ -6,6 +6,7 @@ import {NzTypographyModule} from "ng-zorro-antd/typography";
 import {NzButtonModule} from "ng-zorro-antd/button";
 import {AppRoutingModule} from "../../app-routing.module";
 import {SharedModule} from "../../shared/shared.module";
+import {NzResultModule} from "ng-zorro-antd/result";
 
 
 @NgModule({
@@ -15,13 +16,14 @@ import {SharedModule} from "../../shared/shared.module";
   exports: [
     NotFoundComponent
   ],
-  imports: [
-    CommonModule,
-    NzLayoutModule,
-    NzTypographyModule,
-    NzButtonModule,
-    AppRoutingModule,
-    SharedModule
-  ]
+    imports: [
+        CommonModule,
+        NzLayoutModule,
+        NzTypographyModule,
+        NzButtonModule,
+        AppRoutingModule,
+        SharedModule,
+        NzResultModule
+    ]
 })
 export class ErrorsModule { }
