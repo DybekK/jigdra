@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {emailRegExp} from "../../../../../shared/regexps/regexps";
+import customValidator from "../../../../../shared/validators/custom-validator";
 
 @Component({
   selector: 'app-register-form',
@@ -34,6 +35,7 @@ import {emailRegExp} from "../../../../../shared/regexps/regexps";
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
+      <!--      <div formGroupName="passwords">-->
       <nz-form-item>
         <nz-form-control nzErrorTip="Please input your Password!">
           <nz-input-group nzPrefixIcon="lock">
@@ -42,10 +44,18 @@ import {emailRegExp} from "../../../../../shared/regexps/regexps";
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
-        <nz-form-control nzErrorTip="Please confirm your Password!">
+        <nz-form-control [nzErrorTip]="errorTpl">
           <nz-input-group nzPrefixIcon="lock">
             <input type="password" nz-input formControlName="confirmPassword" placeholder="Confirm Password"/>
           </nz-input-group>
+          <ng-template #errorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">
+              Please confirm your password!
+            </ng-container>
+            <ng-container *ngIf="control.hasError('matching')">
+              Two passwords that you enter is inconsistent!
+            </ng-container>
+          </ng-template>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -83,16 +93,20 @@ export class RegisterFormComponent implements OnInit {
     console.log(this.validateForm.valid ? "Works" : "Doesn't work");
   }
 
+
   ngOnInit(): void {
     this.validateForm = this.fb.group({
-      name: [null, [Validators.required]],
-      surname: [null, [Validators.required]],
-      password: [null, [Validators.required]],
-      username: [null, [Validators.required]],
-      confirmPassword: [null, [Validators.required]],
-      email: [null, [Validators.required, Validators.pattern(emailRegExp)]],
-      dateOfBirth: [null],
-      gender: [null]
-    });
+        name: [null, [Validators.required]],
+        surname: [null, [Validators.required]],
+        username: [null, [Validators.required, Validators.minLength(8)]],
+        password: [null, [Validators.required]],
+        confirmPassword: [null, [Validators.required]],
+        email: [null, [Validators.required, Validators.pattern(emailRegExp)]],
+        dateOfBirth: [null],
+        gender: [null]
+      },
+      {
+        validators: [customValidator.stringsMatch('password', 'confirmPassword')]
+      });
   }
 }
