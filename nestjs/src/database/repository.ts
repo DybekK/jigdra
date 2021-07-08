@@ -1,5 +1,6 @@
 import { EntityManager } from './entityManager.service';
 
-export abstract class Repository {
-  protected constructor(readonly entityManager: EntityManager) {}
+export abstract class PrismaRepository {
+  protected constructor(readonly em: EntityManager) {}
 }
+

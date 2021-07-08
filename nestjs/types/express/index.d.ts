@@ -1,9 +1,9 @@
-import {UserContext} from "../../src/modules/auth/auth.context";
+import { UserContext } from '../../src/modules/auth/guard/auth.context';
 
 declare global {
-    namespace Express {
-        interface Request {
-            userContext?: UserContext
-        }
+  namespace Express {
+    interface Request {
+      userContext?: UserContext;
     }
+  }
 }

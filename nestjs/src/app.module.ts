@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EntityManager } from './database/entityManager.service';
-import {TestController} from "./controller/test.controller";
 
 @Module({
   imports: [
@@ -10,7 +9,7 @@ import {TestController} from "./controller/test.controller";
       isGlobal: true,
     }),
   ],
-  controllers: [TestController],
+  controllers: [],
   providers: [EntityManager],
 })
 export class AppModule {}
