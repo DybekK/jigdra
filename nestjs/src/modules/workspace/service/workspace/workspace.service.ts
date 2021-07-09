@@ -1,15 +1,19 @@
-import { Injectable } from '@nestjs/common';
-import {WorkspaceRepository} from "../../repository/workspace.repository";
-import {WorkspaceUserRepository} from "../../../user/repository/workspaceUser.repository";
+import {Injectable} from "@nestjs/common";
+import {InjectRepository} from "@nestjs/typeorm";
+import {Workspace} from "../../../../database/entity/entity";
+import {Repository} from "typeorm";
+import {CreateWorkspaceDto} from "../../dto/createWorkspaceDto";
 
 @Injectable()
 export class WorkspaceService {
     constructor(
-        private workspaceUserRepository: WorkspaceUserRepository,
-        private workspaceRepository: WorkspaceRepository
+        @InjectRepository(Workspace)
+        private workspaceRepository: Repository<Workspace>,
     ) {}
 
-    async createWorkspaceForUser(workspaceUserId: string) {
-        
+    async createWorkspace(createWorkspaceDto: CreateWorkspaceDto) {
+        const workspace = new Workspace();
+        workspace.name = createWorkspaceDto.name;
+        return this.workspaceRepository.save(workspace);
     }
 }

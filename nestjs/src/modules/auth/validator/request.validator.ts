@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { verify } from 'jsonwebtoken';
 import { UnauthorizedException } from '@nestjs/common';
-import { UserContext } from './guard/auth.context';
+import { UserContext } from '../guard/auth.context';
 
 /**
  * verifies if request has valid token, if so userContext is added to request
