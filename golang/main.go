@@ -26,12 +26,13 @@ func main() {
 
 	r.GET("/v1", h.getUwa)
 	r.POST("/v1/register", h.addUser)
+	r.GET("/v1/login", middleware.LoginHandler)
 	r.POST("/v1/login", middleware.LoginHandler)
 	r.POST("/v1/logout", middleware.LogoutHandler)
 	r.GET("/v1/refresh", middleware.RefreshHandler)
-	//needs to be changed to "mongodb://mongodb:27017" if you want to run it in docker
-	uri := "mongodb://localhost:27017"
-	_, err := model.Interface.Initialize(uri)
+	r.GET("/v1/user/:id", h.getUserById)
+	//Connect to database
+	_, err := model.Interface.Initialize()
 	if err != nil {
 		panic(err)
 	}

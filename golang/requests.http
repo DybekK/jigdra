@@ -6,8 +6,8 @@ POST http://localhost:4201/v1/register
 Content-Type: application/json
 
 {
-    "username": "test",
-    "email": "uwa3mail.com",
+    "username": "test3",
+    "email": "uwa5@mail.com",
     "password": "potezne"
 }
 
@@ -16,7 +16,7 @@ POST http://localhost:4201/v1/login
 Content-Type: application/json
 
 {
-    "email": "uwa4@mail.com",
+    "email": "uwa5@mail.com",
     "password": "potezne"
 }
 
@@ -32,3 +32,6 @@ GET http://localhost:4201/v1/refresh
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjU0OTc2MzgsImlkZW50aXR5S2V5IjoidGVzdCIsIm9yaWdfaWF0IjoxNjI1NDk3NTE4fQ.Z842T8Gn4aApgReH7xRzOnnrZ89cokZdIy8uAJggyuw
 Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjU0OTc2MzgsImlkZW50aXR5S2V5IjoidGVzdCIsIm9yaWdfaWF0IjoxNjI1NDk3NTE4fQ.Z842T8Gn4aApgReH7xRzOnnrZ89cokZdIy8uAJggyuw; Path=/; Max-Age=120
+
+####
+GET http://localhost:4201/v1/user/60e35a7853f9b65906dcad42

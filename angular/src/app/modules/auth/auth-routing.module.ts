@@ -7,6 +7,11 @@ import {AuthViewComponent} from "./components/views/auth-view/auth-view.componen
 const routes: Routes = [
   {
     path: '',
+    redirectTo: 'login',
+    pathMatch: 'full'
+  },
+  {
+    path: '',
     component: AuthViewComponent,
     children: [
       {
@@ -16,7 +21,7 @@ const routes: Routes = [
         path: "register", component: RegisterFormComponent
       }
     ]
-  }
+  },
 ];
 
 @NgModule({

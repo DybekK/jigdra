@@ -1,19 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-not-found',
+  selector:  'app-not-found',
   template:`
-    <nz-layout>
-      <nz-header></nz-header>
-      <nz-content>
-        <h1 nz-typography>Page not found</h1>
-        <h2 nz-typography>Error 404</h2>
-        <button nz-button nzType="primary" routerLink="/">Return to home page</button>
-      </nz-content>
-      <nz-footer></nz-footer>
-    </nz-layout>
+    <div class="error-content">
+      <nz-result nzStatus="404" nzTitle="404" nzSubTitle="Sorry, the page you visited does not exist.">
+        <div nz-result-extra>
+          <button [routerLink]="'/login'" nz-button nzType="primary">Back Home</button>
+        </div>
+      </nz-result>
+    </div>
   `,
-  styleUrls: ['./not-found.component.css']
+  styleUrls: ['./not-found.component.scss']
 })
 export class NotFoundComponent implements OnInit {
 

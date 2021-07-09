@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"golang/model"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -36,7 +39,7 @@ func (h *handler) addUser(c *gin.Context) {
 	}
 	defer cancel()
 
-	result, err := model.Interface.CreateUser(&req_user, ctx)
+	res, err := model.Interface.CreateUser(&req_user, ctx)
 
 	if err != nil {
 		if err.Error() == "409" {
@@ -50,6 +53,26 @@ func (h *handler) addUser(c *gin.Context) {
 		}
 		return
 	}
-	c.JSON(http.StatusOK, result)
+	id := strings.Split(fmt.Sprintf("%v", res.InsertedID), "\"")[1]
+	q := url.Values{}
+	q.Add("redirect", strings.Split(id, ")")[0])
+	location := url.URL{Path: "/v1/login", RawQuery: q.Encode()}
+
+	c.Redirect(http.StatusFound, location.RequestURI())
+
+}
+
+func (h *handler) getUserById(c *gin.Context) {
+	id := c.Param("id")
+	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	user, err := model.Interface.GetUserById(id, ctx)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	defer cancel()
+
+	c.JSON(http.StatusOK, user)
 
 }
