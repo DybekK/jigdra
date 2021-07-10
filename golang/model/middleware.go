@@ -1,7 +1,6 @@
 package model
 
 import (
-	"context"
 	"errors"
 	"time"
 
@@ -41,7 +40,6 @@ func (d *Database) GetMiddleWare() *jwt.GinJWTMiddleware {
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
-			var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 			if c.Request.Method == "GET" {
 				q := c.Query("redirect")
 				if q != "" {
@@ -53,13 +51,12 @@ func (d *Database) GetMiddleWare() *jwt.GinJWTMiddleware {
 					if err != nil {
 						return nil, err
 					}
-					res := d.GetCollection("users").FindOne(ctx, bson.M{"_id": objid})
+					res := d.GetCollection("users").FindOne(c, bson.M{"_id": objid})
 					var user User
 					decode_err := res.Decode(&user)
 					if decode_err != nil {
 						return nil, decode_err
 					}
-					defer cancel()
 					return user, nil
 				}
 			} else if c.Request.Method == "POST" {
@@ -71,9 +68,7 @@ func (d *Database) GetMiddleWare() *jwt.GinJWTMiddleware {
 				if validation_error != nil {
 					return nil, validation_error
 				}
-				defer cancel()
-
-				user, user_err := Interface.GetUser(&req_login, ctx)
+				user, user_err := Interface.GetUser(&req_login, c)
 				if user_err != nil {
 					return nil, jwt.ErrFailedAuthentication
 				}

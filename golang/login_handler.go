@@ -1,11 +1,9 @@
 package main
 
 import (
-	"context"
 	"golang/model"
 	"net/http"
 	"net/url"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
@@ -22,8 +20,6 @@ func (h *handler) getUwa(c *gin.Context) {
 var validate = validator.New()
 
 func (h *handler) addUser(c *gin.Context) {
-	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
-
 	var req_user model.User
 	if err := c.BindJSON(&req_user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -35,9 +31,8 @@ func (h *handler) addUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": validationError.Error()})
 		return
 	}
-	defer cancel()
 
-	res, err := model.Interface.CreateUser(&req_user, ctx)
+	res, err := model.Interface.CreateUser(&req_user, c)
 
 	if err != nil {
 		if err.Error() == "409" {
@@ -61,15 +56,12 @@ func (h *handler) addUser(c *gin.Context) {
 
 func (h *handler) getUserById(c *gin.Context) {
 	id := c.Param("id")
-	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
-	user, err := model.Interface.GetUserById(id, ctx)
+	user, err := model.Interface.GetUserById(id, c)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	defer cancel()
-
 	c.JSON(http.StatusOK, user)
 
 }
