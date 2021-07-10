@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { EntityManager } from './domain/entityManager.service';
-import {TestController} from "./controller/test.controller";
+import {TypeOrmModule} from "@nestjs/typeorm";
+import {Workspace, WorkspaceUser} from "./database/entity/entity";
+import {WorkspaceModule} from "./modules/workspace/workspace.module";
+import {WorkspaceController} from "./modules/workspace/controller/workspace.controller";
 
 @Module({
   imports: [
@@ -9,8 +11,17 @@ import {TestController} from "./controller/test.controller";
       envFilePath: '.env',
       isGlobal: true,
     }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      database: 'jidgra',
+      username: 'admin',
+      password: 'passwd',
+      entities: [Workspace, WorkspaceUser],
+      synchronize: true
+    }),
+    WorkspaceModule
   ],
-  controllers: [TestController],
-  providers: [EntityManager],
 })
 export class AppModule {}
