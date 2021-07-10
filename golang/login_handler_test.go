@@ -1,13 +1,12 @@
 package main
 
 import (
-	"context"
+	"fmt"
 	"golang/model"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -15,7 +14,7 @@ import (
 )
 
 func TestLoginReturns200IfExists(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	c := &gin.Context{}
 	_ = godotenv.Load("tests.env")
 	r := getRouter()
 	h := &handler{}
@@ -32,6 +31,8 @@ func TestLoginReturns200IfExists(t *testing.T) {
 		"register": {
 			payload: `{
 				"username":"test",
+				"name": "Janusz",
+				"surname":"Kowalski",
 				"email":"test@mail.com",
 				"password":"very_stronk"
 			}`,
@@ -48,21 +49,20 @@ func TestLoginReturns200IfExists(t *testing.T) {
 	r.POST("/v1/login", middleware.LoginHandler)
 	r.POST("/v1/register", h.addUser)
 
-	req1, err := http.NewRequest("POST", "/v1/register", strings.NewReader(test["register"].payload))
-	r.ServeHTTP(w, req1)
+	req, err := http.NewRequest("POST", "/v1/register", strings.NewReader(test["register"].payload))
+	r.ServeHTTP(w, req)
 	assert.Nil(t, err)
 	assert.Equal(t, 302, w.Result().StatusCode)
-	w2 := httptest.NewRecorder()
-	req2, err := http.NewRequest("POST", "/v1/login", strings.NewReader(test["login"].payload))
-	r.ServeHTTP(w2, req2)
+	w = httptest.NewRecorder()
+	req, err = http.NewRequest("POST", "/v1/login", strings.NewReader(test["login"].payload))
+	r.ServeHTTP(w, req)
 	assert.Nil(t, err)
-	assert.Equal(t, 200, w2.Result().StatusCode)
-	defer cancel()
-	model.Interface.GetCollection("users").Drop(ctx)
+	assert.Equal(t, 200, w.Result().StatusCode)
+	model.Interface.GetCollection("users").Drop(c)
 }
 
 func TestLoginReturnBadRequest(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	c := &gin.Context{}
 	_ = godotenv.Load("tests.env")
 	model.Interface.Initialize()
 	r := getRouter()
@@ -76,12 +76,11 @@ func TestLoginReturnBadRequest(t *testing.T) {
 	want := 400
 	r.ServeHTTP(w, req)
 	assert.Equal(t, want, w.Result().StatusCode)
-	defer cancel()
-	model.Interface.GetCollection("users").Drop(ctx)
+	model.Interface.GetCollection("users").Drop(c)
 }
 
 func TestLoginReturnUnauthorized(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	c := &gin.Context{}
 	_ = godotenv.Load("tests.env")
 	gin.SetMode(gin.TestMode)
 	model.Interface.Initialize()
@@ -103,6 +102,36 @@ func TestLoginReturnUnauthorized(t *testing.T) {
 	assert.Equal(t, nil, err)
 	assert.NotNil(t, w.Result())
 	assert.Equal(t, tests["401"].expectedcode, w.Result().StatusCode)
-	defer cancel()
-	model.Interface.GetCollection("users").Drop(ctx)
+	model.Interface.GetCollection("users").Drop(c)
+}
+
+//Same hex value for redirect should return 401 after used once
+func TestRedirectHexExpires(t *testing.T) {
+	_ = godotenv.Load("tests.env")
+	gin.SetMode(gin.TestMode)
+	c := &gin.Context{}
+	model.Interface.Initialize()
+	r := getRouter()
+	middleware, _ := getMiddleWare()
+	w := httptest.NewRecorder()
+	userToRegister := model.User{
+		Username: "someusername",
+		Name:     "Janusz",
+		Surname:  "Kowalski",
+		Email:    "uwa@mail.com",
+		Password: "verystrongpasswd",
+	}
+
+	hex, err := model.Interface.CreateUser(&userToRegister, c)
+	assert.Nil(t, err)
+	r.GET("/v1/login", middleware.LoginHandler)
+	urlString := fmt.Sprintf("/v1/login?redirect=%s", hex)
+	req, _ := http.NewRequest("GET", urlString, nil)
+	r.ServeHTTP(w, req)
+	assert.Equal(t, 200, w.Result().StatusCode)
+	req, _ = http.NewRequest("GET", urlString, nil)
+	w = httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+	assert.Equal(t, 401, w.Result().StatusCode)
+	model.Interface.GetCollection("users").Drop(c)
 }

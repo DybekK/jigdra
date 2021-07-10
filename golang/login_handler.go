@@ -2,11 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"golang/model"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -53,9 +51,8 @@ func (h *handler) addUser(c *gin.Context) {
 		}
 		return
 	}
-	id := strings.Split(fmt.Sprintf("%v", res.InsertedID), "\"")[1]
 	q := url.Values{}
-	q.Add("redirect", strings.Split(id, ")")[0])
+	q.Add("redirect", res)
 	location := url.URL{Path: "/v1/login", RawQuery: q.Encode()}
 
 	c.Redirect(http.StatusFound, location.RequestURI())

@@ -45,7 +45,11 @@ func (d *Database) GetMiddleWare() *jwt.GinJWTMiddleware {
 			if c.Request.Method == "GET" {
 				q := c.Query("redirect")
 				if q != "" {
-					objid, err := primitive.ObjectIDFromHex(q)
+					id, exists := d.VerifyRedirect(c, q)
+					if exists != nil {
+						return nil, errors.New("failed redirect")
+					}
+					objid, err := primitive.ObjectIDFromHex(id)
 					if err != nil {
 						return nil, err
 					}

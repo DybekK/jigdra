@@ -3,7 +3,9 @@ package model
 import (
 	"context"
 	"errors"
+	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/go-playground/validator"
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,10 +15,14 @@ import (
 )
 
 type User struct {
-	Id       primitive.ObjectID `bson:"_id" json:"id"`
-	Username string             `json:"username" validate:"required"`
-	Email    string             `json:"email" validate:"required"`
-	Password string             `json:"password" validate:"required"`
+	Id          primitive.ObjectID `bson:"_id" json:"id"`
+	Username    string             `json:"username" validate:"required,max=32"`
+	Name        string             `json:"name" validate:"required,max=32"`
+	Surname     string             `json:"surname" validate:"required,max=32"`
+	Email       string             `json:"email" validate:"required,max=255"`
+	Password    string             `json:"password" validate:"required,min=8,max=20"`
+	GenderId    int                `json:"genderId"`
+	DateOfBirth string             `json:"dateOfBirth"`
 }
 
 type LoginUser struct {
@@ -25,9 +31,13 @@ type LoginUser struct {
 }
 
 type GetUserStruct struct {
-	Id       primitive.ObjectID `bson:"_id" json:"id"`
-	Username string             `json:"username" validate:"required"`
-	Email    string             `json:"email" validate:"required"`
+	Id          primitive.ObjectID `bson:"_id" json:"id"`
+	Username    string             `json:"username" validate:"required"`
+	Name        string             `json:"name" validate:"required,max=32"`
+	Surname     string             `json:"surname" validate:"required,max=32"`
+	Email       string             `json:"email" validate:"required"`
+	GenderId    int                `json:"genderId"`
+	DateOfBirth string             `json:"dateOfBirth"`
 }
 
 func (d *Database) ValidateEmail(email string) error {
@@ -58,37 +68,42 @@ func (d *Database) GetUser(login *LoginUser, ctx context.Context) (*User, error)
 	}
 }
 
-func (d *Database) CreateUser(req_user *User, ctx context.Context) (*mongo.InsertOneResult, error) {
+func (d *Database) CreateUser(req_user *User, ctx context.Context) (string, error) {
 	var user User
 	user.Id = primitive.NewObjectID()
 	email_err := d.ValidateEmail(req_user.Email)
 	if email_err != nil {
-		return nil, email_err
+		return "", email_err
 	}
 	user.Username = req_user.Username
 	user.Email = req_user.Email
 
 	var hash, hash_error = hashPassword(req_user.Password)
 	if hash_error != nil {
-		return nil, errors.New("hashing error")
+		return "", errors.New("hashing error")
 	}
 
 	if availible := d.isUsernameAvailable(user.Username, ctx); !availible {
-		return nil, errors.New("username taken")
+		return "", errors.New("username taken")
 	}
-
 	user.Password = hash
 	result, insertError := d.GetCollection("users").InsertOne(ctx, user)
 	if insertError != nil {
 		matched, _ := regexp.MatchString(`duplicate key`, insertError.Error())
 		if matched {
-			return nil, errors.New("email in use")
+			return "", errors.New("email in use")
 
 		} else {
-			return nil, errors.New(insertError.Error())
+			return "", errors.New(insertError.Error())
 		}
 	}
-	return result, nil
+	id := strings.Split(fmt.Sprintf("%v", result), "\"")[1]
+	hex, err := d.SecureRedirect(ctx, id)
+	if err != nil {
+		return "", err
+	}
+
+	return hex, nil
 }
 
 var validate = validator.New()
