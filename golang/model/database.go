@@ -2,6 +2,8 @@ package model
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"time"
@@ -17,13 +19,20 @@ type Database struct {
 	Client *mongo.Client
 }
 
+type Security struct {
+	Id  string `json:"id"`
+	Hex string `json:"hex"`
+}
+
 type UserInterface interface {
 	Initialize() (*mongo.Client, error)
 	ValidateEmail(string) error
-	CreateUser(*User, context.Context) (*mongo.InsertOneResult, error)
+	CreateUser(*User, context.Context) (string, error)
 	GetCollection(string) *mongo.Collection
 	GetUser(*LoginUser, context.Context) (*User, error)
 	GetUserById(string, context.Context) (*GetUserStruct, error)
+	SecureRedirect(context.Context, string) (string, error)
+	VerifyRedirect(context.Context, string) (string, error)
 	GetMiddleWare() *jwt.GinJWTMiddleware
 }
 
@@ -61,22 +70,54 @@ func (d *Database) GetCollection(collectionName string) *mongo.Collection {
 	return collection
 }
 
+func (d *Database) SecureRedirect(ctx context.Context, id string) (string, error) {
+	coll := d.GetCollection("redirect")
+	var sec Security
+	sec.Id = id
+	randHex, _ := randomHex(20)
+	sec.Hex = randHex
+	_, err := coll.InsertOne(ctx, sec)
+	if err != nil {
+		return "", err
+	}
+
+	return randHex, nil
+}
+
+func (d *Database) VerifyRedirect(ctx context.Context, hex string) (string, error) {
+	coll := d.GetCollection("redirect")
+	var sec Security
+	res := coll.FindOneAndDelete(ctx, bson.M{"hex": hex})
+	decode_err := res.Decode(&sec)
+	if decode_err != nil {
+		return "", decode_err
+	}
+	return sec.Id, nil
+}
+
 //this shouldn't be done programatically, will be removed later
 func createIndex(coll *mongo.Collection) {
 	//Username should also be unique
-	for _, key := range []string{"username", "email"} {
-		index, err := coll.Indexes().CreateOne(
-			context.Background(),
-			mongo.IndexModel{
-				Keys:    bson.D{{Key: key, Value: 1}},
-				Options: options.Index().SetUnique(true),
-			},
-		)
+	index, err := coll.Indexes().CreateOne(
+		context.Background(),
+		mongo.IndexModel{
+			Keys:    bson.D{{Key: "email", Value: 1}},
+			Options: options.Index().SetUnique(true),
+		},
+	)
 
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Println(index)
+	if err != nil {
+		panic(err)
 	}
+
+	fmt.Println(index)
+
+}
+
+func randomHex(n int) (string, error) {
+	bytes := make([]byte, n)
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(bytes), nil
 }

@@ -3,6 +3,7 @@ module golang
 go 1.16
 
 require (
+	github.com/Valiben/gin_unit_test v0.0.0-20181205064931-674aee46d090 // indirect
 	github.com/appleboy/gin-jwt v2.5.0+incompatible // indirect
 	github.com/appleboy/gin-jwt/v2 v2.6.4 // indirect
 	github.com/gin-gonic/gin v1.7.2 // indirect
@@ -16,6 +17,7 @@ require (
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
+	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/ugorji/go v1.2.6 // indirect
 	go.mongodb.org/mongo-driver v1.5.4 // indirect
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
