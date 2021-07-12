@@ -1,9 +1,6 @@
-import {
-  Component,
-  OnInit
-} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {NzMarks, NzSliderValue} from "ng-zorro-antd/slider";
-import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-user-content',
@@ -14,7 +11,7 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
           <nz-form-item>
             <nz-form-control nzErrorTip="You need to specify task name">
               <nz-input-group nzAddOnBefore="Task">
-                <input type="text" nz-input formControlName="taskName" placeholder="Task name"/>
+                <input formControlName="taskName" type="text" nz-input placeholder="Task name"/>
               </nz-input-group>
             </nz-form-control>
           </nz-form-item>
@@ -35,7 +32,7 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
           <nz-form-item>
             <nz-form-control nzErrorTip="Number of brakes">
               <nz-input-group nzAddOnBefore="Breaks">
-                <input type="number" nz-input formControlName="taskName" placeholder="Task name"/>
+                <input formControlName="breaksNumber" type="number" nz-input placeholder="Task name"/>
               </nz-input-group>
             </nz-form-control>
           </nz-form-item>
@@ -53,14 +50,14 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
       <div nz-row nzJustify="center" [nzGutter]="[vGutter, hGutter]">
         <div nz-col [nzSpan]="20">
           <nz-form-item>
-              <textarea nz-input placeholder="Write your comment here!"
+              <textarea formControlName="comment" nz-input placeholder="Write your comment here!"
                         [nzAutosize]="{ minRows: 2, maxRows: 5 }"></textarea>
           </nz-form-item>
         </div>
       </div>
       <div nz-row nzJustify="center" [nzGutter]="[vGutter, hGutter]">
         <div nz-col [nzSpan]="20">
-            <button nz-button [nzType]="'primary'">Crate task</button>
+          <button nz-button [nzType]="'primary'">Crate task</button>
         </div>
       </div>
     </form>
@@ -70,6 +67,7 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 export class UserContentComponent implements OnInit {
 
   createTask!: FormGroup;
+
   hGutter = {xs: 8, sm: 16, md: 24};
   vGutter = {xs: 8, sm: 16, md: 24};
 
@@ -92,8 +90,10 @@ export class UserContentComponent implements OnInit {
 
   ngOnInit(): void {
     this.createTask = this.fb.group({
-      taskName: new FormControl(),
-      time: new FormControl()
+      taskName: [null],
+      time: [null],
+      breaksNumber: [null],
+      comment: [null]
     });
   }
 
