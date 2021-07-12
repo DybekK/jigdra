@@ -3,6 +3,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import { LoginFormComponent } from './login-form.component';
 import {AuthModule} from "../../../auth.module";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {RouterTestingModule} from "@angular/router/testing";
 
 describe('LoginFormComponent', () => {
   let component: LoginFormComponent;
@@ -13,7 +14,8 @@ describe('LoginFormComponent', () => {
       declarations: [ LoginFormComponent ],
       imports: [
         BrowserAnimationsModule,
-        AuthModule
+        AuthModule,
+        RouterTestingModule
       ]
     })
     .compileComponents();
