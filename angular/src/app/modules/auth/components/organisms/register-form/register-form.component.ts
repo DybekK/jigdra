@@ -9,7 +9,8 @@ import StatusValidator, {ValidateStatus} from "../../../../../shared/validators/
   template: `
     <form nz-form [formGroup]="validateForm" class="register-form" (ngSubmit)="submitForm()">
       <nz-form-item>
-        <nz-form-control nzHasFeedback [nzValidateStatus]="validateStatus('username')" nzErrorTip="Please input your username!">
+        <nz-form-control nzHasFeedback [nzValidateStatus]="validateStatus('username')"
+                         nzErrorTip="Please input your username!">
           <nz-input-group>
             <input type="text" nz-input formControlName="username" placeholder="Username"/>
           </nz-input-group>
@@ -23,28 +24,32 @@ import StatusValidator, {ValidateStatus} from "../../../../../shared/validators/
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
-        <nz-form-control nzHasFeedback [nzValidateStatus]="validateStatus('surname')" nzErrorTip="Please input your surname!">
-          <nz-input-group >
+        <nz-form-control nzHasFeedback [nzValidateStatus]="validateStatus('surname')"
+                         nzErrorTip="Please input your surname!">
+          <nz-input-group>
             <input type="text" nz-input formControlName="surname" placeholder="Surname"/>
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
-        <nz-form-control nzHasFeedback [nzValidateStatus]="validateStatus('email')" nzErrorTip="The input is not valid e-mail!">
+        <nz-form-control nzHasFeedback [nzValidateStatus]="validateStatus('email')"
+                         nzErrorTip="The input is not valid e-mail!">
           <nz-input-group>
             <input type="text" nz-input formControlName="email" placeholder="Email"/>
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
-        <nz-form-control nzHasFeedback [nzValidateStatus]="validateStatus('password')" nzErrorTip="Please input your password!">
+        <nz-form-control nzHasFeedback [nzValidateStatus]="validateStatus('password')"
+                         nzErrorTip="Please input your password!">
           <nz-input-group nzPrefixIcon="lock">
             <input type="password" nz-input formControlName="password" placeholder="Password"/>
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
-        <nz-form-control nzHasFeedback [nzValidateStatus]="validateStatus('confirmPassword')" nzErrorTip="Two passwords that you enter is inconsistent!">
+        <nz-form-control nzHasFeedback [nzValidateStatus]="validateStatus('confirmPassword')"
+                         nzErrorTip="Two passwords that you enter is inconsistent!">
           <nz-input-group nzPrefixIcon="lock">
             <input type="password" nz-input formControlName="confirmPassword" placeholder="Confirm password"/>
           </nz-input-group>
@@ -58,17 +63,17 @@ import StatusValidator, {ValidateStatus} from "../../../../../shared/validators/
       <nz-form-item>
         <nz-form-control class="register-form__full-width">
           <nz-select nzPlaceHolder="Select your gender" formControlName="gender">
-            <nz-option nzValue="Male" nzLabel="Male"></nz-option>
-            <nz-option nzValue="Female" nzLabel="Female"></nz-option>
-            <nz-option nzValue="Other" nzLabel="Other"></nz-option>
-            <nz-option nzValue="Unknown" nzLabel="Prefer not to say"></nz-option>
+            <nz-option data-cy="Male" nzValue="Male" nzLabel="Male"></nz-option>
+            <nz-option data-cy="Female" nzValue="Female" nzLabel="Female"></nz-option>
+            <nz-option data-cy="Other" nzValue="Other" nzLabel="Other"></nz-option>
+            <nz-option data-cy="Unknown" nzValue="Unknown" nzLabel="Prefer not to say"></nz-option>
           </nz-select>
         </nz-form-control>
       </nz-form-item>
       <div nz-row class="register-form--margin">
       </div>
       <button [nzLoading]="isLoading" nz-button class="register-form__button" [nzType]="'primary'">Register</button>
-      Have an account? <a [routerLink]="'/login'" > Login now! </a>
+      Have an account? <a [routerLink]="'/login'"> Login now! </a>
     </form>
   `,
   styleUrls: ['./register-form.component.scss']
