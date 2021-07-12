@@ -22,6 +22,9 @@ import {NzIconModule} from "ng-zorro-antd/icon";
 import { UserOutline, LockOutline } from '@ant-design/icons-angular/icons';
 import { IconDefinition } from '@ant-design/icons-angular';
 import {NzTypographyModule} from "ng-zorro-antd/typography";
+import {AuthHttpClient} from "./services/http/auth-http.client";
+import {AuthService} from "./services/register/auth.service";
+import {HttpClientModule} from "@angular/common/http";
 
 const icons: IconDefinition[] = [UserOutline, LockOutline];
 
@@ -32,6 +35,10 @@ const icons: IconDefinition[] = [UserOutline, LockOutline];
     AuthViewComponent,
     RegisterFormComponent,
     AuthHeaderComponent,
+  ],
+  providers: [
+    AuthHttpClient,
+    AuthService
   ],
   exports: [
     AuthContentComponent,
@@ -55,7 +62,8 @@ const icons: IconDefinition[] = [UserOutline, LockOutline];
     NzDatePickerModule,
     NzSelectModule,
     NzIconModule.forChild(icons),
-    NzTypographyModule
+    NzTypographyModule,
+    HttpClientModule
   ]
 })
 export class AuthModule { }

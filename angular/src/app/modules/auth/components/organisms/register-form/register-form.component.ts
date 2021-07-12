@@ -3,6 +3,9 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {emailRegExp} from "../../../../../shared/regexps/regexps";
 import customValidator from "../../../../../shared/validators/custom-validator";
 import StatusValidator, {ValidateStatus} from "../../../../../shared/validators/status-validator";
+import {AuthService} from "../../../services/register/auth.service";
+import {RegisterDto} from "../../../interfaces/RegisterDto";
+import {finalize} from "rxjs/operators";
 
 @Component({
   selector: 'app-register-form',
@@ -78,24 +81,24 @@ export class RegisterFormComponent implements OnInit {
   validateForm!: FormGroup;
   validateStatus!: ValidateStatus
 
-  constructor(private fb: FormBuilder) {
-  }
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+  ) {}
 
   submitForm(): void {
     Object.values(this.validateForm.controls).forEach(control => {
       control.markAsDirty();
       control.updateValueAndValidity();
-    })
+    });
 
-    this.fetchRegister();
-    console.log(this.validateForm.valid ? "Works" : "Doesn't work");
-  }
-
-  fetchRegister() {
-    this.isLoading = true;
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 2000);
+    if(this.validateForm.valid) {
+      this.isLoading = true;
+      const value: RegisterDto = this.validateForm.value;
+      this.authService.registerUser(value).pipe(
+        finalize(() => this.isLoading = false)
+      ).subscribe();
+    }
   }
 
   ngOnInit(): void {
