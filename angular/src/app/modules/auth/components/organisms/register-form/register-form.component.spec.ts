@@ -1,7 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { RegisterFormComponent } from './register-form.component';
-import {FormBuilder} from "@angular/forms";
 import {AuthModule} from "../../../auth.module";
 import {RouterTestingModule} from "@angular/router/testing";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
@@ -28,7 +26,23 @@ describe('RegisterFormComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create RegisterFormComponent', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should render input elements', () => {
+    const nameInput : HTMLInputElement = fixture.nativeElement.querySelector('input[formControlName=name]');
+    const surnameInput : HTMLInputElement = fixture.nativeElement.querySelector('input[formControlName=surname]');
+    const usernameInput : HTMLInputElement = fixture.nativeElement.querySelector('input[formControlName=username]');
+    const passwordInput : HTMLInputElement = fixture.nativeElement.querySelector('input[formControlName=password]');
+    const confirmPasswordInput : HTMLInputElement = fixture.nativeElement.querySelector('input[formControlName=confirmPassword]');
+    const emailInput : HTMLInputElement = fixture.nativeElement.querySelector('input[formControlName=email]');
+
+    expect(nameInput).toBeTruthy();
+    expect(surnameInput).toBeTruthy();
+    expect(usernameInput).toBeTruthy();
+    expect(passwordInput).toBeTruthy();
+    expect(confirmPasswordInput).toBeTruthy();
+    expect(emailInput).toBeTruthy();
+  })
 });
