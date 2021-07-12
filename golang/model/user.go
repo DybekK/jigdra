@@ -3,7 +3,9 @@ package model
 import (
 	"context"
 	"errors"
+	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/go-playground/validator"
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,21 +15,29 @@ import (
 )
 
 type User struct {
-	Id       primitive.ObjectID `bson:"_id" json:"id"`
-	Username *string            `json:"username" validate:"required"`
-	Email    *string            `json:"email" validate:"required"`
-	Password *string            `json:"password" validate:"required"`
+	Id          primitive.ObjectID `bson:"_id" json:"id"`
+	Username    string             `json:"username" validate:"required,max=32"`
+	Name        string             `json:"name" validate:"required,max=32"`
+	Surname     string             `json:"surname" validate:"required,max=32"`
+	Email       string             `json:"email" validate:"required,max=255"`
+	Password    string             `json:"password" validate:"required,min=6,max=20"`
+	GenderId    int                `json:"genderId"`
+	DateOfBirth string             `json:"dateOfBirth"`
 }
 
 type LoginUser struct {
-	Email    *string `json:"email" validate: "required"`
-	Password *string `json:"password" validate:"required"`
+	Email    string `json:"email" validate: "required"`
+	Password string `json:"password" validate:"required"`
 }
 
 type GetUserStruct struct {
-	Id       primitive.ObjectID `bson:"_id" json:"id"`
-	Username *string            `json:"username" validate:"required"`
-	Email    *string            `json:"email" validate:"required"`
+	Id          primitive.ObjectID `bson:"_id" json:"id"`
+	Username    string             `json:"username" validate:"required"`
+	Name        string             `json:"name" validate:"required,max=32"`
+	Surname     string             `json:"surname" validate:"required,max=32"`
+	Email       string             `json:"email" validate:"required"`
+	GenderId    int                `json:"genderId"`
+	DateOfBirth string             `json:"dateOfBirth"`
 }
 
 func (d *Database) ValidateEmail(email string) error {
@@ -51,40 +61,49 @@ func (d *Database) GetUser(login *LoginUser, ctx context.Context) (*User, error)
 	if decode_err != nil {
 		return nil, errors.New("decode error")
 	}
-	if verifyPassword(*login.Password, *result.Password) {
+	if verifyPassword(login.Password, result.Password) {
 		return &result, nil
 	} else {
 		return nil, errors.New("invalid password")
 	}
 }
 
-func (d *Database) CreateUser(req_user *User, ctx context.Context) (*mongo.InsertOneResult, error) {
+func (d *Database) CreateUser(req_user *User, ctx context.Context) (string, error) {
 	var user User
 	user.Id = primitive.NewObjectID()
-	email_err := d.ValidateEmail(*req_user.Email)
+	email_err := d.ValidateEmail(req_user.Email)
 	if email_err != nil {
-		return nil, email_err
+		return "", email_err
 	}
 	user.Username = req_user.Username
 	user.Email = req_user.Email
 
-	var hash, hash_error = hashPassword(*req_user.Password)
+	var hash, hash_error = hashPassword(req_user.Password)
 	if hash_error != nil {
-		return nil, errors.New("hashing error")
+		return "", errors.New("hashing error")
 	}
 
-	user.Password = &hash
+	if availible := d.isUsernameAvailable(user.Username, ctx); !availible {
+		return "", errors.New("username taken")
+	}
+	user.Password = hash
 	result, insertError := d.GetCollection("users").InsertOne(ctx, user)
 	if insertError != nil {
 		matched, _ := regexp.MatchString(`duplicate key`, insertError.Error())
 		if matched {
-			return nil, errors.New("409")
+			return "", errors.New("email in use")
 
 		} else {
-			return nil, errors.New(insertError.Error())
+			return "", errors.New(insertError.Error())
 		}
 	}
-	return result, nil
+	id := strings.Split(fmt.Sprintf("%v", result), "\"")[1]
+	hex, err := d.SecureRedirect(ctx, id)
+	if err != nil {
+		return "", err
+	}
+
+	return hex, nil
 }
 
 var validate = validator.New()
@@ -100,6 +119,13 @@ func (d *Database) GetUserById(id string, ctx context.Context) (*GetUserStruct, 
 	}
 
 	return &user, nil
+
+}
+
+func (d *Database) isUsernameAvailable(username string, ctx context.Context) bool {
+	coll := d.GetCollection("users")
+	result := coll.FindOne(ctx, bson.M{"username": username})
+	return result.Err() == mongo.ErrNoDocuments
 
 }
 

@@ -30,7 +30,7 @@ services:
         ports:
             - "27017:27017"
         volumes:
-            - 'mongo_data:/bitnami/mongodb'
+            - '~/mongo:/data/db'
         networks:
             - apps-network
 
