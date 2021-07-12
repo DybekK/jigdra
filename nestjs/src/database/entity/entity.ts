@@ -1,4 +1,4 @@
-import {Column, Entity, Index, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, Index, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {worker} from "cluster";
 
 export abstract class Model {
@@ -18,10 +18,14 @@ export class WorkspaceUser extends Model {
     @Column({default: true})
     isActive: boolean;
 
-    @ManyToOne(() => Workspace, workspace => workspace.workspaceUsers)
+    @ManyToOne(() => Workspace, workspace => workspace.workspaceUsers, {
+        cascade: true
+    })
     workspace: Promise<Workspace>;
 
-    @OneToMany(() => Task, task => task.workspace)
+    @ManyToMany(() => Task, task => task.workspaceUsers, {
+        cascade: true
+    })
     tasks: Promise<Task[]>;
 }
 
@@ -30,10 +34,14 @@ export class Workspace extends Model {
     @Column()
     name: string
 
-    @OneToMany(() => WorkspaceUser, workspaceUser => workspaceUser.workspace)
+    @OneToMany(() => WorkspaceUser, workspaceUser => workspaceUser.workspace, {
+        cascade: true
+    })
     workspaceUsers: Promise<WorkspaceUser[]>;
 
-    @OneToMany(() => Task, task => task.workspace)
+    @OneToMany(() => Task, task => task.workspace, {
+        cascade: true
+    })
     tasks: Promise<Task[]>;
 }
 
@@ -44,9 +52,13 @@ export class Task {
     @Column()
     description: string;
 
-    @ManyToOne(() => Workspace, workspace => workspace.tasks)
+    @ManyToOne(() => Workspace, workspace => workspace.tasks, {
+        cascade: true
+    })
     workspace: Promise<Workspace>;
 
-    @ManyToOne(() => WorkspaceUser, workspaceUser => workspaceUser.tasks)
-    workspaceUser: Promise<WorkspaceUser>
+    @ManyToMany(() => WorkspaceUser, workspaceUser => workspaceUser.tasks, {
+        cascade: true
+    })
+    workspaceUsers: Promise<WorkspaceUser>
 }
