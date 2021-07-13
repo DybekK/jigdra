@@ -67,7 +67,7 @@ import {finalize} from "rxjs/operators";
       </nz-form-item>
       <nz-form-item>
         <nz-form-control class="register-form__full-width">
-          <nz-select [nzOpen]="true" nzPlaceHolder="Select your gender" formControlName="gender" [nzOptions]="Gender">
+          <nz-select nzPlaceHolder="Select your gender" formControlName="gender" [nzOptions]="Gender">
           </nz-select>
         </nz-form-control>
       </nz-form-item>
