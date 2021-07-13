@@ -68,8 +68,8 @@ export class LoginFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.validateForm = this.fb.group({
-      email: [null, [Validators.required, Validators.pattern(emailRegExp)]],
-      password: [null, [Validators.required]],
+      email: [null, [Validators.required, Validators.pattern(emailRegExp), Validators.maxLength(255)]],
+      password: [null, [Validators.required, Validators.minLength(6), Validators.maxLength(20)]],
       remember: [true]
     });
     this.validateStatus = StatusValidator.validateStatus(this.validateForm);

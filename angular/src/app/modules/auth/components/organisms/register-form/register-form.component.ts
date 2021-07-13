@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {emailRegExp} from "../../../../../shared/regexps/regexps";
+import {emailRegExp, onlyLettersRegExp} from "../../../../../shared/regexps/regexps";
 import customValidator from "../../../../../shared/validators/custom-validator";
 import StatusValidator, {ValidateStatus} from "../../../../../shared/validators/status-validator";
 import {AuthService} from "../../../services/register/auth.service";
@@ -15,14 +15,14 @@ import {finalize} from "rxjs/operators";
         <nz-form-control nzHasFeedback [nzValidateStatus]="validateStatus('username')"
                          nzErrorTip="Please input your username!">
           <nz-input-group>
-            <input type="text" nz-input formControlName="username" placeholder="Username"/>
+            <input type="text" nz-input formControlName="username" placeholder="Username" [maxLength]="32"/>
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
         <nz-form-control nzHasFeedback [nzValidateStatus]="validateStatus('name')" nzErrorTip="Please input your name!">
           <nz-input-group>
-            <input type="text" nz-input formControlName="name" placeholder="Name"/>
+            <input type="text" nz-input formControlName="name" placeholder="Name" [maxLength]="32"/>
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
@@ -30,7 +30,7 @@ import {finalize} from "rxjs/operators";
         <nz-form-control nzHasFeedback [nzValidateStatus]="validateStatus('surname')"
                          nzErrorTip="Please input your surname!">
           <nz-input-group>
-            <input type="text" nz-input formControlName="surname" placeholder="Surname"/>
+            <input type="text" nz-input formControlName="surname" placeholder="Surname" [maxLength]="32"/>
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
@@ -38,7 +38,7 @@ import {finalize} from "rxjs/operators";
         <nz-form-control nzHasFeedback [nzValidateStatus]="validateStatus('email')"
                          nzErrorTip="The input is not valid e-mail!">
           <nz-input-group>
-            <input type="text" nz-input formControlName="email" placeholder="Email"/>
+            <input type="text" nz-input formControlName="email" placeholder="Email" [maxLength]="255"/>
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
@@ -46,7 +46,8 @@ import {finalize} from "rxjs/operators";
         <nz-form-control nzHasFeedback [nzValidateStatus]="validateStatus('password')"
                          nzErrorTip="Please input your password!">
           <nz-input-group nzPrefixIcon="lock">
-            <input type="password" nz-input formControlName="password" placeholder="Password"/>
+            <input type="password" nz-input formControlName="password" placeholder="Password" [minLength]="6"
+                   [maxLength]="20"/>
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
@@ -54,7 +55,8 @@ import {finalize} from "rxjs/operators";
         <nz-form-control nzHasFeedback [nzValidateStatus]="validateStatus('confirmPassword')"
                          nzErrorTip="Two passwords that you enter is inconsistent!">
           <nz-input-group nzPrefixIcon="lock">
-            <input type="password" nz-input formControlName="confirmPassword" placeholder="Confirm password"/>
+            <input type="password" nz-input formControlName="confirmPassword" placeholder="Confirm password"
+                   [minLength]="6" [maxLength]="20"/>
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
@@ -65,11 +67,7 @@ import {finalize} from "rxjs/operators";
       </nz-form-item>
       <nz-form-item>
         <nz-form-control class="register-form__full-width">
-          <nz-select nzPlaceHolder="Select your gender" formControlName="gender">
-            <nz-option data-cy="Male" nzValue="Male" nzLabel="Male"></nz-option>
-            <nz-option data-cy="Female" nzValue="Female" nzLabel="Female"></nz-option>
-            <nz-option data-cy="Other" nzValue="Other" nzLabel="Other"></nz-option>
-            <nz-option data-cy="Unknown" nzValue="Unknown" nzLabel="Prefer not to say"></nz-option>
+          <nz-select [nzOpen]="true" nzPlaceHolder="Select your gender" formControlName="gender" [nzOptions]="Gender">
           </nz-select>
         </nz-form-control>
       </nz-form-item>
@@ -89,7 +87,15 @@ export class RegisterFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-  ) {}
+  ) {
+  }
+
+  Gender: any = [
+    {label: 'Male', value: 'Male'},
+    {label: 'Female', value: 'Female'},
+    {label: 'Other', value: 'Other'},
+    {label: 'Prefer not to say', value: 'Unknown'}
+  ]
 
   submitForm(): void {
     Object.values(this.validateForm.controls).forEach(control => {
@@ -97,7 +103,7 @@ export class RegisterFormComponent implements OnInit {
       control.updateValueAndValidity();
     });
 
-    if(this.validateForm.valid) {
+    if (this.validateForm.valid) {
       this.isLoading = true;
       const value: RegisterDto = this.validateForm.value;
       this.authService.registerUser(value).pipe(
@@ -108,12 +114,12 @@ export class RegisterFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.validateForm = this.fb.group({
-        name: [null, [Validators.required]],
-        surname: [null, [Validators.required]],
-        username: [null, [Validators.required, Validators.minLength(8)]],
-        password: [null, [Validators.required]],
-        confirmPassword: [null, [Validators.required]],
-        email: [null, [Validators.required, Validators.pattern(emailRegExp)]],
+        name: [null, [Validators.required, Validators.pattern(onlyLettersRegExp), Validators.maxLength(32)]],
+        surname: [null, [Validators.required, Validators.pattern(onlyLettersRegExp), Validators.maxLength(32)]],
+        username: [null, [Validators.required, Validators.maxLength(32)]],
+        password: [null, [Validators.required, Validators.minLength(6), Validators.maxLength(20)]],
+        confirmPassword: [null, [Validators.required, Validators.minLength(6), Validators.maxLength(20)]],
+        email: [null, [Validators.required, Validators.maxLength(255), Validators.pattern(emailRegExp)]],
         dateOfBirth: [null],
         gender: [null]
       },

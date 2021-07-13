@@ -61,10 +61,14 @@ describe('RegisterFormComponent', () => {
     "Male",
     "Female",
     "Other",
-    "Unknown"
+    "Unknown",
+    "TOPOWINNOWYJEBACBŁĄD"
   ]).it('should render gender select options', (optionValue) => {
-    const optionElement = Array.from(document.querySelectorAll('.ant-select-item-option-content'))
+    const {debugElement} = fixture;
+    const selectElement: HTMLInputElement = debugElement.nativeElement.querySelector('nz-select[formControlName=gender]').querySelector('input');
+    // fireEvent.click(selectElement)
+    const optionsElement = Array.from(debugElement.nativeElement.querySelectorAll('.ant-select-item-option-content'))
       .find(el => el.textContent === `${optionValue}`);
-    expect(optionElement).toBeTruthy();
+    expect(optionsElement).toBeTruthy();
   });
 });
