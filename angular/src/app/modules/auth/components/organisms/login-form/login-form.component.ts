@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {emailRegExp} from "../../../../../shared/regexps/regexps";
 import StatusValidator, {ValidateStatus} from "../../../../../shared/validators/status-validator";
-import {AuthService} from "../../../services/register/auth.service";
+import {AuthService} from "../../../services/auth/auth.service";
 import {finalize} from "rxjs/operators";
 import {LoginDto} from "../../../interfaces/LoginDto";
 import {Router} from "@angular/router";
@@ -65,8 +65,8 @@ export class LoginFormComponent implements OnInit {
       this.authService.loginUser(value).pipe(
         finalize(() => this.isLoading = false)
       ).subscribe(response => {
-        this.router.navigate(['/user'])
         this.authService.successfulLogin(response);
+        this.router.navigate(['/user'])
       });
     }
   }

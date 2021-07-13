@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {AuthViewComponent} from "./modules/auth/components/views/auth-view/auth-view.component";
 import {NotFoundComponent} from "./modules/errors/not-found/not-found.component";
+import {AuthGuard} from "./modules/auth/services/guard/auth-guard.service";
 
 const routes: Routes = [
   {
@@ -11,6 +12,7 @@ const routes: Routes = [
   },
   {
     path: 'user',
+    canActivate: [AuthGuard],
     loadChildren: () => import('./modules/user/user.module').then(m => m.UserModule)
   },
   {

@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {emailRegExp, onlyLettersRegExp} from "../../../../../shared/regexps/regexps";
 import customValidator from "../../../../../shared/validators/custom-validator";
 import StatusValidator, {ValidateStatus} from "../../../../../shared/validators/status-validator";
-import {AuthService} from "../../../services/register/auth.service";
+import {AuthService} from "../../../services/auth/auth.service";
 import {RegisterDto} from "../../../interfaces/RegisterDto";
 import {finalize} from "rxjs/operators";
 

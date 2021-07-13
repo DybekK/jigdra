@@ -18,7 +18,6 @@ export class AuthContentComponent implements OnInit {
 
   setUrl(url: string) {
     this.cardTitle = url === '/register' ? 'Register' : 'Sign in';
-    console.log(this.router.url);
   }
 
   constructor(private router: Router) {

@@ -22,8 +22,9 @@ import { UserOutline, LockOutline } from '@ant-design/icons-angular/icons';
 import { IconDefinition } from '@ant-design/icons-angular';
 import {NzTypographyModule} from "ng-zorro-antd/typography";
 import {AuthHttpClient} from "./services/http/auth-http.client";
-import {AuthService} from "./services/register/auth.service";
 import {HttpClientModule} from "@angular/common/http";
+import {AuthService} from "./services/auth/auth.service";
+import {AuthGuard} from "./services/guard/auth-guard.service";
 
 const icons: IconDefinition[] = [UserOutline, LockOutline];
 
@@ -38,6 +39,7 @@ const icons: IconDefinition[] = [UserOutline, LockOutline];
   providers: [
     AuthHttpClient,
     AuthService,
+    AuthGuard
   ],
   exports: [
     AuthContentComponent,
