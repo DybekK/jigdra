@@ -21,8 +21,8 @@ func (d *Database) GetMiddleWare() *jwt.GinJWTMiddleware {
 		// TokenLookup:    "cookie:token",
 		// CookieDomain:   "localhost",
 		// CookieSameSite: http.SameSiteDefaultMode,
-		Timeout:     time.Minute * 2,
-		MaxRefresh:  time.Minute * 10,
+		Timeout:     time.Hour * 10,
+		MaxRefresh:  time.Hour * 10,
 		IdentityKey: "_id",
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*User); ok {
