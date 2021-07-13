@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {emailRegExp} from "../../../../../shared/regexps/regexps";
 import StatusValidator, {ValidateStatus} from "../../../../../shared/validators/status-validator";
-import {AuthService} from "../../../services/register/auth.service";
+import {AuthService} from "../../../services/auth/auth.service";
 import {finalize} from "rxjs/operators";
 import {LoginDto} from "../../../interfaces/LoginDto";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-login-form',
@@ -47,7 +48,8 @@ export class LoginFormComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   submitForm(): void {
@@ -62,7 +64,10 @@ export class LoginFormComponent implements OnInit {
       const value: LoginDto = this.validateForm.value;
       this.authService.loginUser(value).pipe(
         finalize(() => this.isLoading = false)
-      ).subscribe();
+      ).subscribe(response => {
+        this.authService.successfulLogin(response);
+        this.router.navigate(['/user'])
+      });
     }
   }
 

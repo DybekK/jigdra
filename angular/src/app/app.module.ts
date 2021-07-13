@@ -15,7 +15,8 @@ import {ErrorsModule} from "./modules/errors/errors.module";
 import {NzLayoutModule} from "ng-zorro-antd/layout";
 import {SharedModule} from "./shared/shared.module";
 import {DataCypressDirective} from "./data.cypress.directive";
-
+import {JwtModule} from "@auth0/angular-jwt";
+import {AuthService} from "./modules/auth/services/auth/auth.service";
 
 registerLocaleData(en);
 
@@ -34,7 +35,12 @@ registerLocaleData(en);
     ErrorsModule,
     AppRoutingModule,
     NzLayoutModule,
-    HttpClientModule
+    HttpClientModule,
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: AuthService.getToken,
+      },
+    }),
   ],
   providers: [{provide: NZ_I18N, useValue: en_US}],
   bootstrap: [AppComponent]
