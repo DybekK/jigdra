@@ -20,9 +20,11 @@ import {Component, OnInit} from '@angular/core';
               <li nz-menu-item>Team 2</li>
             </ul>
           </li>
-          <li nz-menu-item>
-            <i nz-icon nzType="file"></i>
-            <span>nav 1</span>
+          <li nz-submenu nzTitle="Time Task" nzIcon="clock-circle" >
+            <ul>
+              <li nz-menu-item>New Task</li>
+              <li nz-menu-item>Quick Task</li>
+            </ul>
           </li>
           <li nz-menu-item>
             <i nz-icon nzType="video-camera"></i>
