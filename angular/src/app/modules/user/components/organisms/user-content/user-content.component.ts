@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {NzMarks, NzSliderValue} from "ng-zorro-antd/slider";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-user-content',
   template: `
-    <form [formGroup]="createTask" class="ant-advanced-search-form">
+    <form [formGroup]="validateForm" class="ant-advanced-search-form" (ngSubmit)="submitTask()">
       <div nz-row nzJustify="center" [nzGutter]="[vGutter, hGutter]">
         <div nz-col [nzSpan]="20">
           <nz-form-item>
@@ -17,26 +17,29 @@ import {FormBuilder, FormGroup} from "@angular/forms";
           </nz-form-item>
         </div>
       </div>
+
       <div nz-row [nzGutter]="[vGutter, hGutter]">
         <div nz-col [nzSpan]="24">
           <nz-form-item>
-            <nz-form-control>
+            <nz-form-control nzErrorTip="Task needs to be longer than 0 min">
               <nz-slider formControlName="time" [nzMarks]="timeStamps" [nzStep]="1" nzMax="120"
                          (nzOnAfterChange)="getTimeValue($event)"></nz-slider>
             </nz-form-control>
           </nz-form-item>
         </div>
       </div>
+
       <div nz-row nzJustify="center" [nzGutter]="[vGutter, hGutter]">
         <div nz-col [nzSpan]="10">
           <nz-form-item>
-            <nz-form-control nzErrorTip="Number of brakes">
+            <nz-form-control nzErrorTip="Number of breaks needs to be a natural number">
               <nz-input-group nzAddOnBefore="Breaks">
-                <input formControlName="breaksNumber" type="number" nz-input placeholder="Task name"/>
+                <input formControlName="breaksNumber" type="number" nz-input min="0"/>
               </nz-input-group>
             </nz-form-control>
           </nz-form-item>
         </div>
+
         <div nz-col [nzSpan]="10">
           <nz-form-item>
             <nz-form-control nzErrorTip="You need to specify task name">
@@ -47,6 +50,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
           </nz-form-item>
         </div>
       </div>
+
       <div nz-row nzJustify="center" [nzGutter]="[vGutter, hGutter]">
         <div nz-col [nzSpan]="20">
           <nz-form-item>
@@ -55,18 +59,23 @@ import {FormBuilder, FormGroup} from "@angular/forms";
           </nz-form-item>
         </div>
       </div>
+
       <div nz-row nzJustify="center" [nzGutter]="[vGutter, hGutter]">
-        <div nz-col [nzSpan]="20">
-          <button nz-button [nzType]="'primary'">Crate task</button>
+        <div nz-col [nzSpan]="3">
+          <button nz-button [nzType]="'primary'" >Crate task</button>
+        </div>
+        <div nz-col [nzSpan]="3">
+          <button nz-button [nzType]="'default'" (click)="resetTaskForm($event)">Reset</button>
         </div>
       </div>
+
     </form>
   `,
   styleUrls: ['./user-content.component.scss']
 })
 export class UserContentComponent implements OnInit {
 
-  createTask!: FormGroup;
+  validateForm!: FormGroup;
 
   hGutter = {xs: 8, sm: 16, md: 24};
   vGutter = {xs: 8, sm: 16, md: 24};
@@ -74,8 +83,8 @@ export class UserContentComponent implements OnInit {
   timeStamps: NzMarks = {
     0: '0 min',
     10: '10 min',
-    25: '25 min',
-    50: '50 min'
+    30: '30 min',
+    60: '60 min'
   }
 
   constructor(private fb: FormBuilder) {
@@ -84,17 +93,38 @@ export class UserContentComponent implements OnInit {
   /*
    * Get time value from slider as **number**
    */
-  getTimeValue(value: NzSliderValue) {
+  getTimeValue(value: NzSliderValue): void {
     console.log(value);
   }
 
   ngOnInit(): void {
-    this.createTask = this.fb.group({
-      taskName: [null],
-      time: [null],
-      breaksNumber: [null],
+    this.validateForm = this.fb.group({
+      taskName: [null, [Validators.required]],
+      time: [null, [Validators.required, Validators.min(1)]],
+      breaksNumber: [0, [Validators.required, Validators.min(0)]],
       comment: [null]
     });
   }
 
+  submitTask(): void {
+    Object.values(this.validateForm.controls).forEach(control => {
+      control.markAsDirty();
+      control.updateValueAndValidity();
+    })
+
+    if (this.validateForm.valid) {
+      console.log('everything is fine')
+    }
+  }
+
+  resetTaskForm(e: MouseEvent) {
+    e.preventDefault();
+    this.validateForm.reset();
+    Object.values(this.validateForm.controls).forEach( control => {
+        control.markAsPristine();
+        control.updateValueAndValidity();
+
+    })
+    this.validateForm.controls["breaksNumber"].setValue(0);
+  }
 }
