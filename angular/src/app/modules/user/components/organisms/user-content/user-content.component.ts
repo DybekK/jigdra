@@ -18,8 +18,8 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
         </div>
       </div>
 
-      <div nz-row [nzGutter]="[vGutter, hGutter]">
-        <div nz-col [nzSpan]="24">
+      <div nz-row nzJustify="center" [nzGutter]="[vGutter, hGutter]">
+        <div nz-col [nzSpan]="20">
           <nz-form-item>
             <nz-form-control nzErrorTip="Task needs to be longer than 0 min">
               <nz-slider formControlName="time" [nzMarks]="timeStamps" [nzStep]="1" nzMax="120"
