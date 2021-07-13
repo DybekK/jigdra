@@ -4,7 +4,7 @@ import {LoginFormComponent} from "./components/organisms/login-form/login-form.c
 import {RegisterFormComponent} from "./components/organisms/register-form/register-form.component";
 import {AuthViewComponent} from "./components/views/auth-view/auth-view.component";
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     path: '',
     redirectTo: 'login',
