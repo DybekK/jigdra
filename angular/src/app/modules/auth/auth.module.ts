@@ -8,7 +8,6 @@ import {NzCheckboxModule} from "ng-zorro-antd/checkbox";
 import {NzButtonModule} from "ng-zorro-antd/button";
 import {NzInputModule} from "ng-zorro-antd/input";
 import {NzLayoutModule} from "ng-zorro-antd/layout";
-import {RouterModule} from "@angular/router";
 import {NzSpaceModule} from "ng-zorro-antd/space";
 import {NzCardModule} from "ng-zorro-antd/card";
 import {AuthViewComponent} from "./components/views/auth-view/auth-view.component";
@@ -38,7 +37,7 @@ const icons: IconDefinition[] = [UserOutline, LockOutline];
   ],
   providers: [
     AuthHttpClient,
-    AuthService
+    AuthService,
   ],
   exports: [
     AuthContentComponent,
@@ -54,7 +53,6 @@ const icons: IconDefinition[] = [UserOutline, LockOutline];
     NzButtonModule,
     NzLayoutModule,
     NzIconModule,
-    RouterModule,
     NzSpaceModule,
     NzCardModule,
     AuthRoutingModule,

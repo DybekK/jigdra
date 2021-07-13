@@ -5,6 +5,7 @@ import StatusValidator, {ValidateStatus} from "../../../../../shared/validators/
 import {AuthService} from "../../../services/register/auth.service";
 import {finalize} from "rxjs/operators";
 import {LoginDto} from "../../../interfaces/LoginDto";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-login-form',
@@ -47,7 +48,8 @@ export class LoginFormComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   submitForm(): void {
@@ -62,7 +64,10 @@ export class LoginFormComponent implements OnInit {
       const value: LoginDto = this.validateForm.value;
       this.authService.loginUser(value).pipe(
         finalize(() => this.isLoading = false)
-      ).subscribe();
+      ).subscribe(response => {
+        this.router.navigate(['/user'])
+        this.authService.successfulLogin(response);
+      });
     }
   }
 
