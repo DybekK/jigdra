@@ -6,9 +6,11 @@ POST http://localhost:4201/v1/register
 Content-Type: application/json
 
 {
-    "username": "test3",
-    "email": "uwa5@mail.com",
-    "password": "potezne"
+    "name": "John",
+    "surname": "Doe",
+    "username": "john_doe",
+    "email": "joemamma@mail.com",
+    "password": "verystrongpasswd"
 }
 
 ####
@@ -24,14 +26,15 @@ Content-Type: application/json
 ####
 POST http://localhost:4201/v1/logout
 Content-Type: application/json
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjU0OTc2MTMsImlkZW50aXR5S2V5IjoidGVzdCIsIm9yaWdfaWF0IjoxNjI1NDk3NDkzfQ.XRD9CRrH2GHWBHZ7H_Olym3c6GXC9CxY4kMLTmo7QKU; Path=/; Max-Age=120
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYzMTEzMzEsImlkZW50aXR5a2V5IjoiNjBlZGZkM2RmNTRiYzcxNzVmOGU5MDM4In0.DE4lKirl0a_GId77nQ5jni_Te0MqBYmVlYEwDNDmroY
 
 ####
-GET http://localhost:4201/v1/refresh
+POST http://localhost:4201/v1/refresh
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjU0OTc2MzgsImlkZW50aXR5S2V5IjoidGVzdCIsIm9yaWdfaWF0IjoxNjI1NDk3NTE4fQ.Z842T8Gn4aApgReH7xRzOnnrZ89cokZdIy8uAJggyuw
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjU0OTc2MzgsImlkZW50aXR5S2V5IjoidGVzdCIsIm9yaWdfaWF0IjoxNjI1NDk3NTE4fQ.Z842T8Gn4aApgReH7xRzOnnrZ89cokZdIy8uAJggyuw; Path=/; Max-Age=120
+
+{
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYzMjIzNzYsImlkZW50aXR5a2V5IjoiNjBlZGZkM2RmNTRiYzcxNzVmOGU5MDM4In0.OzMWHDSKJRA4N0yuqxfahR0K5QWrAPmWwmXQToTj0yc"
+}
 
 ####
-GET http://localhost:4201/v1/user/60e35a7853f9b65906dcad42
+GET http://localhost:4201/v1/user/60ef0d38a9ea37ee3ab8b6db

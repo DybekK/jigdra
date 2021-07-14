@@ -8,7 +8,6 @@ import (
 	"os"
 	"time"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -33,7 +32,6 @@ type UserInterface interface {
 	GetUserById(string, context.Context) (*GetUserStruct, error)
 	SecureRedirect(context.Context, string) (string, error)
 	VerifyRedirect(context.Context, string) (string, error)
-	GetMiddleWare() *jwt.GinJWTMiddleware
 }
 
 var (
@@ -97,8 +95,7 @@ func (d *Database) VerifyRedirect(ctx context.Context, hex string) (string, erro
 
 //this shouldn't be done programatically, will be removed later
 func createIndex(coll *mongo.Collection) {
-	//Username should also be unique
-	index, err := coll.Indexes().CreateOne(
+	_, err := coll.Indexes().CreateOne(
 		context.Background(),
 		mongo.IndexModel{
 			Keys:    bson.D{{Key: "email", Value: 1}},
@@ -109,9 +106,6 @@ func createIndex(coll *mongo.Collection) {
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println(index)
-
 }
 
 func randomHex(n int) (string, error) {

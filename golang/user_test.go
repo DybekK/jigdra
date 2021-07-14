@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -16,7 +17,6 @@ func TestCreateUser(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	model.Interface.Initialize()
 	user := &model.User{
-		Id:       primitive.NewObjectID(),
 		Username: "test",
 		Name:     "Janusz",
 		Surname:  "Kowalski",
@@ -26,7 +26,16 @@ func TestCreateUser(t *testing.T) {
 	result, err := model.Interface.CreateUser(user, c)
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	model.Interface.GetCollection("users").Drop(c)
+	var insertedUser model.User
+	coll := model.Interface.GetCollection("users")
+	res := coll.FindOne(c, bson.M{"name": "Janusz"})
+	err = res.Decode(&insertedUser)
+	assert.Nil(t, err)
+	assert.Equal(t, user.Name, insertedUser.Name)
+	assert.Equal(t, user.Surname, insertedUser.Surname)
+	assert.Equal(t, user.Username, insertedUser.Username)
+	assert.Equal(t, user.Email, insertedUser.Email)
+	coll.Drop(c)
 }
 
 func TestCreateUserConflict(t *testing.T) {
@@ -70,7 +79,7 @@ func TestCreateUserConflict(t *testing.T) {
 	result2, err := model.Interface.CreateUser(&user2, c)
 	assert.NotNil(t, err)
 	assert.Empty(t, result2)
-	assert.Equal(t, "email in use", err.Error())
+	assert.Equal(t, "409", err.Error())
 	//New user with different email but same email
 	user3 := users["test3"]
 	result3, err := model.Interface.CreateUser(&user3, c)
