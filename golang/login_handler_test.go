@@ -18,12 +18,8 @@ func TestLoginReturns200IfExists(t *testing.T) {
 	_ = godotenv.Load("tests.env")
 	r := getRouter()
 	h := &handler{}
-	middleware, err := getMiddleWare()
 	model.Interface.Initialize()
 	w := httptest.NewRecorder()
-	if err != nil {
-		t.Fail()
-	}
 	test := map[string]struct {
 		payload    string
 		statuscode int
@@ -46,7 +42,7 @@ func TestLoginReturns200IfExists(t *testing.T) {
 		},
 	}
 
-	r.POST("/v1/login", middleware.LoginHandler)
+	r.POST("/v1/login", h.login)
 	r.POST("/v1/register", h.addUser)
 
 	req, err := http.NewRequest("POST", "/v1/register", strings.NewReader(test["register"].payload))
@@ -64,14 +60,11 @@ func TestLoginReturns200IfExists(t *testing.T) {
 func TestLoginReturnBadRequest(t *testing.T) {
 	c := &gin.Context{}
 	_ = godotenv.Load("tests.env")
+	h := &handler{}
 	model.Interface.Initialize()
 	r := getRouter()
 	w := httptest.NewRecorder()
-	middleware, err := getMiddleWare()
-	if err != nil {
-		t.Errorf("failed to get middleware")
-	}
-	r.POST("/v1/login", middleware.LoginHandler)
+	r.POST("/v1/login", h.login)
 	req, _ := http.NewRequest("POST", "/v1/login", strings.NewReader(""))
 	want := 400
 	r.ServeHTTP(w, req)
@@ -82,10 +75,10 @@ func TestLoginReturnBadRequest(t *testing.T) {
 func TestLoginReturnUnauthorized(t *testing.T) {
 	c := &gin.Context{}
 	_ = godotenv.Load("tests.env")
+	h := &handler{}
 	gin.SetMode(gin.TestMode)
 	model.Interface.Initialize()
 	r := getRouter()
-	middleware, _ := getMiddleWare()
 	w := httptest.NewRecorder()
 	tests := map[string]struct {
 		payload      string
@@ -96,7 +89,7 @@ func TestLoginReturnUnauthorized(t *testing.T) {
 			expectedcode: 401,
 		},
 	}
-	r.POST("/v1/login", middleware.LoginHandler)
+	r.POST("/v1/login", h.login)
 	req, err := http.NewRequest(http.MethodPost, "/v1/login", strings.NewReader(tests["401"].payload))
 	r.ServeHTTP(w, req)
 	assert.Equal(t, nil, err)
@@ -110,9 +103,9 @@ func TestRedirectHexExpires(t *testing.T) {
 	_ = godotenv.Load("tests.env")
 	gin.SetMode(gin.TestMode)
 	c := &gin.Context{}
+	h := &handler{}
 	model.Interface.Initialize()
 	r := getRouter()
-	middleware, _ := getMiddleWare()
 	w := httptest.NewRecorder()
 	userToRegister := model.User{
 		Username: "someusername",
@@ -124,7 +117,7 @@ func TestRedirectHexExpires(t *testing.T) {
 
 	hex, err := model.Interface.CreateUser(&userToRegister, c)
 	assert.Nil(t, err)
-	r.GET("/v1/login", middleware.LoginHandler)
+	r.GET("/v1/login", h.login)
 	urlString := fmt.Sprintf("/v1/login?redirect=%s", hex)
 	req, _ := http.NewRequest("GET", urlString, nil)
 	r.ServeHTTP(w, req)

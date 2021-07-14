@@ -8,7 +8,6 @@ import (
 	"os"
 	"time"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -33,7 +32,6 @@ type UserInterface interface {
 	GetUserById(string, context.Context) (*GetUserStruct, error)
 	SecureRedirect(context.Context, string) (string, error)
 	VerifyRedirect(context.Context, string) (string, error)
-	GetMiddleWare() *jwt.GinJWTMiddleware
 }
 
 var (

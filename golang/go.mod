@@ -4,8 +4,7 @@ go 1.16
 
 require (
 	github.com/Valiben/gin_unit_test v0.0.0-20181205064931-674aee46d090 // indirect
-	github.com/appleboy/gin-jwt v2.5.0+incompatible // indirect
-	github.com/appleboy/gin-jwt/v2 v2.6.4 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/gin-gonic/gin v1.7.2 // indirect
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/go-playground/validator/v10 v10.6.1 // indirect
