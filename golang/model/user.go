@@ -77,6 +77,10 @@ func (d *Database) CreateUser(req_user *User, ctx context.Context) (string, erro
 	}
 	user.Username = req_user.Username
 	user.Email = req_user.Email
+	user.DateOfBirth = req_user.DateOfBirth
+	user.GenderId = req_user.GenderId
+	user.Name = req_user.Name
+	user.Surname = req_user.Surname
 
 	var hash, hash_error = hashPassword(req_user.Password)
 	if hash_error != nil {

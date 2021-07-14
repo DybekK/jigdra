@@ -129,7 +129,7 @@ func (h *handler) login(c *gin.Context) {
 			var user model.User
 			decode_err := res.Decode(&user)
 			if decode_err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": decode_err})
+				c.JSON(http.StatusInternalServerError, gin.H{"error": decode_err.Error()})
 				return
 			}
 
@@ -145,17 +145,17 @@ func (h *handler) login(c *gin.Context) {
 	} else if c.Request.Method == "POST" {
 		var req_login model.LoginUser
 		if err := c.BindJSON(&req_login); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 		validation_error := validate.Struct(req_login)
 		if validation_error != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": validation_error})
+			c.JSON(http.StatusBadRequest, gin.H{"error": validation_error.Error()})
 			return
 		}
 		user, user_err := model.Interface.GetUser(&req_login, c)
 		if user_err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": user_err})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": user_err.Error()})
 			return
 		}
 		newTokenPair, err := auth.GenerateTokenPair(user.Id.Hex())

@@ -19,9 +19,11 @@ func main() {
 	r.POST("/v1/register", h.addUser)
 	r.GET("/v1/login", h.login)
 	r.POST("/v1/login", h.login)
-	r.POST("/v1/logout", auth.TokenAuthMiddleware(), h.logout)
 	r.GET("/v1/refresh", h.refresh)
 	r.GET("/v1/user/:id", h.getUserById)
+	//These endpoints require Authorization header with valid Bearer token
+	r.POST("/v1/logout", auth.TokenAuthMiddleware(), h.logout)
+
 	//Connect to database
 	_, err := model.Interface.Initialize()
 	if err != nil {
