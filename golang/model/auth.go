@@ -18,7 +18,7 @@ func (a *AuthHandler) GenerateTokenPair(objectid string) (map[string]string, err
 
 	claims := token.Claims.(jwt.MapClaims)
 	claims["identitykey"] = objectid
-	claims["exp"] = time.Now().Add(time.Second * 10).Unix()
+	claims["exp"] = time.Now().Add(time.Hour * 10).Unix()
 	t, err := token.SignedString([]byte("test"))
 	if err != nil {
 		return nil, err
