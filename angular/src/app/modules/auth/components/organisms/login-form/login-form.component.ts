@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {emailRegExp} from "../../../../../shared/regexps/regexps";
 import StatusValidator, {ValidateStatus} from "../../../../../shared/validators/status-validator";
+import {AuthService} from "../../../services/auth/auth.service";
+import {finalize} from "rxjs/operators";
+import {LoginDto} from "../../../interfaces/LoginDto";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-login-form',
@@ -42,7 +46,11 @@ export class LoginFormComponent implements OnInit {
   validateForm!: FormGroup;
   validateStatus!: ValidateStatus;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   submitForm(): void {
     Object.values(this.validateForm.controls).forEach(control => {
@@ -50,24 +58,23 @@ export class LoginFormComponent implements OnInit {
       control.updateValueAndValidity();
     });
 
-    this.fetchRegister();
     if(this.validateForm.valid) {
-      console.log("went nice");
-    }
-  }
+      this.isLoading = true;
 
-  // method only for testing purposes
-  fetchRegister() {
-    this.isLoading = true;
-    setTimeout(() => {
-    this.isLoading = false;
-    }, 2000);
+      const value: LoginDto = this.validateForm.value;
+      this.authService.loginUser(value).pipe(
+        finalize(() => this.isLoading = false)
+      ).subscribe(response => {
+        this.authService.successfulLogin(response);
+        this.router.navigate(['/user'])
+      });
+    }
   }
 
   ngOnInit(): void {
     this.validateForm = this.fb.group({
-      email: [null, [Validators.required, Validators.pattern(emailRegExp)]],
-      password: [null, [Validators.required]],
+      email: [null, [Validators.required, Validators.pattern(emailRegExp), Validators.maxLength(255)]],
+      password: [null, [Validators.required, Validators.minLength(6), Validators.maxLength(20)]],
       remember: [true]
     });
     this.validateStatus = StatusValidator.validateStatus(this.validateForm);

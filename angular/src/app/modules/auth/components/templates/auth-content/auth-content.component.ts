@@ -6,7 +6,7 @@ import {filter} from "rxjs/operators";
   selector: 'app-auth-content',
   template: `
     <nz-content class="auth-content">
-      <nz-card class="box-shadow" [nzTitle]="cardTitle">
+      <nz-card class="box-shadow" id="cardTitle" [nzTitle]="cardTitle">
         <router-outlet></router-outlet>
       </nz-card>
     </nz-content>
@@ -15,7 +15,6 @@ import {filter} from "rxjs/operators";
 })
 export class AuthContentComponent implements OnInit {
   cardTitle: string = "";
-
 
   setUrl(url: string) {
     this.cardTitle = url === '/register' ? 'Register' : 'Sign in';

@@ -11,9 +11,38 @@ import {NzMenuModule} from "ng-zorro-antd/menu";
 import {NzIconModule} from "ng-zorro-antd/icon";
 import {SharedModule} from "../../shared/shared.module";
 import {IconDefinition} from "@ant-design/icons-angular";
-import {LockOutline, UserOutline} from "@ant-design/icons-angular/icons";
+import {
+  LockOutline,
+  UserOutline,
+  TeamOutline,
+  FileOutline,
+  VideoCameraOutline,
+  UploadOutline,
+  BarChartOutline,
+  CloudOutline,
+  AppstoreOutline,
+  ShopOutline,
 
-const icons: IconDefinition[] = [ UserOutline, LockOutline ];
+} from "@ant-design/icons-angular/icons";
+import {NzGridModule} from "ng-zorro-antd/grid";
+import {NzInputModule} from "ng-zorro-antd/input";
+import {NzSliderModule} from "ng-zorro-antd/slider";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {NzFormModule} from "ng-zorro-antd/form";
+import {NzButtonModule} from "ng-zorro-antd/button";
+
+const icons: IconDefinition[] = [
+  UserOutline,
+  LockOutline,
+  TeamOutline,
+  FileOutline,
+  VideoCameraOutline,
+  UploadOutline,
+  BarChartOutline,
+  CloudOutline,
+  AppstoreOutline,
+  ShopOutline
+];
 
 @NgModule({
   declarations: [
@@ -21,16 +50,23 @@ const icons: IconDefinition[] = [ UserOutline, LockOutline ];
     UserProfileComponent,
     UserContentComponent
   ],
-  imports: [
-    CommonModule,
-    UserRoutingModule,
-    NzLayoutModule,
-    NzBreadCrumbModule,
-    NzMenuModule,
-    NzIconModule,
-    SharedModule,
-    NzIconModule.forChild(icons)
-  ]
+    imports: [
+        CommonModule,
+        UserRoutingModule,
+        NzLayoutModule,
+        NzBreadCrumbModule,
+        NzMenuModule,
+        NzIconModule,
+        SharedModule,
+        NzIconModule.forChild(icons),
+        NzGridModule,
+        NzInputModule,
+        NzSliderModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NzFormModule,
+        NzButtonModule
+    ]
 })
 export class UserModule {
 }

@@ -3,6 +3,8 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import { LoginFormComponent } from './login-form.component';
 import {AuthModule} from "../../../auth.module";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {cases} from "jasmine-parameterized";
+import {RouterTestingModule} from "@angular/router/testing";
 
 describe('LoginFormComponent', () => {
   let component: LoginFormComponent;
@@ -13,7 +15,8 @@ describe('LoginFormComponent', () => {
       declarations: [ LoginFormComponent ],
       imports: [
         BrowserAnimationsModule,
-        AuthModule
+        AuthModule,
+        RouterTestingModule
       ]
     })
     .compileComponents();
@@ -40,50 +43,23 @@ describe('LoginFormComponent', () => {
     expect(passwordInput).toBeTruthy();
   });
 
-  it('should submit form if all inputs are valid', () => {
+  cases([
+    ["test@test.com", "test", true],
+    ["", "test", false],
+    ["test@invalid", "test", false],
+    ["test@test.com", "", false]
+  ]).
+  it('should show errors if inputs are invalid', ([email, password, valid]) => {
     const {debugElement} = fixture;
     const emailInput: HTMLInputElement = debugElement.nativeElement.querySelector('input[formControlName=email]');
     const passwordInput: HTMLInputElement = debugElement.nativeElement.querySelector('input[formControlName=password]');
 
-    emailInput.value = "test@test.com";
-    passwordInput.value = "test";
+    emailInput.value = email;
+    passwordInput.value = password;
 
     emailInput.dispatchEvent(new Event("input"));
     passwordInput.dispatchEvent(new Event("input"));
 
-    expect(component.validateForm.valid).toBeTrue();
-  });
-
-  it('should show errors if inputs are invalid', () => {
-    const {debugElement} = fixture;
-    const emailInput: HTMLInputElement = debugElement.nativeElement.querySelector('input[formControlName=email]');
-    const passwordInput: HTMLInputElement = debugElement.nativeElement.querySelector('input[formControlName=password]');
-
-    // email is empty
-    emailInput.value = "";
-    passwordInput.value = "test";
-
-    emailInput.dispatchEvent(new Event("input"));
-    passwordInput.dispatchEvent(new Event("input"));
-
-    expect(component.validateForm.valid).toBeFalse();
-
-    // email is invalid
-    emailInput.value = "test@invalid";
-    passwordInput.value = "test";
-
-    emailInput.dispatchEvent(new Event("input"));
-    passwordInput.dispatchEvent(new Event("input"));
-
-    expect(component.validateForm.valid).toBeFalse();
-
-    // password is empty
-    emailInput.value = "test@test.com";
-    passwordInput.value = "";
-
-    emailInput.dispatchEvent(new Event("input"));
-    passwordInput.dispatchEvent(new Event("input"));
-
-    expect(component.validateForm.valid).toBeFalse();
+    expect(component.validateForm.valid).toBe(valid);
   });
 });
