@@ -13,13 +13,15 @@ func main() {
 	h := &handler{}
 	auth := &model.AuthHandler{}
 	r := gin.Default()
+	// returns 405 instead of 404 if you call a wrong method on an endpoint
+	r.HandleMethodNotAllowed = true
 	r.Use(gin.Logger())
 	r.Use(CORSMiddleware())
 	r.GET("/v1", h.getUwa)
 	r.POST("/v1/register", h.addUser)
 	r.GET("/v1/login", h.login)
 	r.POST("/v1/login", h.login)
-	r.GET("/v1/refresh", h.refresh)
+	r.POST("/v1/refresh", h.refresh)
 	r.GET("/v1/user/:id", h.getUserById)
 	//These endpoints require Authorization header with valid Bearer token
 	r.POST("/v1/logout", auth.TokenAuthMiddleware(), h.logout)

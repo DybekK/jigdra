@@ -60,24 +60,20 @@ func (h *handler) addUser(c *gin.Context) {
 }
 
 func (h *handler) getUserById(c *gin.Context) {
-	if c.Request.Method == "GET" {
-		id := c.Param("id")
-		user, err := model.Interface.GetUserById(id, c)
 
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, user)
+	id := c.Param("id")
+	user, err := model.Interface.GetUserById(id, c)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
 		return
 	}
-	c.JSON(http.StatusBadRequest, gin.H{"error": "unsupported http method"})
+	c.JSON(http.StatusOK, user)
+	return
+
 }
 
 func (h *handler) refresh(c *gin.Context) {
-	if c.Request.Method == "POST" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "unsupported http method"})
-	}
 	type tokenReqBody struct {
 		RefreshToken string `json:"refresh_token"`
 	}
@@ -163,7 +159,6 @@ func (h *handler) login(c *gin.Context) {
 		c.JSON(http.StatusOK, newTokenPair)
 		return
 	}
-	c.JSON(http.StatusBadRequest, "unsupported http method")
 }
 
 func (h *handler) logout(c *gin.Context) {
