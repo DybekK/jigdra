@@ -58,8 +58,9 @@ curl -L \
 Result for that request
 
 ```json
-{ "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYzMTUyMjUsImlkZW50aXR5a2V5IjoiNjBlZjBkMzhhOWVhMzdlZTNhYjhiNmRiIn0.sWceqUARxwg2dedxd1byBTQIhVJoF7zM6P9QVto3UuU",
-"refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYzMTUyMjV9.US5C2pf9s8jw5pV6q0lUPYD_7Qok0udDf7UI2zvZTl0"
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYzMjA1MTEsImlkZW50aXR5a2V5IjoiNjBlZGZkM2RmNTRiYzcxNzVmOGU5MDM4In0.cSW-_jqYozIWfQXtuJUboGRVN4nO7VKiiu4JbtSuvvg",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYzMjA1MTF9.Cume_ciO21wyobQDr1fkLCa4PgOQ5Yy8FTE4mpCYMSo"
 }
 ```
 
@@ -99,10 +100,9 @@ curl --request POST \
 Response for that request
 
 ```json
-{           
-"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYzMTY0NzMsImlkZW50aXR5a2V5IjoiNjBlZGZkM2RmNTRiYzcxNzVmOGU5MDM4In0.1OmlaTq4UuYyQAmEzrwWNntGZyzttpg_WnLHd3e2Xd4",
-
-"refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYzMTY0NzN9.-3IZ0hlHB2XDMQu-Uw7x9bIURK8D6FSRT8uENMwCkHo"
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYzMjA1MTEsImlkZW50aXR5a2V5IjoiNjBlZGZkM2RmNTRiYzcxNzVmOGU5MDM4In0.cSW-_jqYozIWfQXtuJUboGRVN4nO7VKiiu4JbtSuvvg",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYzMjA1MTF9.Cume_ciO21wyobQDr1fkLCa4PgOQ5Yy8FTE4mpCYMSo"
 }
 ```
 
