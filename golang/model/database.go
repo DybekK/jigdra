@@ -95,8 +95,7 @@ func (d *Database) VerifyRedirect(ctx context.Context, hex string) (string, erro
 
 //this shouldn't be done programatically, will be removed later
 func createIndex(coll *mongo.Collection) {
-	//Username should also be unique
-	index, err := coll.Indexes().CreateOne(
+	_, err := coll.Indexes().CreateOne(
 		context.Background(),
 		mongo.IndexModel{
 			Keys:    bson.D{{Key: "email", Value: 1}},
@@ -107,9 +106,6 @@ func createIndex(coll *mongo.Collection) {
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println(index)
-
 }
 
 func randomHex(n int) (string, error) {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"golang/model"
 	"net/http"
 	"net/url"
@@ -78,14 +79,18 @@ func (h *handler) refresh(c *gin.Context) {
 		RefreshToken string `json:"refresh_token"`
 	}
 	tokenReq := tokenReqBody{}
-
 	if err := c.BindJSON(&tokenReq); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 		return
 	}
-	token, err := auth.VerifyToken(c.Request)
+	token, err := jwt.Parse(tokenReq.RefreshToken, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte("test"), nil
+	})
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -100,7 +105,7 @@ func (h *handler) refresh(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 }
 
 func (h *handler) login(c *gin.Context) {

@@ -6,11 +6,11 @@ POST http://localhost:4201/v1/register
 Content-Type: application/json
 
 {
-    "name": "ebebe",
-    "surname": "many",
-    "username": "test3",
-    "email": "uwa5@mail.com",
-    "password": "potezne"
+    "name": "John",
+    "surname": "Doe",
+    "username": "john_doe",
+    "email": "joemamma@mail.com",
+    "password": "verystrongpasswd"
 }
 
 ####
@@ -29,14 +29,12 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYzMTEzMzEsImlkZW50aXR5a2V5IjoiNjBlZGZkM2RmNTRiYzcxNzVmOGU5MDM4In0.DE4lKirl0a_GId77nQ5jni_Te0MqBYmVlYEwDNDmroY
 
 ####
-GET http://localhost:4201/v1/refresh
+POST http://localhost:4201/v1/refresh
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYyMTc2NzEsImlkZW50aXR5a2V5IjoiNjBlZGZkM2RmNTRiYzcxNzVmOGU5MDM4Iiwic3ViIjoxfQ.hbm7ejZdb8xX5nQLG8XyF49vQEYUAl88Sd6zggo6w1g
-Content-Type: "application/json"
 
 {
-    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYyMTc4NzAsImlkZW50aXR5a2V5IjoiNjBlZGZkM2RmNTRiYzcxNzVmOGU5MDM4Iiwic3ViIjoxfQ.pFMbv7-kbdy-fKWnCwyByJOqGpDDZSYA5jz5-6MqF-w"
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYzMjIzNzYsImlkZW50aXR5a2V5IjoiNjBlZGZkM2RmNTRiYzcxNzVmOGU5MDM4In0.OzMWHDSKJRA4N0yuqxfahR0K5QWrAPmWwmXQToTj0yc"
 }
 
 ####
-GET http://localhost:4201/v1/user/60e35a7853f9b65906dcad42
+GET http://localhost:4201/v1/user/60ef0d38a9ea37ee3ab8b6db

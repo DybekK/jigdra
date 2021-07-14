@@ -79,7 +79,7 @@ func TestCreateUserConflict(t *testing.T) {
 	result2, err := model.Interface.CreateUser(&user2, c)
 	assert.NotNil(t, err)
 	assert.Empty(t, result2)
-	assert.Equal(t, "email in use", err.Error())
+	assert.Equal(t, "409", err.Error())
 	//New user with different email but same email
 	user3 := users["test3"]
 	result3, err := model.Interface.CreateUser(&user3, c)
