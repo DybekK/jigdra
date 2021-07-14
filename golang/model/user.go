@@ -59,7 +59,7 @@ func (d *Database) GetUser(login *LoginUser, ctx context.Context) (*User, error)
 	var result User
 	decode_err := res.Decode(&result)
 	if decode_err != nil {
-		return nil, errors.New("decode error")
+		return nil, decode_err
 	}
 	if verifyPassword(login.Password, result.Password) {
 		return &result, nil
@@ -95,7 +95,7 @@ func (d *Database) CreateUser(req_user *User, ctx context.Context) (string, erro
 	if insertError != nil {
 		matched, _ := regexp.MatchString(`duplicate key`, insertError.Error())
 		if matched {
-			return "", errors.New("email in use")
+			return "", errors.New("409")
 
 		} else {
 			return "", errors.New(insertError.Error())

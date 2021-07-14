@@ -25,41 +25,37 @@ func (h *handler) getUwa(c *gin.Context) {
 var validate = validator.New()
 
 func (h *handler) addUser(c *gin.Context) {
-	if c.Request.Method == "POST" {
-		var req_user model.User
-		if err := c.BindJSON(&req_user); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		validationError := validate.Struct(req_user)
-		if validationError != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": validationError.Error()})
-			return
-		}
-
-		res, err := model.Interface.CreateUser(&req_user, c)
-
-		if err != nil {
-			if err.Error() == "409" {
-				c.JSON(http.StatusConflict, gin.H{
-					"error": err.Error(),
-				})
-			} else {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": err.Error(),
-				})
-			}
-			return
-		}
-		q := url.Values{}
-		q.Add("redirect", res)
-		location := url.URL{Path: "/v1/login", RawQuery: q.Encode()}
-
-		c.Redirect(http.StatusFound, location.RequestURI())
+	var req_user model.User
+	if err := c.BindJSON(&req_user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusBadRequest, gin.H{"error": "unsupported http method"})
+
+	validationError := validate.Struct(req_user)
+	if validationError != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": validationError.Error()})
+		return
+	}
+
+	res, err := model.Interface.CreateUser(&req_user, c)
+
+	if err != nil {
+		if err.Error() == "409" {
+			c.JSON(http.StatusConflict, gin.H{
+				"error": "email in use",
+			})
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+		}
+		return
+	}
+	q := url.Values{}
+	q.Add("redirect", res)
+	location := url.URL{Path: "/v1/login", RawQuery: q.Encode()}
+
+	c.Redirect(http.StatusFound, location.RequestURI())
 
 }
 
@@ -155,7 +151,7 @@ func (h *handler) login(c *gin.Context) {
 		}
 		user, user_err := model.Interface.GetUser(&req_login, c)
 		if user_err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": user_err.Error()})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid email or password"})
 			return
 		}
 		newTokenPair, err := auth.GenerateTokenPair(user.Id.Hex())
