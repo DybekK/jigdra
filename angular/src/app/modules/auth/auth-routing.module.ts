@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import {LoginFormComponent} from "./components/organisms/login-form/login-form.component";
 import {RegisterFormComponent} from "./components/organisms/register-form/register-form.component";
 import {AuthViewComponent} from "./components/views/auth-view/auth-view.component";
+import {MailConfirmationComponent} from "./components/organisms/mail-confirmation/mail-confirmation.component";
 
 export const routes: Routes = [
   {
@@ -19,6 +20,9 @@ export const routes: Routes = [
       },
       {
         path: "register", component: RegisterFormComponent
+      },
+      {
+        path: "emailConfirmation", component: MailConfirmationComponent
       }
     ]
   },

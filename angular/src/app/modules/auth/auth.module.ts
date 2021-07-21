@@ -25,6 +25,7 @@ import {AuthHttpClient} from "./services/http/auth-http.client";
 import {HttpClientModule} from "@angular/common/http";
 import {AuthService} from "./services/auth/auth.service";
 import {AuthGuard} from "./services/guard/auth-guard.service";
+import { MailConfirmationComponent } from './components/organisms/mail-confirmation/mail-confirmation.component';
 
 const icons: IconDefinition[] = [UserOutline, LockOutline];
 
@@ -35,6 +36,7 @@ const icons: IconDefinition[] = [UserOutline, LockOutline];
     AuthViewComponent,
     RegisterFormComponent,
     AuthHeaderComponent,
+    MailConfirmationComponent,
   ],
   providers: [
     AuthHttpClient,

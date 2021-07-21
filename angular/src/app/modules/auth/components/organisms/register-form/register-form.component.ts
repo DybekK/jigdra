@@ -82,7 +82,9 @@ import {finalize} from "rxjs/operators";
 export class RegisterFormComponent implements OnInit {
   isLoading = false;
   validateForm!: FormGroup;
-  validateStatus!: ValidateStatus
+  validateStatus!: ValidateStatus;
+  responseError!: string;
+
 
   constructor(
     private fb: FormBuilder,
@@ -108,8 +110,19 @@ export class RegisterFormComponent implements OnInit {
       const value: RegisterDto = this.validateForm.value;
       this.authService.registerUser(value).pipe(
         finalize(() => this.isLoading = false)
-      ).subscribe();
+      ).subscribe({
+        error: this.handleError
+      });
     }
+  }
+
+  handleError(error: RegisterError) {
+    Object.entries(error).forEach(([key,value]) => {
+      const {controls} = this.validateForm;
+      if (controls[key]) {
+        controls[key].setErrors({error: value});
+      }
+    })
   }
 
   ngOnInit(): void {
@@ -129,3 +142,11 @@ export class RegisterFormComponent implements OnInit {
     this.validateStatus = StatusValidator.validateStatus(this.validateForm);
   }
 }
+
+
+// TODO: Wait for correct backend error response
+type RegisterErrorKey = 'username' | 'email'
+type RegisterError = {
+  [key in RegisterErrorKey]?: string
+}
+
