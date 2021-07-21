@@ -1,5 +1,5 @@
 export interface TokenDto {
   code: number;
   expire: string;
-  token: string;
+  access_token: string;
 }
