@@ -141,6 +141,7 @@ func (h *handler) login(c *gin.Context) {
 			c.JSON(http.StatusOK, newTokenPair)
 			return
 		}
+		c.JSON(http.StatusMethodNotAllowed, gin.H{"error": "method not found"})
 	} else if c.Request.Method == "POST" {
 		var req_login model.LoginUser
 		if err := c.BindJSON(&req_login); err != nil {
