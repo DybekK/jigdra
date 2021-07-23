@@ -98,13 +98,13 @@ func (d *Database) CreateUser(req_user *User, ctx context.Context) (string, erro
 			return "", errors.New("409")
 
 		} else {
-			return "", errors.New(insertError.Error())
+			return "", errors.New("failed to insert user")
 		}
 	}
 	id := strings.Split(fmt.Sprintf("%v", result), "\"")[1]
 	hex, err := d.SecureRedirect(ctx, id)
 	if err != nil {
-		return "", err
+		return "", errors.New("unable to redirect")
 	}
 
 	return hex, nil
