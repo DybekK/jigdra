@@ -113,35 +113,36 @@ func (h *handler) refresh(c *gin.Context) {
 func (h *handler) login(c *gin.Context) {
 	if c.Request.Method == "GET" {
 		q := c.Query("redirect")
-		if q != "" {
-			id, exists := model.Interface.VerifyRedirect(c, q)
-			if exists != nil {
-				c.JSON(http.StatusUnauthorized, gin.H{"redirect": "redirect doesn't exist"})
-				return
-			}
-			objid, err := primitive.ObjectIDFromHex(id)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"_id": "invalid hex"})
-				return
-			}
-			res := model.Interface.GetCollection("users").FindOne(c, bson.M{"_id": objid})
-			var user model.User
-			decode_err := res.Decode(&user)
-			if decode_err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"user": "failed to decode user"})
-				return
-			}
-
-			newTokenPair, err := auth.GenerateTokenPair(id)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"token": "signing error"})
-				return
-			}
-
-			c.JSON(http.StatusOK, newTokenPair)
+		if q == "" {
+			c.JSON(http.StatusMethodNotAllowed, gin.H{"error": "method not found"})
 			return
 		}
-		c.JSON(http.StatusMethodNotAllowed, gin.H{"error": "method not found"})
+		id, exists := model.Interface.VerifyRedirect(c, q)
+		if exists != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"redirect": "redirect doesn't exist"})
+			return
+		}
+		objid, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"_id": "invalid hex"})
+			return
+		}
+		res := model.Interface.GetCollection("users").FindOne(c, bson.M{"_id": objid})
+		var user model.User
+		decode_err := res.Decode(&user)
+		if decode_err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"user": "failed to decode user"})
+			return
+		}
+
+		newTokenPair, err := auth.GenerateTokenPair(id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"token": "signing error"})
+			return
+		}
+
+		c.JSON(http.StatusOK, newTokenPair)
+
 	} else if c.Request.Method == "POST" {
 		var req_login model.LoginUser
 		if err := c.BindJSON(&req_login); err != nil {
