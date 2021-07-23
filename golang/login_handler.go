@@ -114,7 +114,7 @@ func (h *handler) login(c *gin.Context) {
 	if c.Request.Method == "GET" {
 		q := c.Query("redirect")
 		if q == "" {
-			c.JSON(http.StatusMethodNotAllowed, gin.H{"error": "method not found"})
+			c.String(405, "405 Method not allowed")
 			return
 		}
 		id, exists := model.Interface.VerifyRedirect(c, q)
