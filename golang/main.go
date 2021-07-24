@@ -25,12 +25,6 @@ func main() {
 	r.GET("/v1/user/:id", h.getUserById)
 	//These endpoints require Authorization header with valid Bearer token
 	r.POST("/v1/logout", auth.TokenAuthMiddleware(), h.logout)
-
-	//Connect to database
-	_, err := model.Interface.Initialize()
-	if err != nil {
-		panic(err)
-	}
 	log.Fatal(r.Run(":4201"))
 }
 

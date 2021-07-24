@@ -16,6 +16,7 @@ import (
 type handler struct{}
 
 var auth = model.AuthHandler{}
+var userService = model.UserService
 
 func (h *handler) getUwa(c *gin.Context) {
 	c.JSON(200, gin.H{
@@ -38,7 +39,7 @@ func (h *handler) addUser(c *gin.Context) {
 		return
 	}
 
-	res, err := model.Interface.CreateUser(&req_user, c)
+	res, err := userService.CreateUser(&req_user, c)
 
 	if err != nil {
 		if err.Error() == "409" {
@@ -63,7 +64,7 @@ func (h *handler) addUser(c *gin.Context) {
 func (h *handler) getUserById(c *gin.Context) {
 
 	id := c.Param("id")
-	user, err := model.Interface.GetUserById(id, c)
+	user, err := userService.GetUserById(id, c)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -72,7 +73,6 @@ func (h *handler) getUserById(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, user)
-	return
 
 }
 
@@ -117,7 +117,7 @@ func (h *handler) login(c *gin.Context) {
 			c.String(405, "405 Method not allowed")
 			return
 		}
-		id, exists := model.Interface.VerifyRedirect(c, q)
+		id, exists := model.RedirectService.VerifyRedirect(c, q)
 		if exists != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"redirect": "redirect doesn't exist"})
 			return
@@ -127,7 +127,7 @@ func (h *handler) login(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"_id": "invalid hex"})
 			return
 		}
-		res := model.Interface.GetCollection("users").FindOne(c, bson.M{"_id": objid})
+		res := model.UserCollection.FindOne(c, bson.M{"_id": objid})
 		var user model.User
 		decode_err := res.Decode(&user)
 		if decode_err != nil {
@@ -154,7 +154,7 @@ func (h *handler) login(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"user": "validation error"})
 			return
 		}
-		user, user_err := model.Interface.GetUser(&req_login, c)
+		user, user_err := userService.GetUser(&req_login, c)
 		if user_err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"login": "invalid email or password"})
 			return

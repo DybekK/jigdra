@@ -7,12 +7,22 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/go-playground/validator"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
+
+type UserInterface interface {
+	ValidateEmail(string) error
+	CreateUser(*User, context.Context) (string, error)
+	GetUser(*LoginUser, context.Context) (*User, error)
+	GetUserById(string, context.Context) (*GetUserStruct, error)
+}
+type UserServ struct{}
+
+var UserService UserInterface = &UserServ{}
+var UserCollection *mongo.Collection = DBService.GetCollection(client, "users")
 
 type User struct {
 	Id          primitive.ObjectID `bson:"_id" json:"id"`
@@ -40,7 +50,7 @@ type GetUserStruct struct {
 	DateOfBirth string             `json:"dateOfBirth"`
 }
 
-func (d *Database) ValidateEmail(email string) error {
+func (u *UserServ) ValidateEmail(email string) error {
 	match := email_regex.MatchString(email)
 	if match {
 		return nil
@@ -49,10 +59,8 @@ func (d *Database) ValidateEmail(email string) error {
 	}
 }
 
-func (d *Database) GetUser(login *LoginUser, ctx context.Context) (*User, error) {
-	coll := d.GetCollection("users")
-
-	res := coll.FindOne(ctx, bson.M{
+func (u *UserServ) GetUser(login *LoginUser, ctx context.Context) (*User, error) {
+	res := UserCollection.FindOne(ctx, bson.M{
 		"email": login.Email,
 	})
 
@@ -68,10 +76,10 @@ func (d *Database) GetUser(login *LoginUser, ctx context.Context) (*User, error)
 	}
 }
 
-func (d *Database) CreateUser(req_user *User, ctx context.Context) (string, error) {
+func (u *UserServ) CreateUser(req_user *User, ctx context.Context) (string, error) {
 	var user User
 	user.Id = primitive.NewObjectID()
-	email_err := d.ValidateEmail(req_user.Email)
+	email_err := u.ValidateEmail(req_user.Email)
 	if email_err != nil {
 		return "", email_err
 	}
@@ -87,11 +95,11 @@ func (d *Database) CreateUser(req_user *User, ctx context.Context) (string, erro
 		return "", errors.New("hashing error")
 	}
 
-	if availible := d.isUsernameAvailable(user.Username, ctx); !availible {
+	if availible := isUsernameAvailable(user.Username, ctx); !availible {
 		return "", errors.New("username taken")
 	}
 	user.Password = hash
-	result, insertError := d.GetCollection("users").InsertOne(ctx, user)
+	result, insertError := UserCollection.InsertOne(ctx, user)
 	if insertError != nil {
 		matched, _ := regexp.MatchString(`duplicate key`, insertError.Error())
 		if matched {
@@ -102,7 +110,7 @@ func (d *Database) CreateUser(req_user *User, ctx context.Context) (string, erro
 		}
 	}
 	id := strings.Split(fmt.Sprintf("%v", result), "\"")[1]
-	hex, err := d.SecureRedirect(ctx, id)
+	hex, err := RedirectService.SecureRedirect(ctx, id)
 	if err != nil {
 		return "", errors.New("unable to redirect")
 	}
@@ -110,12 +118,9 @@ func (d *Database) CreateUser(req_user *User, ctx context.Context) (string, erro
 	return hex, nil
 }
 
-var validate = validator.New()
-
-func (d *Database) GetUserById(id string, ctx context.Context) (*GetUserStruct, error) {
-	coll := d.GetCollection("users")
+func (u *UserServ) GetUserById(id string, ctx context.Context) (*GetUserStruct, error) {
 	objId, _ := primitive.ObjectIDFromHex(id)
-	res := coll.FindOne(ctx, bson.M{"_id": objId})
+	res := UserCollection.FindOne(ctx, bson.M{"_id": objId})
 	var user GetUserStruct
 	decode_err := res.Decode(&user)
 	if decode_err != nil {
@@ -126,9 +131,8 @@ func (d *Database) GetUserById(id string, ctx context.Context) (*GetUserStruct, 
 
 }
 
-func (d *Database) isUsernameAvailable(username string, ctx context.Context) bool {
-	coll := d.GetCollection("users")
-	result := coll.FindOne(ctx, bson.M{"username": username})
+func isUsernameAvailable(username string, ctx context.Context) bool {
+	result := UserCollection.FindOne(ctx, bson.M{"username": username})
 	return result.Err() == mongo.ErrNoDocuments
 
 }

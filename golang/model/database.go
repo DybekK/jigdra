@@ -2,40 +2,33 @@ package model
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/hex"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-type Database struct {
-	Client *mongo.Client
-}
+type Database struct{}
 
 type Security struct {
 	Id  string `json:"id"`
 	Hex string `json:"hex"`
 }
 
-type UserInterface interface {
-	Initialize() (*mongo.Client, error)
-	ValidateEmail(string) error
-	CreateUser(*User, context.Context) (string, error)
-	GetCollection(string) *mongo.Collection
-	GetUser(*LoginUser, context.Context) (*User, error)
-	GetUserById(string, context.Context) (*GetUserStruct, error)
-	SecureRedirect(context.Context, string) (string, error)
-	VerifyRedirect(context.Context, string) (string, error)
+type DatabaseService interface {
+	Initialize() *mongo.Client
+	GetCollection(*mongo.Client, string) *mongo.Collection
 }
 
 var (
-	Interface UserInterface = &Database{}
+	DBService DatabaseService = &Database{}
+	client    *mongo.Client   = DBService.Initialize()
 )
 
 func getConnection(uri string) (*mongo.Client, error) {
@@ -52,45 +45,25 @@ func getConnection(uri string) (*mongo.Client, error) {
 	return client, nil
 }
 
-func (d *Database) Initialize() (*mongo.Client, error) {
+func (d *Database) Initialize() *mongo.Client {
+	if strings.HasSuffix(os.Args[0], ".test") {
+		_ = godotenv.Load("tests.env")
+	}
 	db_user := os.Getenv("MONGO_INITDB_ROOT_USERNAME")
 	db_passwd := os.Getenv("MONGO_INITDB_ROOT_PASSWORD")
 	db_host := os.Getenv("MONGO_HOST")
 	uri := fmt.Sprintf("mongodb://%s:%s@%s:27017", db_user, db_passwd, db_host)
-	var err error
-	d.Client, err = getConnection(uri)
-	createIndex(d.GetCollection("users"))
-	return d.Client, err
-}
-
-func (d *Database) GetCollection(collectionName string) *mongo.Collection {
-	var collection *mongo.Collection = (*mongo.Collection)(d.Client.Database(os.Getenv("MONGO_INITDB_DATABASE")).Collection(collectionName))
-	return collection
-}
-
-func (d *Database) SecureRedirect(ctx context.Context, id string) (string, error) {
-	coll := d.GetCollection("redirect")
-	var sec Security
-	sec.Id = id
-	randHex, _ := randomHex(20)
-	sec.Hex = randHex
-	_, err := coll.InsertOne(ctx, sec)
+	client, err := getConnection(uri)
 	if err != nil {
-		return "", err
+		panic(err)
 	}
-
-	return randHex, nil
+	createIndex(d.GetCollection(client, "users"))
+	return client
 }
 
-func (d *Database) VerifyRedirect(ctx context.Context, hex string) (string, error) {
-	coll := d.GetCollection("redirect")
-	var sec Security
-	res := coll.FindOneAndDelete(ctx, bson.M{"hex": hex})
-	decode_err := res.Decode(&sec)
-	if decode_err != nil {
-		return "", decode_err
-	}
-	return sec.Id, nil
+func (d *Database) GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
+	var collection *mongo.Collection = (*mongo.Collection)(client.Database(os.Getenv("MONGO_INITDB_DATABASE")).Collection(collectionName))
+	return collection
 }
 
 //this shouldn't be done programatically, will be removed later
@@ -102,16 +75,7 @@ func createIndex(coll *mongo.Collection) {
 			Options: options.Index().SetUnique(true),
 		},
 	)
-
 	if err != nil {
 		panic(err)
 	}
-}
-
-func randomHex(n int) (string, error) {
-	bytes := make([]byte, n)
-	if _, err := rand.Read(bytes); err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(bytes), nil
 }
