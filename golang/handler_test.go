@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func TestLoginReturns200IfExists(t *testing.T) {
@@ -51,7 +52,7 @@ func TestLoginReturns200IfExists(t *testing.T) {
 	r.ServeHTTP(w, req)
 	assert.Nil(t, err)
 	assert.Equal(t, 200, w.Result().StatusCode)
-	model.UserCollection.Drop(c)
+	model.UserCollection.DeleteMany(c, bson.M{})
 }
 
 func TestLoginReturnBadRequest(t *testing.T) {
@@ -64,7 +65,7 @@ func TestLoginReturnBadRequest(t *testing.T) {
 	want := 400
 	r.ServeHTTP(w, req)
 	assert.Equal(t, want, w.Result().StatusCode)
-	model.UserCollection.Drop(c)
+	model.UserCollection.DeleteMany(c, bson.M{})
 }
 
 func TestLoginReturnUnauthorized(t *testing.T) {
@@ -89,7 +90,7 @@ func TestLoginReturnUnauthorized(t *testing.T) {
 	assert.Equal(t, nil, err)
 	assert.NotNil(t, w.Result())
 	assert.Equal(t, tests["401"].expectedcode, w.Result().StatusCode)
-	model.UserCollection.Drop(c)
+	model.UserCollection.DeleteMany(c, bson.M{})
 }
 
 //Same hex value for redirect should return 401 after used once
@@ -118,5 +119,6 @@ func TestRedirectHexExpires(t *testing.T) {
 	w = httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 401, w.Result().StatusCode)
-	model.UserCollection.Drop(c)
+	model.UserCollection.DeleteMany(c, bson.M{})
+	model.RedirectCollection.DeleteMany(c, bson.M{})
 }

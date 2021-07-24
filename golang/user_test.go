@@ -34,7 +34,7 @@ func TestCreateUser(t *testing.T) {
 	assert.Equal(t, user.Surname, insertedUser.Surname)
 	assert.Equal(t, user.Username, insertedUser.Username)
 	assert.Equal(t, user.Email, insertedUser.Email)
-	coll.Drop(c)
+	model.UserCollection.DeleteMany(c, bson.M{})
 }
 
 func TestCreateUserConflict(t *testing.T) {
@@ -85,7 +85,7 @@ func TestCreateUserConflict(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.Empty(t, result3)
 	assert.Equal(t, "username taken", err.Error())
-	model.UserCollection.Drop(c)
+	model.UserCollection.DeleteMany(c, bson.M{})
 }
 
 func TestGetUserById(t *testing.T) {
@@ -112,5 +112,5 @@ func TestGetUserById(t *testing.T) {
 	assert.Equal(t, user.Email, user_resp.Email)
 	assert.Equal(t, user.Name, user_resp.Name)
 	assert.Equal(t, user.Surname, user_resp.Surname)
-	model.UserCollection.Drop(c)
+	model.UserCollection.DeleteMany(c, bson.M{})
 }

@@ -17,14 +17,14 @@ type redirectService interface {
 }
 
 var RedirectService redirectService = &redirect{}
-var redirectCollection *mongo.Collection = DBService.GetCollection(client, "redirect")
+var RedirectCollection *mongo.Collection = DBService.GetCollection(client, "redirect")
 
 func (r *redirect) SecureRedirect(ctx context.Context, id string) (string, error) {
 	var sec Security
 	sec.Id = id
 	randHex, _ := randomHex(20)
 	sec.Hex = randHex
-	_, err := redirectCollection.InsertOne(ctx, sec)
+	_, err := RedirectCollection.InsertOne(ctx, sec)
 	if err != nil {
 		return "", err
 	}
@@ -34,7 +34,7 @@ func (r *redirect) SecureRedirect(ctx context.Context, id string) (string, error
 
 func (r *redirect) VerifyRedirect(ctx context.Context, hex string) (string, error) {
 	var sec Security
-	res := redirectCollection.FindOneAndDelete(ctx, bson.M{"hex": hex})
+	res := RedirectCollection.FindOneAndDelete(ctx, bson.M{"hex": hex})
 	decode_err := res.Decode(&sec)
 	if decode_err != nil {
 		return "", decode_err
