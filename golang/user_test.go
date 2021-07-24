@@ -5,17 +5,16 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestCreateUser(t *testing.T) {
-	c := &gin.Context{}
-	_ = godotenv.Load("tests.env")
 	gin.SetMode(gin.TestMode)
-	model.Interface.Initialize()
+	c := &gin.Context{}
+
+	userService := model.UserService
 	user := &model.User{
 		Username: "test",
 		Name:     "Janusz",
@@ -23,11 +22,11 @@ func TestCreateUser(t *testing.T) {
 		Email:    "test@mail.com",
 		Password: "strongpasswd",
 	}
-	result, err := model.Interface.CreateUser(user, c)
+	result, err := userService.CreateUser(user, c)
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 	var insertedUser model.User
-	coll := model.Interface.GetCollection("users")
+	coll := model.UserCollection
 	res := coll.FindOne(c, bson.M{"name": "Janusz"})
 	err = res.Decode(&insertedUser)
 	assert.Nil(t, err)
@@ -35,14 +34,14 @@ func TestCreateUser(t *testing.T) {
 	assert.Equal(t, user.Surname, insertedUser.Surname)
 	assert.Equal(t, user.Username, insertedUser.Username)
 	assert.Equal(t, user.Email, insertedUser.Email)
-	coll.Drop(c)
+	model.UserCollection.DeleteMany(c, bson.M{})
 }
 
 func TestCreateUserConflict(t *testing.T) {
 	c := &gin.Context{}
-	_ = godotenv.Load("tests.env")
+	_ = model.DBService.Initialize()
 	gin.SetMode(gin.TestMode)
-	model.Interface.Initialize()
+	userService := model.UserService
 	users := map[string]model.User{
 		"test1": {
 			Id:       primitive.NewObjectID(),
@@ -71,48 +70,49 @@ func TestCreateUserConflict(t *testing.T) {
 	}
 	//New user
 	user1 := users["test1"]
-	result1, err := model.Interface.CreateUser(&user1, c)
+	result1, err := userService.CreateUser(&user1, c)
 	assert.Nil(t, err)
 	assert.NotNil(t, result1)
 	//New user with different username but same email
 	user2 := users["test2"]
-	result2, err := model.Interface.CreateUser(&user2, c)
+	result2, err := model.UserService.CreateUser(&user2, c)
 	assert.NotNil(t, err)
 	assert.Empty(t, result2)
 	assert.Equal(t, "409", err.Error())
-	//New user with different email but same email
+	//New user with different email but same username
 	user3 := users["test3"]
-	result3, err := model.Interface.CreateUser(&user3, c)
+	result3, err := userService.CreateUser(&user3, c)
 	assert.NotNil(t, err)
 	assert.Empty(t, result3)
 	assert.Equal(t, "username taken", err.Error())
-	model.Interface.GetCollection("users").Drop(c)
+	model.UserCollection.DeleteMany(c, bson.M{})
+	model.RedirectCollection.DeleteMany(c, bson.M{})
 }
 
 func TestGetUserById(t *testing.T) {
 	c := &gin.Context{}
-	_ = godotenv.Load("tests.env")
-        gin.SetMode(gin.TestMode)
-        model.Interface.Initialize()
-        user := &model.User{
-             Username: "test",
-             Name:     "Janusz",
-             Surname:  "Kowalski",
-             Email:    "test@mail.com",
-             Password: "strongpasswd",
-        }
-	result, err := model.Interface.CreateUser(user,c)
+	gin.SetMode(gin.TestMode)
+	userService := model.UserService
+	user := &model.User{
+		Username: "test",
+		Name:     "Janusz",
+		Surname:  "Kowalski",
+		Email:    "test@mail.com",
+		Password: "strongpasswd",
+	}
+	result, err := userService.CreateUser(user, c)
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	id, err := model.Interface.VerifyRedirect(c, result)
+	id, err := model.RedirectService.VerifyRedirect(c, result)
 	assert.Nil(t, err)
 	assert.NotNil(t, id)
-	user_resp, err := model.Interface.GetUserById(id, c);
+	user_resp, err := userService.GetUserById(id, c)
 	assert.Nil(t, err)
 	assert.NotNil(t, user_resp)
-	assert.Equal(t,user.Username,user_resp.Username)
-	assert.Equal(t,user.Email,user_resp.Email)
-	assert.Equal(t,user.Name,user_resp.Name)
-	assert.Equal(t,user.Surname,user_resp.Surname)
-	model.Interface.GetCollection("users").Drop(c)
+	assert.Equal(t, user.Username, user_resp.Username)
+	assert.Equal(t, user.Email, user_resp.Email)
+	assert.Equal(t, user.Name, user_resp.Name)
+	assert.Equal(t, user.Surname, user_resp.Surname)
+	model.UserCollection.DeleteMany(c, bson.M{})
+	model.RedirectCollection.DeleteMany(c, bson.M{})
 }
