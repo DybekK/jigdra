@@ -86,6 +86,7 @@ func TestCreateUserConflict(t *testing.T) {
 	assert.Empty(t, result3)
 	assert.Equal(t, "username taken", err.Error())
 	model.UserCollection.DeleteMany(c, bson.M{})
+	model.RedirectCollection.DeleteMany(c, bson.M{})
 }
 
 func TestGetUserById(t *testing.T) {
@@ -113,4 +114,5 @@ func TestGetUserById(t *testing.T) {
 	assert.Equal(t, user.Name, user_resp.Name)
 	assert.Equal(t, user.Surname, user_resp.Surname)
 	model.UserCollection.DeleteMany(c, bson.M{})
+	model.RedirectCollection.DeleteMany(c, bson.M{})
 }
