@@ -25,8 +25,8 @@ export class AuthService {
   }
 
   successfulLogin(response: TokenDto): void {
-    if(response.token) {
-      localStorage.setItem("token", response.token);
+    if(response.access_token) {
+      localStorage.setItem("token", response.access_token);
     }
   }
 
