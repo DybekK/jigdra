@@ -11,7 +11,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
           <nz-form-item>
             <nz-form-control nzErrorTip="You need to specify task name">
               <nz-input-group nzAddOnBefore="Task">
-                <input formControlName="taskName" type="text" nz-input placeholder="Task name"/>
+                <input formControlName="taskName" type="text" nz-input placeholder="Task name" />
               </nz-input-group>
             </nz-form-control>
           </nz-form-item>

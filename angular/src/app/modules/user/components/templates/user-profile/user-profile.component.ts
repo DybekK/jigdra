@@ -6,55 +6,77 @@ import {Component, OnInit} from '@angular/core';
     <nz-layout>
       <nz-sider nzCollapsible nzWidth="200px">
         <div class="logo"></div>
+
         <ul nz-menu nzTheme="dark" nzMode="inline">
-          <li nz-submenu nzTitle="User" nzIcon="user">
+          <!--User block-->
+          <ul nz-submenu nzTitle="User" nzIcon="user" nzOpen="{{open}}">
+            <li nz-menu-item>
+              <i nz-icon nzType="profile"></i>
+              <span>Profile</span>
+            </li>
+            <li nz-menu-item>
+              <i nz-icon nzType="setting"></i>
+              <span>Settings</span>
+            </li>
+          </ul>
+          <!--Team block-->
+          <li nz-submenu nzTitle="Team" nzIcon="team" nzOpen="{{open}}">
             <ul>
-              <li nz-menu-item>Tom</li>
-              <li nz-menu-item>Bill</li>
-              <li nz-menu-item>Alex</li>
+              <li nz-menu-item *ngFor="let user of users">
+                <i nz-icon nzType="{{user.work_state}}" [nzTheme]="user.work_state_theme"
+                   [nzTwotoneColor]="user.work_state_color"></i>
+                <span>{{user.user_name}}</span></li>
             </ul>
           </li>
-          <li nz-submenu nzTitle="Team" nzIcon="team">
+          <!--Project block-->
+          <li nz-submenu nzTitle="Project" nzIcon="desktop" nzOpen="{{open}}">
             <ul>
-              <li nz-menu-item>Team 1</li>
-              <li nz-menu-item>Team 2</li>
+
+              <li nz-submenu nzTitle="Select project" nzIcon="unordered-list" nzOpen="{{open}}">
+                <ul>
+                  <li nz-menu-item *ngFor="let project of projects">
+                    <i nz-icon nzType="{{project.icon}}" nzTheme="outline"></i>
+                    <span>{{project.title}}</span>
+                  </li>
+                </ul>
+              </li>
+
+              <li nz-submenu nzTitle="Your tasks" nzIcon="clock-circle" nzOpen="{{open}}">
+                <ul>
+                  <li nz-menu-item>
+                    <i nz-icon nzType="unordered-list" nzTheme="outline"></i>
+                    <span>Tasks</span>
+                  </li>
+                  <li nz-menu-item>
+                    <i nz-icon nzType="plus" nzTheme="outline"></i>
+                    <span>New Task</span>
+                  </li>
+                </ul>
+              </li>
+
+              <li nz-menu-item>
+                <i nz-icon nzType="calendar" nzTheme="outline"></i>
+                <span>Calendar</span>
+              </li>
+
+              <li nz-menu-item>
+                <i nz-icon nzType="file-add" nzTheme="outline"></i>
+                <span>Create project</span>
+              </li>
+              <li nz-menu-item>
+                <i nz-icon nzType="setting" nzTheme="outline"></i>
+                <span>Project settings</span>
+              </li>
             </ul>
           </li>
-          <li nz-submenu nzTitle="Time Task" nzIcon="clock-circle" >
-            <ul>
-              <li nz-menu-item>New Task</li>
-              <li nz-menu-item>Quick Task</li>
-            </ul>
-          </li>
+
           <li nz-menu-item>
             <i nz-icon nzType="video-camera"></i>
             <span>nav 2</span>
           </li>
-          <li nz-menu-item>
-            <i nz-icon nzType="upload"></i>
-            <span>nav 3</span>
-          </li>
-          <li nz-menu-item>
-            <i nz-icon nzType="bar-chart"></i>
-            <span>nav 4</span>
-          </li>
-          <li nz-menu-item>
-            <i nz-icon nzType="cloud-o"></i>
-            <span>nav 5</span>
-          </li>
-          <li nz-menu-item>
-            <i nz-icon nzType="appstore-o"></i>
-            <span>nav 6</span>
-          </li>
-          <li nz-menu-item>
-            <i nz-icon nzType="team"></i>
-            <span>nav 7</span>
-          </li>
-          <li nz-menu-item>
-            <i nz-icon nzType="shop"></i>
-            <span>nav 8</span>
-          </li>
+
         </ul>
+
       </nz-sider>
       <nz-layout class="right-layout">
         <nz-header></nz-header>
@@ -74,6 +96,41 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./user-profile.component.scss']
 })
 export class UserProfileComponent implements OnInit {
+  open: Boolean = true;
+
+  users: { user_name: string, work_state: string, work_state_theme: 'fill' | 'outline' | 'twotone', work_state_color: string }[] = [
+    {
+      user_name: 'Bob',
+      work_state: 'bulb',
+      work_state_theme: 'twotone',
+      work_state_color: '#52c41a'
+    }, {
+      user_name: 'Alex',
+      work_state: 'bulb',
+      work_state_theme: 'twotone',
+      work_state_color: '#e0b21d'
+    }, {
+      user_name: 'Cassandra',
+      work_state: 'bulb',
+      work_state_theme: 'twotone',
+      work_state_color: '#bd0404'
+    }, {
+      user_name: 'Kotlin',
+      work_state: 'bulb',
+      work_state_theme: 'twotone',
+      work_state_color: ''
+    }
+  ]
+  projects = [
+    {
+      title: 'Project 1',
+      icon: 'project'
+    },
+    {
+      title: 'Project 2',
+      icon: 'project'
+    }
+  ]
 
   constructor() {
   }
