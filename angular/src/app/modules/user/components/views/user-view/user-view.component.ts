@@ -5,8 +5,7 @@ import {Component, OnInit} from '@angular/core';
   template: `
     <nz-layout class="user-view">
       <nz-layout class="user-view__inner-content">
-        <app-user-profile></app-user-profile>
-
+        <app-user-nav></app-user-nav>
       </nz-layout>
     </nz-layout>
   `,

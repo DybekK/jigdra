@@ -2,8 +2,8 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {UserRoutingModule} from './user-routing.module';
 import {UserViewComponent} from './components/views/user-view/user-view.component';
-import {UserProfileComponent} from './components/templates/user-profile/user-profile.component';
-import {UserContentComponent} from './components/organisms/user-content/user-content.component';
+import {UserNavComponent} from './components/templates/user-nav/user-nav.component';
+import {UserAddTaskComponent} from './components/organisms/user-add-task/user-add-task.component';
 import {NzLayoutModule} from "ng-zorro-antd/layout";
 import {NzBreadCrumbModule} from "ng-zorro-antd/breadcrumb";
 import {NzMenuModule} from "ng-zorro-antd/menu";
@@ -38,6 +38,11 @@ import {NzSliderModule} from "ng-zorro-antd/slider";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NzFormModule} from "ng-zorro-antd/form";
 import {NzButtonModule} from "ng-zorro-antd/button";
+import { CalendarComponent } from './components/organisms/calendar/calendar.component';
+import { ProjectCreateComponent } from './components/organisms/project-create/project-create.component';
+import { ProjectMainComponent } from './components/organisms/project-main/project-main.component';
+import { UserTasksComponent } from './components/organisms/user-tasks/user-tasks.component';
+import { UserProfileComponent } from './components/organisms/user-profile/user-profile.component';
 
 const icons: IconDefinition[] = [
   UserOutline,
@@ -65,8 +70,13 @@ const icons: IconDefinition[] = [
 @NgModule({
   declarations: [
     UserViewComponent,
-    UserProfileComponent,
-    UserContentComponent
+    UserNavComponent,
+    UserAddTaskComponent,
+    CalendarComponent,
+    ProjectCreateComponent,
+    ProjectMainComponent,
+    UserTasksComponent,
+    UserProfileComponent
   ],
     imports: [
         CommonModule,

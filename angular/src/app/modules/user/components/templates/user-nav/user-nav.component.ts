@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 
 @Component({
-  selector: 'app-user-profile',
+  selector: 'app-user-nav',
   template: `
     <nz-layout>
       <nz-sider nzCollapsible nzWidth="200px">
@@ -36,7 +36,7 @@ import {Component, OnInit} from '@angular/core';
                 <ul>
                   <li nz-menu-item *ngFor="let project of projects">
                     <i nz-icon nzType="{{project.icon}}" nzTheme="outline"></i>
-                    <span>{{project.title}}</span>
+                    <span><a routerLink="project-main">{{project.title}}</a></span>
                   </li>
                 </ul>
               </li>
@@ -45,27 +45,27 @@ import {Component, OnInit} from '@angular/core';
                 <ul>
                   <li nz-menu-item>
                     <i nz-icon nzType="unordered-list" nzTheme="outline"></i>
-                    <span>Tasks</span>
+                    <span><a routerLink="user-tasks">Tasks</a></span>
                   </li>
                   <li nz-menu-item>
                     <i nz-icon nzType="plus" nzTheme="outline"></i>
-                    <span>New Task</span>
+                    <span><a routerLink="add-task">New Task</a></span>
                   </li>
                 </ul>
               </li>
 
               <li nz-menu-item>
                 <i nz-icon nzType="calendar" nzTheme="outline"></i>
-                <span>Calendar</span>
+                <span><a routerLink="calendar">Calendar</a></span>
               </li>
 
               <li nz-menu-item>
                 <i nz-icon nzType="file-add" nzTheme="outline"></i>
-                <span>Create project</span>
+                <span><a routerLink="project-create">Create project</a></span>
               </li>
               <li nz-menu-item>
                 <i nz-icon nzType="setting" nzTheme="outline"></i>
-                <span>Project settings</span>
+                <span><a routerLink="project-settings">Project settings</a></span>
               </li>
             </ul>
           </li>
@@ -86,16 +86,16 @@ import {Component, OnInit} from '@angular/core';
             <nz-breadcrumb-item>Bill</nz-breadcrumb-item>
           </nz-breadcrumb>
           <div class="inner-content">
-            <app-user-content></app-user-content>
+            <router-outlet></router-outlet>
           </div>
         </nz-content>
         <app-footer></app-footer>
       </nz-layout>
     </nz-layout>
   `,
-  styleUrls: ['./user-profile.component.scss']
+  styleUrls: ['./user-nav.component.scss']
 })
-export class UserProfileComponent implements OnInit {
+export class UserNavComponent implements OnInit {
   open: Boolean = true;
 
   users: { user_name: string, work_state: string, work_state_theme: 'fill' | 'outline' | 'twotone', work_state_color: string }[] = [

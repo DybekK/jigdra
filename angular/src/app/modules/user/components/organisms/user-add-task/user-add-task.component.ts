@@ -3,7 +3,7 @@ import {NzMarks, NzSliderValue} from "ng-zorro-antd/slider";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
 @Component({
-  selector: 'app-user-content',
+  selector: 'app-user-add-task',
   template: `
     <form [formGroup]="validateForm" class="ant-advanced-search-form" (ngSubmit)="submitTask()">
       <div nz-row nzJustify="center" [nzGutter]="[vGutter, hGutter]">
@@ -11,7 +11,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
           <nz-form-item>
             <nz-form-control nzErrorTip="You need to specify task name">
               <nz-input-group nzAddOnBefore="Task">
-                <input formControlName="taskName" type="text" nz-input placeholder="Task name" />
+                <input formControlName="taskName" type="text" nz-input placeholder="Task name"/>
               </nz-input-group>
             </nz-form-control>
           </nz-form-item>
@@ -71,9 +71,9 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
     </form>
   `,
-  styleUrls: ['./user-content.component.scss']
+  styleUrls: ['./user-add-task.component.scss']
 })
-export class UserContentComponent implements OnInit {
+export class UserAddTaskComponent implements OnInit {
 
   validateForm!: FormGroup;
 
