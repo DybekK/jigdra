@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"golang/model"
+	"golang/model/dto"
+	"golang/model/repository"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -18,6 +19,10 @@ func TestLoginReturns200IfExists(t *testing.T) {
 	r := getRouter()
 	h := &handler{}
 	w := httptest.NewRecorder()
+	defer func() {
+		repository.UserCollection.DeleteMany(c, bson.M{})
+		repository.RedirectCollection.DeleteMany(c, bson.M{})
+	}()
 	test := map[string]struct {
 		payload    string
 		statuscode int
@@ -52,7 +57,6 @@ func TestLoginReturns200IfExists(t *testing.T) {
 	r.ServeHTTP(w, req)
 	assert.Nil(t, err)
 	assert.Equal(t, 200, w.Result().StatusCode)
-	model.UserCollection.DeleteMany(c, bson.M{})
 }
 
 func TestLoginReturnBadRequest(t *testing.T) {
@@ -60,21 +64,27 @@ func TestLoginReturnBadRequest(t *testing.T) {
 	h := &handler{}
 	r := getRouter()
 	w := httptest.NewRecorder()
+	defer func() {
+		repository.UserCollection.DeleteMany(c, bson.M{})
+		repository.RedirectCollection.DeleteMany(c, bson.M{})
+	}()
 	r.POST("/v1/login", h.login)
 	req, _ := http.NewRequest("POST", "/v1/login", strings.NewReader(""))
 	want := 400
 	r.ServeHTTP(w, req)
 	assert.Equal(t, want, w.Result().StatusCode)
-	model.UserCollection.DeleteMany(c, bson.M{})
 }
 
 func TestLoginReturnUnauthorized(t *testing.T) {
 	c := &gin.Context{}
 	h := &handler{}
 	gin.SetMode(gin.TestMode)
-	model.DBService.Initialize()
 	r := getRouter()
 	w := httptest.NewRecorder()
+	defer func() {
+		repository.UserCollection.DeleteMany(c, bson.M{})
+		repository.RedirectCollection.DeleteMany(c, bson.M{})
+	}()
 	tests := map[string]struct {
 		payload      string
 		expectedcode int
@@ -90,7 +100,6 @@ func TestLoginReturnUnauthorized(t *testing.T) {
 	assert.Equal(t, nil, err)
 	assert.NotNil(t, w.Result())
 	assert.Equal(t, tests["401"].expectedcode, w.Result().StatusCode)
-	model.UserCollection.DeleteMany(c, bson.M{})
 }
 
 //Same hex value for redirect should return 401 after used once
@@ -100,7 +109,11 @@ func TestRedirectHexExpires(t *testing.T) {
 	h := &handler{}
 	r := getRouter()
 	w := httptest.NewRecorder()
-	userToRegister := model.User{
+	defer func() {
+		repository.UserCollection.DeleteMany(c, bson.M{})
+		repository.RedirectCollection.DeleteMany(c, bson.M{})
+	}()
+	userToRegister := dto.User{
 		Username: "someusername",
 		Name:     "Janusz",
 		Surname:  "Kowalski",
@@ -108,7 +121,8 @@ func TestRedirectHexExpires(t *testing.T) {
 		Password: "verystrongpasswd",
 	}
 
-	hex, err := model.UserService.CreateUser(&userToRegister, c)
+	id, err := userRepo.CreateUser(&userToRegister, c)
+	hex, err := redirectRepo.SecureRedirect(c, id)
 	assert.Nil(t, err)
 	r.GET("/v1/login", h.login)
 	urlString := fmt.Sprintf("/v1/login?redirect=%s", hex)
@@ -119,6 +133,4 @@ func TestRedirectHexExpires(t *testing.T) {
 	w = httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	assert.Equal(t, 401, w.Result().StatusCode)
-	model.UserCollection.DeleteMany(c, bson.M{})
-	model.RedirectCollection.DeleteMany(c, bson.M{})
 }

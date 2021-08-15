@@ -3,9 +3,17 @@ package main
 import (
 	"fmt"
 	"golang/model"
+	"golang/model/repository"
 	"log"
 
 	"github.com/gin-gonic/gin"
+)
+
+var (
+	userRepo        = repository.NewUserRepository()
+	userService     = model.NewUserService(userRepo)
+	redirectRepo    = repository.NewRedirectRepository()
+	redirectService = model.NewRedirectService(redirectRepo)
 )
 
 func main() {

@@ -1,4 +1,4 @@
-package model
+package repository
 
 import (
 	"context"
@@ -14,12 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-type Database struct{}
-
-type Security struct {
-	Id  string `json:"id"`
-	Hex string `json:"hex"`
-}
+type database struct{}
 
 type DatabaseService interface {
 	Initialize() *mongo.Client
@@ -27,7 +22,7 @@ type DatabaseService interface {
 }
 
 var (
-	DBService DatabaseService = &Database{}
+	DBService DatabaseService = &database{}
 	client    *mongo.Client   = DBService.Initialize()
 )
 
@@ -45,7 +40,7 @@ func getConnection(uri string) (*mongo.Client, error) {
 	return client, nil
 }
 
-func (d *Database) Initialize() *mongo.Client {
+func (d *database) Initialize() *mongo.Client {
 	if strings.HasSuffix(os.Args[0], ".test") {
 		_ = godotenv.Load("tests.env")
 	}
@@ -61,7 +56,7 @@ func (d *Database) Initialize() *mongo.Client {
 	return client
 }
 
-func (d *Database) GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
+func (d *database) GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
 	var collection *mongo.Collection = (*mongo.Collection)(client.Database(os.Getenv("MONGO_INITDB_DATABASE")).Collection(collectionName))
 	return collection
 }
