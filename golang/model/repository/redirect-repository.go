@@ -2,8 +2,6 @@ package repository
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/hex"
 	"golang/model/dto"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -11,7 +9,7 @@ import (
 )
 
 type RedirectRepository interface {
-	SecureRedirect(context.Context, string) (string, error)
+	SecureRedirect(context.Context, dto.Security) (string, error)
 	VerifyRedirect(context.Context, string) (string, error)
 }
 
@@ -23,17 +21,13 @@ func NewRedirectRepository() RedirectRepository {
 	return &database{}
 }
 
-func (d *database) SecureRedirect(ctx context.Context, id string) (string, error) {
-	var sec dto.Security
-	sec.Id = id
-	randHex, _ := randomHex(20)
-	sec.Hex = randHex
+func (d *database) SecureRedirect(ctx context.Context, sec dto.Security) (string, error) {
 	_, err := RedirectCollection.InsertOne(ctx, sec)
 	if err != nil {
 		return "", err
 	}
 
-	return randHex, nil
+	return sec.Hex, nil
 }
 
 func (d *database) VerifyRedirect(ctx context.Context, hex string) (string, error) {
@@ -44,12 +38,4 @@ func (d *database) VerifyRedirect(ctx context.Context, hex string) (string, erro
 		return "", decode_err
 	}
 	return sec.Id, nil
-}
-
-func randomHex(n int) (string, error) {
-	bytes := make([]byte, n)
-	if _, err := rand.Read(bytes); err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(bytes), nil
 }

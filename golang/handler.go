@@ -39,7 +39,7 @@ func (h *handler) addUser(c *gin.Context) {
 	}
 
 	res, err := userService.CreateUser(&req_user, c)
-	hex, err := redirectRepo.SecureRedirect(c, res)
+	hex, err := redirectService.SecureRedirect(c, res)
 	if err != nil {
 		if err.Error() == "409" {
 			c.JSON(http.StatusConflict, gin.H{

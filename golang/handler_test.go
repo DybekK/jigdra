@@ -114,7 +114,9 @@ func TestRedirectHexExpires(t *testing.T) {
 		Password: "verystrongpasswd",
 	}
 	id, err := userService.CreateUser(&userToRegister, c)
-	hex, err := redirectRepo.SecureRedirect(c, id)
+	assert.Nil(t, err)
+	assert.NotNil(t, id)
+	hex, err := redirectService.SecureRedirect(c, id)
 	assert.Nil(t, err)
 	r.GET("/v1/login", h.login)
 	urlString := fmt.Sprintf("/v1/login?redirect=%s", hex)

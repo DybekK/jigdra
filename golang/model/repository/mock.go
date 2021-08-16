@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"golang/model/dto"
 
 	"github.com/stretchr/testify/mock"
@@ -16,7 +15,7 @@ type MockUserRepo struct {
 	mock.Mock
 }
 
-func (r MockUserRepo) CreateUser(user *dto.User, ctx context.Context) (string, error) {
+func (r MockUserRepo) CreateUser(user *dto.User, ctx context.Context) (interface{}, error) {
 	user.Id = primitive.NewObjectID()
 	for _, val := range userData {
 		if val.Email == user.Email {
@@ -26,7 +25,7 @@ func (r MockUserRepo) CreateUser(user *dto.User, ctx context.Context) (string, e
 	}
 	userData = append(userData, *user)
 
-	return fmt.Sprintf("%v", user.Id), nil
+	return user.Id, nil
 }
 func (r MockUserRepo) GetUser(login *dto.LoginUser, ctx context.Context) (*dto.User, error) {
 	for _, val := range userData {
@@ -36,9 +35,9 @@ func (r MockUserRepo) GetUser(login *dto.LoginUser, ctx context.Context) (*dto.U
 	}
 	return nil, mongo.ErrNoDocuments
 }
-func (r MockUserRepo) GetUserById(id string, ctx context.Context) (*dto.GetUserStruct, error) {
+func (r MockUserRepo) GetUserById(id primitive.ObjectID, ctx context.Context) (*dto.GetUserStruct, error) {
 	for _, val := range userData {
-		if id == val.Id.Hex() {
+		if id.Hex() == val.Id.Hex() {
 			return &dto.GetUserStruct{
 				Id:          val.Id,
 				Email:       val.Email,
@@ -67,14 +66,9 @@ type MockRedirectRepo struct {
 	mock mock.Mock
 }
 
-func (r MockRedirectRepo) SecureRedirect(ctx context.Context, id string) (string, error) {
-	var sec dto.Security
-	sec.Id = id
-	randHex, _ := randomHex(20)
-	sec.Hex = randHex
-	fmt.Println(id)
+func (r MockRedirectRepo) SecureRedirect(ctx context.Context, sec dto.Security) (string, error) {
 	redirectData = append(redirectData, sec)
-	return randHex, nil
+	return sec.Hex, nil
 }
 
 func (r MockRedirectRepo) VerifyRedirect(ctx context.Context, hex string) (string, error) {

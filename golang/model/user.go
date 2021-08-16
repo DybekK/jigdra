@@ -66,13 +66,14 @@ func (u *userService) CreateUser(req_user *dto.User, ctx context.Context) (strin
 			return "", errors.New("failed to insert user")
 		}
 	}
-
-	id := strings.Split(res, "\"")[1]
+	str := fmt.Sprintf("%v", res)
+	id := strings.Split(str, "\"")[1]
 	return id, nil
 }
 
 func (u *userService) GetUserById(id string, ctx context.Context) (*dto.GetUserStruct, error) {
-	return u.repo.GetUserById(id, ctx)
+	objid, _ := primitive.ObjectIDFromHex(id)
+	return u.repo.GetUserById(objid, ctx)
 }
 
 func (u *userService) IsUsernameAvailable(username string, ctx context.Context) bool {
@@ -85,7 +86,6 @@ func hashPassword(password string) (string, error) {
 }
 
 func verifyPassword(password, hash string) bool {
-	fmt.Println(hash)
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }

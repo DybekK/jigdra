@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"golang/model/dto"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -11,9 +10,9 @@ import (
 )
 
 type UserRepository interface {
-	CreateUser(*dto.User, context.Context) (string, error)
+	CreateUser(*dto.User, context.Context) (interface{}, error)
 	GetUser(*dto.LoginUser, context.Context) (*dto.User, error)
-	GetUserById(string, context.Context) (*dto.GetUserStruct, error)
+	GetUserById(primitive.ObjectID, context.Context) (*dto.GetUserStruct, error)
 	IsUsernameAvailable(string, context.Context) bool
 }
 
@@ -38,14 +37,13 @@ func (d *database) GetUser(login *dto.LoginUser, ctx context.Context) (*dto.User
 
 }
 
-func (d *database) CreateUser(req_user *dto.User, ctx context.Context) (string, error) {
+func (d *database) CreateUser(req_user *dto.User, ctx context.Context) (interface{}, error) {
 	result, insertError := UserCollection.InsertOne(ctx, &req_user)
-	return fmt.Sprintf("%v", result.InsertedID), insertError
+	return result.InsertedID, insertError
 }
 
-func (d *database) GetUserById(id string, ctx context.Context) (*dto.GetUserStruct, error) {
-	objId, _ := primitive.ObjectIDFromHex(id)
-	res := UserCollection.FindOne(ctx, bson.M{"_id": objId})
+func (d *database) GetUserById(id primitive.ObjectID, ctx context.Context) (*dto.GetUserStruct, error) {
+	res := UserCollection.FindOne(ctx, bson.M{"_id": id})
 	var user dto.GetUserStruct
 	decode_err := res.Decode(&user)
 	if decode_err != nil {

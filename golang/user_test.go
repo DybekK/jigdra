@@ -103,8 +103,9 @@ func TestGetUserById(t *testing.T) {
 		Password: "strongpasswd",
 	}
 	uid, err := userService.CreateUser(user, c)
+	assert.Nil(t, err)
 	assert.NotNil(t, uid)
-	hex, err := redirectRepo.SecureRedirect(c, uid)
+	hex, err := redirectService.SecureRedirect(c, uid)
 	assert.Nil(t, err)
 	assert.NotNil(t, hex)
 	id, err := redirectService.VerifyRedirect(c, hex)
