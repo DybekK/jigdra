@@ -94,3 +94,8 @@ func (r MockRedirectRepo) VerifyRedirect(ctx context.Context, hex string) (strin
 
 	return "", mongo.ErrNoDocuments
 }
+
+func Purge() {
+	redirectData = nil
+	userData = nil
+}

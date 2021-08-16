@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"golang/model/dto"
+	"golang/model/repository"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -13,6 +14,9 @@ import (
 )
 
 func TestLoginReturns200IfExists(t *testing.T) {
+	defer func() {
+		repository.Purge()
+	}()
 	r := getRouter()
 	h := &handler{}
 	w := httptest.NewRecorder()
@@ -53,6 +57,9 @@ func TestLoginReturns200IfExists(t *testing.T) {
 }
 
 func TestLoginReturnBadRequest(t *testing.T) {
+	defer func() {
+		repository.Purge()
+	}()
 	h := &handler{}
 	r := getRouter()
 	w := httptest.NewRecorder()
@@ -65,6 +72,9 @@ func TestLoginReturnBadRequest(t *testing.T) {
 
 func TestLoginReturnUnauthorized(t *testing.T) {
 	//c := &gin.Context{}
+	defer func() {
+		repository.Purge()
+	}()
 	h := &handler{}
 	gin.SetMode(gin.TestMode)
 	r := getRouter()
@@ -88,6 +98,9 @@ func TestLoginReturnUnauthorized(t *testing.T) {
 
 //Same hex value for redirect should return 401 after used once
 func TestRedirectHexExpires(t *testing.T) {
+	defer func() {
+		repository.Purge()
+	}()
 	gin.SetMode(gin.TestMode)
 	c := &gin.Context{}
 	h := &handler{}

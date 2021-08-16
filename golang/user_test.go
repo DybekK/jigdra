@@ -2,6 +2,7 @@ package main
 
 import (
 	"golang/model/dto"
+	"golang/model/repository"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -10,6 +11,9 @@ import (
 )
 
 func TestCreateUser(t *testing.T) {
+	defer func() {
+		repository.Purge()
+	}()
 	gin.SetMode(gin.TestMode)
 	c := &gin.Context{}
 	_ = getRouter() //This inits userService and redirectService so yeah idc
@@ -32,6 +36,9 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestCreateUserConflict(t *testing.T) {
+	defer func() {
+		repository.Purge()
+	}()
 	c := &gin.Context{}
 	gin.SetMode(gin.TestMode)
 	_ = getRouter()
@@ -82,6 +89,9 @@ func TestCreateUserConflict(t *testing.T) {
 }
 
 func TestGetUserById(t *testing.T) {
+	defer func() {
+		repository.Purge()
+	}()
 	c := &gin.Context{}
 	_ = getRouter()
 	gin.SetMode(gin.TestMode)
