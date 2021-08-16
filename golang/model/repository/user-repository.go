@@ -14,12 +14,14 @@ type UserRepository interface {
 	CreateUser(*dto.User, context.Context) (string, error)
 	GetUser(*dto.LoginUser, context.Context) (*dto.User, error)
 	GetUserById(string, context.Context) (*dto.GetUserStruct, error)
+	IsUsernameAvailable(string, context.Context) bool
 }
 
-var UserCollection *mongo.Collection = DBService.GetCollection(client, "users")
+var UserCollection *mongo.Collection
 
 func NewUserRepository() UserRepository {
 	DBService.Initialize()
+	UserCollection = DBService.GetCollection(client, "users")
 	return &database{}
 }
 
@@ -38,7 +40,7 @@ func (d *database) GetUser(login *dto.LoginUser, ctx context.Context) (*dto.User
 
 func (d *database) CreateUser(req_user *dto.User, ctx context.Context) (string, error) {
 	result, insertError := UserCollection.InsertOne(ctx, &req_user)
-	return fmt.Sprintf("%v", result), insertError
+	return fmt.Sprintf("%v", result.InsertedID), insertError
 }
 
 func (d *database) GetUserById(id string, ctx context.Context) (*dto.GetUserStruct, error) {
@@ -52,4 +54,9 @@ func (d *database) GetUserById(id string, ctx context.Context) (*dto.GetUserStru
 
 	return &user, nil
 
+}
+
+func (d *database) IsUsernameAvailable(username string, ctx context.Context) bool {
+	result := UserCollection.FindOne(ctx, bson.M{"username": username})
+	return result.Err() == mongo.ErrNoDocuments
 }

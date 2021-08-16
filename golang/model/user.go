@@ -6,12 +6,11 @@ import (
 	"fmt"
 	"golang/model/dto"
 	"golang/model/repository"
-	"regexp"
 	"strings"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -19,6 +18,7 @@ type UserService interface {
 	CreateUser(*dto.User, context.Context) (string, error)
 	GetUser(*dto.LoginUser, context.Context) (*dto.User, error)
 	GetUserById(string, context.Context) (*dto.GetUserStruct, error)
+	IsUsernameAvailable(string, context.Context) bool
 }
 
 type userService struct {
@@ -52,13 +52,13 @@ func (u *userService) CreateUser(req_user *dto.User, ctx context.Context) (strin
 		return "", errors.New("hashing error")
 	}
 
-	if availible := isUsernameAvailable(req_user.Username, ctx); !availible {
+	if availible := u.repo.IsUsernameAvailable(req_user.Username, ctx); !availible {
 		return "", errors.New("username taken")
 	}
 	req_user.Password = hash
 	res, err := u.repo.CreateUser(req_user, ctx)
 	if err != nil {
-		matched, _ := regexp.MatchString(`duplicate key`, err.Error())
+		matched := mongo.IsDuplicateKeyError(err)
 		if matched {
 			return "", errors.New("409")
 
@@ -75,6 +75,10 @@ func (u *userService) GetUserById(id string, ctx context.Context) (*dto.GetUserS
 	return u.repo.GetUserById(id, ctx)
 }
 
+func (u *userService) IsUsernameAvailable(username string, ctx context.Context) bool {
+	return u.repo.IsUsernameAvailable(username, ctx)
+}
+
 func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
@@ -84,11 +88,6 @@ func verifyPassword(password, hash string) bool {
 	fmt.Println(hash)
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
-}
-
-func isUsernameAvailable(username string, ctx context.Context) bool {
-	result := repository.UserCollection.FindOne(ctx, bson.M{"username": username})
-	return result.Err() == mongo.ErrNoDocuments
 }
 
 func validateEmail(email string) error {

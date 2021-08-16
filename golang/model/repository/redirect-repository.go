@@ -15,10 +15,11 @@ type RedirectRepository interface {
 	VerifyRedirect(context.Context, string) (string, error)
 }
 
-var RedirectCollection *mongo.Collection = DBService.GetCollection(client, "redirect")
+var RedirectCollection *mongo.Collection
 
 func NewRedirectRepository() RedirectRepository {
 	DBService.Initialize()
+	RedirectCollection = DBService.GetCollection(client, "redirect")
 	return &database{}
 }
 

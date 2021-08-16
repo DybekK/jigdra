@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"golang/model/dto"
-	"golang/model/repository"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -11,18 +10,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 func TestLoginReturns200IfExists(t *testing.T) {
-	c := &gin.Context{}
 	r := getRouter()
 	h := &handler{}
 	w := httptest.NewRecorder()
-	defer func() {
-		repository.UserCollection.DeleteMany(c, bson.M{})
-		repository.RedirectCollection.DeleteMany(c, bson.M{})
-	}()
 	test := map[string]struct {
 		payload    string
 		statuscode int
@@ -60,14 +53,9 @@ func TestLoginReturns200IfExists(t *testing.T) {
 }
 
 func TestLoginReturnBadRequest(t *testing.T) {
-	c := &gin.Context{}
 	h := &handler{}
 	r := getRouter()
 	w := httptest.NewRecorder()
-	defer func() {
-		repository.UserCollection.DeleteMany(c, bson.M{})
-		repository.RedirectCollection.DeleteMany(c, bson.M{})
-	}()
 	r.POST("/v1/login", h.login)
 	req, _ := http.NewRequest("POST", "/v1/login", strings.NewReader(""))
 	want := 400
@@ -76,15 +64,11 @@ func TestLoginReturnBadRequest(t *testing.T) {
 }
 
 func TestLoginReturnUnauthorized(t *testing.T) {
-	c := &gin.Context{}
+	//c := &gin.Context{}
 	h := &handler{}
 	gin.SetMode(gin.TestMode)
 	r := getRouter()
 	w := httptest.NewRecorder()
-	defer func() {
-		repository.UserCollection.DeleteMany(c, bson.M{})
-		repository.RedirectCollection.DeleteMany(c, bson.M{})
-	}()
 	tests := map[string]struct {
 		payload      string
 		expectedcode int
@@ -109,10 +93,6 @@ func TestRedirectHexExpires(t *testing.T) {
 	h := &handler{}
 	r := getRouter()
 	w := httptest.NewRecorder()
-	defer func() {
-		repository.UserCollection.DeleteMany(c, bson.M{})
-		repository.RedirectCollection.DeleteMany(c, bson.M{})
-	}()
 	userToRegister := dto.User{
 		Username: "someusername",
 		Name:     "Janusz",
@@ -120,8 +100,7 @@ func TestRedirectHexExpires(t *testing.T) {
 		Email:    "uwa@mail.com",
 		Password: "verystrongpasswd",
 	}
-
-	id, err := userRepo.CreateUser(&userToRegister, c)
+	id, err := userService.CreateUser(&userToRegister, c)
 	hex, err := redirectRepo.SecureRedirect(c, id)
 	assert.Nil(t, err)
 	r.GET("/v1/login", h.login)

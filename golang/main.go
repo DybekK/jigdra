@@ -10,14 +10,18 @@ import (
 )
 
 var (
-	userRepo        = repository.NewUserRepository()
-	userService     = model.NewUserService(userRepo)
-	redirectRepo    = repository.NewRedirectRepository()
-	redirectService = model.NewRedirectService(redirectRepo)
+	userRepo        repository.UserRepository
+	userService     model.UserService
+	redirectRepo    repository.RedirectRepository
+	redirectService model.RedirectService
 )
 
 func main() {
 	fmt.Println("lets go")
+	userRepo = repository.NewUserRepository()
+	userService = model.NewUserService(userRepo)
+	redirectRepo = repository.NewRedirectRepository()
+	redirectService = model.NewRedirectService(redirectRepo)
 	h := &handler{}
 	auth := &model.AuthHandler{}
 	r := gin.Default()

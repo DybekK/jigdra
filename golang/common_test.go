@@ -7,10 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+
 func getRouter() *gin.Engine {
-	userRepo = repository.NewUserRepository()
+	userRepo = new(repository.MockUserRepo)
 	userService = model.NewUserService(userRepo)
-	redirectRepo = repository.NewRedirectRepository()
+	redirectRepo = new(repository.MockRedirectRepo)
 	redirectService = model.NewRedirectService(redirectRepo)
 	r := gin.Default()
 	return r

@@ -2,19 +2,17 @@ package main
 
 import (
 	"golang/model/dto"
-	"golang/model/repository"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestCreateUser(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	c := &gin.Context{}
-
+	_ = getRouter() //This inits userService and redirectService so yeah idc
 	user := &dto.User{
 		Username: "test",
 		Name:     "Janusz",
@@ -22,17 +20,10 @@ func TestCreateUser(t *testing.T) {
 		Email:    "test@mail.com",
 		Password: "strongpasswd",
 	}
-	defer func() {
-		repository.UserCollection.DeleteMany(c, bson.M{})
-		repository.RedirectCollection.DeleteMany(c, bson.M{})
-	}()
 	result, err := userService.CreateUser(user, c)
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	var insertedUser dto.User
-	coll := repository.UserCollection
-	res := coll.FindOne(c, bson.M{"name": "Janusz"})
-	err = res.Decode(&insertedUser)
+	insertedUser, err := userService.GetUserById(result, c)
 	assert.Nil(t, err)
 	assert.Equal(t, user.Name, insertedUser.Name)
 	assert.Equal(t, user.Surname, insertedUser.Surname)
@@ -42,8 +33,8 @@ func TestCreateUser(t *testing.T) {
 
 func TestCreateUserConflict(t *testing.T) {
 	c := &gin.Context{}
-
 	gin.SetMode(gin.TestMode)
+	_ = getRouter()
 	users := map[string]dto.User{
 		"test1": {
 			Id:       primitive.NewObjectID(),
@@ -70,10 +61,6 @@ func TestCreateUserConflict(t *testing.T) {
 			Password: "strong",
 		},
 	}
-	defer func() {
-		repository.UserCollection.DeleteMany(c, bson.M{})
-		repository.RedirectCollection.DeleteMany(c, bson.M{})
-	}()
 	//New user
 	user1 := users["test1"]
 	result1, err := userService.CreateUser(&user1, c)
@@ -96,6 +83,7 @@ func TestCreateUserConflict(t *testing.T) {
 
 func TestGetUserById(t *testing.T) {
 	c := &gin.Context{}
+	_ = getRouter()
 	gin.SetMode(gin.TestMode)
 	user := &dto.User{
 		Username: "test",
@@ -104,10 +92,6 @@ func TestGetUserById(t *testing.T) {
 		Email:    "test@mail.com",
 		Password: "strongpasswd",
 	}
-	defer func() {
-		repository.UserCollection.DeleteMany(c, bson.M{})
-		repository.RedirectCollection.DeleteMany(c, bson.M{})
-	}()
 	uid, err := userService.CreateUser(user, c)
 	assert.NotNil(t, uid)
 	hex, err := redirectRepo.SecureRedirect(c, uid)

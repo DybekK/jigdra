@@ -23,7 +23,7 @@ type DatabaseService interface {
 
 var (
 	DBService DatabaseService = &database{}
-	client    *mongo.Client   = DBService.Initialize()
+	client    *mongo.Client
 )
 
 func getConnection(uri string) (*mongo.Client, error) {
