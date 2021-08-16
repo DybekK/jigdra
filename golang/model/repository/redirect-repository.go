@@ -16,7 +16,7 @@ type RedirectRepository interface {
 var RedirectCollection *mongo.Collection
 
 func NewRedirectRepository() RedirectRepository {
-	DBService.Initialize()
+	client = DBService.Initialize()
 	RedirectCollection = DBService.GetCollection(client, "redirect")
 	return &database{}
 }

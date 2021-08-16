@@ -19,7 +19,7 @@ type UserRepository interface {
 var UserCollection *mongo.Collection
 
 func NewUserRepository() UserRepository {
-	DBService.Initialize()
+	client = DBService.Initialize()
 	UserCollection = DBService.GetCollection(client, "users")
 	return &database{}
 }
