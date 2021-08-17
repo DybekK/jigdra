@@ -1,0 +1,95 @@
+package repository
+
+import (
+	"context"
+	"golang/model/dto"
+
+	"github.com/stretchr/testify/mock"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+)
+
+var userData []dto.User
+
+type MockUserRepo struct {
+	mock.Mock
+}
+
+func (r MockUserRepo) CreateUser(user *dto.User, ctx context.Context) (interface{}, error) {
+	user.Id = primitive.NewObjectID()
+	for _, val := range userData {
+		if val.Email == user.Email {
+			e := mongo.CommandError{Code: 11000}
+			return "", e
+		}
+	}
+	userData = append(userData, *user)
+
+	return user.Id, nil
+}
+func (r MockUserRepo) GetUser(login *dto.LoginUser, ctx context.Context) (*dto.User, error) {
+	for _, val := range userData {
+		if login.Email == val.Email {
+			return &val, nil
+		}
+	}
+	return nil, mongo.ErrNoDocuments
+}
+func (r MockUserRepo) GetUserById(id primitive.ObjectID, ctx context.Context) (*dto.GetUserStruct, error) {
+	for _, val := range userData {
+		if id.Hex() == val.Id.Hex() {
+			return &dto.GetUserStruct{
+				Id:          val.Id,
+				Email:       val.Email,
+				Username:    val.Username,
+				Name:        val.Name,
+				Surname:     val.Surname,
+				GenderId:    val.GenderId,
+				DateOfBirth: val.DateOfBirth,
+			}, nil
+		}
+	}
+	return nil, mongo.ErrNoDocuments
+}
+func (r MockUserRepo) IsUsernameAvailable(username string, ctx context.Context) bool {
+	for _, val := range userData {
+		if username == val.Username {
+			return false
+		}
+	}
+	return true
+}
+
+var redirectData = []dto.Security{}
+
+type MockRedirectRepo struct {
+	mock mock.Mock
+}
+
+func (r MockRedirectRepo) SecureRedirect(ctx context.Context, sec dto.Security) (string, error) {
+	redirectData = append(redirectData, sec)
+	return sec.Hex, nil
+}
+
+func (r MockRedirectRepo) VerifyRedirect(ctx context.Context, hex string) (string, error) {
+	id := ""
+	index := 0
+	for i, val := range redirectData {
+		if hex == val.Hex {
+			id = val.Id
+			index = i
+		}
+	}
+	if id != "" {
+		redirectData[index] = redirectData[len(redirectData)-1]
+		redirectData = redirectData[:len(redirectData)-1]
+		return id, nil
+	}
+
+	return "", mongo.ErrNoDocuments
+}
+
+func Purge() {
+	redirectData = nil
+	userData = nil
+}

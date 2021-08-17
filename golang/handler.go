@@ -3,20 +3,19 @@ package main
 import (
 	"fmt"
 	"golang/model"
+	"golang/model/dto"
 	"net/http"
 	"net/url"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type handler struct{}
 
 var auth = model.AuthHandler{}
-var userService = model.UserService
 
 func (h *handler) getUwa(c *gin.Context) {
 	c.JSON(200, gin.H{
@@ -27,7 +26,7 @@ func (h *handler) getUwa(c *gin.Context) {
 var validate = validator.New()
 
 func (h *handler) addUser(c *gin.Context) {
-	var req_user model.User
+	var req_user dto.User
 	if err := c.BindJSON(&req_user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"user": "invalid request body"})
 		return
@@ -40,7 +39,7 @@ func (h *handler) addUser(c *gin.Context) {
 	}
 
 	res, err := userService.CreateUser(&req_user, c)
-
+	hex, err := redirectService.SecureRedirect(c, res)
 	if err != nil {
 		if err.Error() == "409" {
 			c.JSON(http.StatusConflict, gin.H{
@@ -54,7 +53,7 @@ func (h *handler) addUser(c *gin.Context) {
 		return
 	}
 	q := url.Values{}
-	q.Add("redirect", res)
+	q.Add("redirect", hex)
 	location := url.URL{Path: "/v1/login", RawQuery: q.Encode()}
 
 	c.Redirect(http.StatusFound, location.RequestURI())
@@ -117,7 +116,7 @@ func (h *handler) login(c *gin.Context) {
 			c.String(405, "405 Method not allowed")
 			return
 		}
-		id, exists := model.RedirectService.VerifyRedirect(c, q)
+		id, exists := redirectService.VerifyRedirect(c, q)
 		if exists != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"redirect": "redirect doesn't exist"})
 			return
@@ -127,15 +126,12 @@ func (h *handler) login(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"_id": "invalid hex"})
 			return
 		}
-		res := model.UserCollection.FindOne(c, bson.M{"_id": objid})
-		var user model.User
-		decode_err := res.Decode(&user)
-		if decode_err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"user": "failed to decode user"})
-			return
+		res, err := userService.GetUserById(objid.Hex(), c)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"user": "user not found"})
 		}
 
-		newTokenPair, err := auth.GenerateTokenPair(id)
+		newTokenPair, err := auth.GenerateTokenPair(res.Id.Hex())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"token": "signing error"})
 			return
@@ -144,7 +140,7 @@ func (h *handler) login(c *gin.Context) {
 		c.JSON(http.StatusOK, newTokenPair)
 
 	} else if c.Request.Method == "POST" {
-		var req_login model.LoginUser
+		var req_login dto.LoginUser
 		if err := c.BindJSON(&req_login); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"user": "invalid request body"})
 			return

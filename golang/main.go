@@ -3,13 +3,27 @@ package main
 import (
 	"fmt"
 	"golang/model"
+	"golang/model/repository"
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+)
+
+var (
+	userRepo        repository.UserRepository
+	userService     model.UserService
+	redirectRepo    repository.RedirectRepository
+	redirectService model.RedirectService
 )
 
 func main() {
 	fmt.Println("lets go")
+	_ = godotenv.Load("../.env")
+	userRepo = repository.NewUserRepository()
+	userService = model.NewUserService(userRepo)
+	redirectRepo = repository.NewRedirectRepository()
+	redirectService = model.NewRedirectService(redirectRepo)
 	h := &handler{}
 	auth := &model.AuthHandler{}
 	r := gin.Default()
@@ -17,14 +31,17 @@ func main() {
 	r.HandleMethodNotAllowed = true
 	r.Use(gin.Logger())
 	r.Use(CORSMiddleware())
-	r.GET("/v1", h.getUwa)
-	r.POST("/v1/register", h.addUser)
-	r.GET("/v1/login", h.login)
-	r.POST("/v1/login", h.login)
-	r.POST("/v1/refresh", h.refresh)
-	r.GET("/v1/user/:id", h.getUserById)
-	//These endpoints require Authorization header with valid Bearer token
-	r.POST("/v1/logout", auth.TokenAuthMiddleware(), h.logout)
+	v1 := r.Group("/v1")
+	{
+		v1.GET("/v1", h.getUwa)
+		v1.POST("/v1/register", h.addUser)
+		v1.GET("/v1/login", h.login)
+		v1.POST("/v1/login", h.login)
+		v1.POST("/v1/refresh", h.refresh)
+		v1.GET("/v1/user/:id", h.getUserById)
+		//These endpoints require Authorization header with valid Bearer token
+		v1.POST("/v1/logout", auth.TokenAuthMiddleware(), h.logout)
+	}
 	log.Fatal(r.Run(":4201"))
 }
 
