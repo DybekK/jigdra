@@ -1,0 +1,24 @@
+nz-select {
+  width: 100% !important;
+}
+
+.ant-select-selection-item {
+  background-color: #ff91af !important;
+}
+
+.loading-icon {
+  margin-right: 8px;
+}
+
+.upload-icon {
+  margin-right: 8px;
+}
+
+:host ::ng-deep .avatar-uploader > .ant-upload {
+  width: 128px;
+  height: 128px;
+}
+
+:hover {
+
+}

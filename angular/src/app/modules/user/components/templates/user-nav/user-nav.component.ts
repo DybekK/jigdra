@@ -12,7 +12,7 @@ import {Component, OnInit} from '@angular/core';
           <ul nz-submenu nzTitle="User" nzIcon="user" nzOpen="{{open}}">
             <li nz-menu-item>
               <i nz-icon nzType="profile"></i>
-              <span>Profile</span>
+              <span><a routerLink="user-profile">Profile</a></span>
             </li>
             <li nz-menu-item>
               <i nz-icon nzType="setting"></i>

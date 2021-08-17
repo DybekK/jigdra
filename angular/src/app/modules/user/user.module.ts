@@ -38,11 +38,14 @@ import {NzSliderModule} from "ng-zorro-antd/slider";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NzFormModule} from "ng-zorro-antd/form";
 import {NzButtonModule} from "ng-zorro-antd/button";
-import { CalendarComponent } from './components/organisms/calendar/calendar.component';
-import { ProjectCreateComponent } from './components/organisms/project-create/project-create.component';
-import { ProjectMainComponent } from './components/organisms/project-main/project-main.component';
-import { UserTasksComponent } from './components/organisms/user-tasks/user-tasks.component';
-import { UserProfileComponent } from './components/organisms/user-profile/user-profile.component';
+import {CalendarComponent} from './components/organisms/calendar/calendar.component';
+import {ProjectCreateComponent} from './components/organisms/project-create/project-create.component';
+import {ProjectMainComponent} from './components/organisms/project-main/project-main.component';
+import {UserTasksComponent} from './components/organisms/user-tasks/user-tasks.component';
+import {UserProfileComponent} from './components/organisms/user-profile/user-profile.component';
+import {NzUploadModule} from "ng-zorro-antd/upload";
+import {NzSelectModule} from "ng-zorro-antd/select";
+
 
 const icons: IconDefinition[] = [
   UserOutline,
@@ -78,23 +81,25 @@ const icons: IconDefinition[] = [
     UserTasksComponent,
     UserProfileComponent
   ],
-    imports: [
-        CommonModule,
-        UserRoutingModule,
-        NzLayoutModule,
-        NzBreadCrumbModule,
-        NzMenuModule,
-        NzIconModule,
-        SharedModule,
-        NzIconModule.forChild(icons),
-        NzGridModule,
-        NzInputModule,
-        NzSliderModule,
-        FormsModule,
-        ReactiveFormsModule,
-        NzFormModule,
-        NzButtonModule
-    ]
+  imports: [
+    CommonModule,
+    UserRoutingModule,
+    NzLayoutModule,
+    NzBreadCrumbModule,
+    NzMenuModule,
+    NzIconModule,
+    SharedModule,
+    NzIconModule.forChild(icons),
+    NzGridModule,
+    NzInputModule,
+    NzSliderModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NzFormModule,
+    NzButtonModule,
+    NzUploadModule,
+    NzSelectModule
+  ]
 })
 export class UserModule {
 }
