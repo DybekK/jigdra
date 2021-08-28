@@ -33,14 +33,14 @@ func main() {
 	r.Use(CORSMiddleware())
 	v1 := r.Group("/v1")
 	{
-		v1.GET("/v1", h.getUwa)
-		v1.POST("/v1/register", h.addUser)
-		v1.GET("/v1/login", h.login)
-		v1.POST("/v1/login", h.login)
-		v1.POST("/v1/refresh", h.refresh)
-		v1.GET("/v1/user/:id", h.getUserById)
+		v1.GET("/", h.getUwa)
+		v1.POST("/register", h.addUser)
+		v1.GET("/login", h.login)
+		v1.POST("/login", h.login)
+		v1.GET("/user/:id", h.getUserById)
 		//These endpoints require Authorization header with valid Bearer token
-		v1.POST("/v1/logout", auth.TokenAuthMiddleware(), h.logout)
+		v1.POST("/logout", auth.TokenAuthMiddleware(), h.logout)
+		v1.POST("/refresh", auth.TokenAuthMiddleware(), h.refresh)
 	}
 	log.Fatal(r.Run(":4201"))
 }
