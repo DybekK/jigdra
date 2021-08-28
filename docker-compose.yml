@@ -34,10 +34,10 @@ services:
         networks:
             - apps-network
 
-    nestjs:
+    go-psql:
         build:
             context: .
-            dockerfile: ./nestjs/Dockerfile
+            dockerfile: ./go-psql/Dockerfile
         ports:
             - "8080:8080"
         networks:
