@@ -37,10 +37,10 @@ func main() {
 		v1.POST("/register", h.addUser)
 		v1.GET("/login", h.login)
 		v1.POST("/login", h.login)
-		v1.POST("/refresh", h.refresh)
 		v1.GET("/user/:id", h.getUserById)
 		//These endpoints require Authorization header with valid Bearer token
 		v1.POST("/logout", auth.TokenAuthMiddleware(), h.logout)
+		v1.POST("/refresh", auth.TokenAuthMiddleware(), h.refresh)
 	}
 	log.Fatal(r.Run(":4201"))
 }
