@@ -13,9 +13,19 @@ func main() {
 	_ = godotenv.Load("../.env")
 	r := gin.Default()
 
+	//initialize postgres connection
 	postgresDatabase := database.InitPostgresDatabase()
+
+	//initialize services
+	authMiddleware := InitializeAuthMiddleware(postgresDatabase)
 	handler := InitializeWorkspaceUserHandler(postgresDatabase)
 
+	//initialize middleware
+	r.Use(authMiddleware.TokenAuthMiddleware())
+
+	//initialize routing
 	r.Handle("GET", "/v1/workuser/:id", handler.GetUser)
+
+	//catch errors
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

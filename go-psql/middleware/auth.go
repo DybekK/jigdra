@@ -1,48 +1,42 @@
-package main
+package middleware
 
 import (
-	"encoding/json"
 	"fmt"
+	"go-psql/service"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type AuthMiddleware struct{}
-
-func (a *AuthMiddleware) GenerateTokenPair(objectid string) (map[string]string, error) {
-	token := jwt.New(jwt.SigningMethodHS256)
-
-	claims := token.Claims.(jwt.MapClaims)
-	claims["identitykey"] = objectid
-	claims["exp"] = time.Now().Add(time.Hour * 10).Unix()
-	t, err := token.SignedString([]byte("test"))
-	if err != nil {
-		return nil, err
-	}
-
-	refreshToken := jwt.New(jwt.SigningMethodHS256)
-	rtClaims := refreshToken.Claims.(jwt.MapClaims)
-	rtClaims["exp"] = time.Now().Add(time.Hour * 10).Unix()
-	rtClaims["identitykey"] = objectid
-
-	rt, err := refreshToken.SignedString([]byte("test"))
-	if err != nil {
-		return nil, err
-	}
-
-	return map[string]string{
-		"access_token":  t,
-		"refresh_token": rt,
-	}, nil
+type AuthMiddleware struct {
+	workspaceUserService service.WorkspaceUserService
 }
 
-func (auth *AuthMiddleware) TokenValid(r *http.Request) error {
-	token, err := auth.VerifyToken(r)
+//factory
+
+func NewAuthMiddleware(workspaceUserService service.WorkspaceUserService) AuthMiddleware {
+	return AuthMiddleware{workspaceUserService: workspaceUserService}
+}
+
+//methods
+
+func (auth *AuthMiddleware) TokenAuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		err := auth.tokenValid(c.Request)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, bson.M{"error": err.Error()})
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}
+
+func (auth *AuthMiddleware) tokenValid(r *http.Request) error {
+	token, err := auth.verifyToken(r)
 	if err != nil {
 		return err
 	}
@@ -52,7 +46,7 @@ func (auth *AuthMiddleware) TokenValid(r *http.Request) error {
 	}
 	id := claims["identitykey"].(string)
 	fmt.Println(id)
-	user := workspaceUserService.FindByUserId(id)
+	user := auth.workspaceUserService.GetUser(id)
 	if user != nil {
 		return nil
 	}
@@ -64,28 +58,11 @@ func (auth *AuthMiddleware) TokenValid(r *http.Request) error {
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("user does not exist")
 	}
-	type respUser struct {
-		Username string `json:"username"`
-	}
-	var ru respUser
-	err = json.NewDecoder(resp.Body).Decode(&ru)
-	if err != nil {
-		fmt.Println(err.Error())
-		return err
-	}
-	fmt.Println("username", ru.Username)
-
-	_, err = workspaceUserService.SaveWorkspaceUser(id, ru.Username)
-	if err != nil {
-		fmt.Println(err.Error())
-		return err
-	}
-
 	return err
 }
 
-func (auth *AuthMiddleware) VerifyToken(r *http.Request) (*jwt.Token, error) {
-	tokenString := ExtractToken(r)
+func (auth *AuthMiddleware) verifyToken(r *http.Request) (*jwt.Token, error) {
+	tokenString := auth.extractToken(r)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -98,19 +75,7 @@ func (auth *AuthMiddleware) VerifyToken(r *http.Request) (*jwt.Token, error) {
 	return token, nil
 }
 
-func (auth *AuthMiddleware) TokenAuthMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		err := auth.TokenValid(c.Request)
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, bson.M{"error": err.Error()})
-			c.Abort()
-			return
-		}
-		c.Next()
-	}
-}
-
-func ExtractToken(r *http.Request) string {
+func (auth *AuthMiddleware) extractToken(r *http.Request) string {
 	bearToken := r.Header.Get("Authorization")
 	strArr := strings.Split(bearToken, " ")
 	if len(strArr) == 2 {
