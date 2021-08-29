@@ -1,9 +1,7 @@
-package repository
+package workspace
 
 import (
 	"context"
-	"go-psql/dto"
-
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4"
 )
@@ -20,7 +18,7 @@ func NewWorkspaceUserRepo(posgresDatabase *pgx.Conn) WorkspaceUserRepository {
 
 //methods
 
-func (wur *WorkspaceUserRepository) Create(user dto.WorkspaceUser) error {
+func (wur *WorkspaceUserRepository) Create(user WorkspaceUser) error {
 	tx, err := wur.posgresDatabase.Begin(context.Background())
 	if err != nil {
 		return err
@@ -35,7 +33,7 @@ func (wur *WorkspaceUserRepository) Create(user dto.WorkspaceUser) error {
 	return err
 }
 
-func (wur *WorkspaceUserRepository) Read(id string) *dto.WorkspaceUser {
+func (wur *WorkspaceUserRepository) Read(id string) *WorkspaceUser {
 	var uuid uuid.UUID
 	var userid string
 	var nickname string
@@ -47,7 +45,7 @@ func (wur *WorkspaceUserRepository) Read(id string) *dto.WorkspaceUser {
 	// var uuid uuid.UUID
 	// row.Scan(&uuid)
 	// user.Id = uuid
-	user := dto.WorkspaceUser{
+	user := WorkspaceUser{
 		Id:       uuid,
 		UserId:   userid,
 		Nickname: nickname,

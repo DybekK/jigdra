@@ -1,4 +1,4 @@
-package dto
+package workspace
 
 import "github.com/google/uuid"
 

@@ -3,29 +3,26 @@
 package main
 
 import (
-	"go-psql/database/repository"
-	"go-psql/handler"
-	"go-psql/middleware"
-	"go-psql/service"
-
 	"github.com/google/wire"
 	"github.com/jackc/pgx/v4"
+	"go-psql/middleware"
+	"go-psql/workspace"
 )
 
 func InitializeAuthMiddleware(postgresDatabase *pgx.Conn) middleware.AuthMiddleware {
 	wire.Build(
 		middleware.NewAuthMiddleware,
-		service.NewWorkspaceUserService,
-		repository.NewWorkspaceUserRepo,
+		workspace.NewWorkspaceUserService,
+		workspace.NewWorkspaceUserRepo,
 	)
 	return middleware.AuthMiddleware{}
 }
 
-func InitializeWorkspaceUserHandler(postgresDatabase *pgx.Conn) handler.WorkspaceUserHandler {
+func InitializeWorkspaceUserHandler(postgresDatabase *pgx.Conn) workspace.WorkspaceUserHandler {
 	wire.Build(
-		handler.NewWorkspaceUserHandler,
-		service.NewWorkspaceUserService,
-		repository.NewWorkspaceUserRepo,
+		workspace.NewWorkspaceUserHandler,
+		workspace.NewWorkspaceUserService,
+		workspace.NewWorkspaceUserRepo,
 	)
-	return handler.WorkspaceUserHandler{}
+	return workspace.WorkspaceUserHandler{}
 }
