@@ -1,9 +1,9 @@
-package main
+package handler
 
 import (
 	"fmt"
-	"golang/model"
-	"golang/model/dto"
+	"golang/redirect"
+	"golang/user"
 	"net/http"
 	"net/url"
 
@@ -13,20 +13,20 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type handler struct{}
+type Handler struct {
+	userService     user.UserService
+	redirectService redirect.RedirectService
+}
 
-var auth = model.AuthHandler{}
-
-func (h *handler) getUwa(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"msg": "success",
-	})
+//factory
+func NewHandler(userService user.UserService, redirectService redirect.RedirectService) Handler {
+	return Handler{userService: userService}
 }
 
 var validate = validator.New()
 
-func (h *handler) addUser(c *gin.Context) {
-	var req_user dto.User
+func (h *Handler) AddUser(c *gin.Context) {
+	var req_user user.User
 	if err := c.BindJSON(&req_user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"user": "invalid request body"})
 		return
@@ -37,8 +37,7 @@ func (h *handler) addUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"user": "invalid request body"})
 		return
 	}
-
-	res, err := userService.CreateUser(&req_user, c)
+	res, err := h.userService.CreateUser(&req_user, c)
 	if err != nil {
 		if err.Error() == "409" {
 			c.JSON(http.StatusConflict, gin.H{
@@ -51,7 +50,7 @@ func (h *handler) addUser(c *gin.Context) {
 		}
 		return
 	}
-	hex, err := redirectService.SecureRedirect(c, res)
+	hex, err := h.redirectService.SecureRedirect(c, res)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"err": err})
 	}
@@ -63,10 +62,10 @@ func (h *handler) addUser(c *gin.Context) {
 
 }
 
-func (h *handler) getUserById(c *gin.Context) {
+func (h *Handler) GetUserById(c *gin.Context) {
 
 	id := c.Param("id")
-	user, err := userService.GetUserById(id, c)
+	user, err := h.userService.GetUserById(id, c)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -78,7 +77,7 @@ func (h *handler) getUserById(c *gin.Context) {
 
 }
 
-func (h *handler) refresh(c *gin.Context) {
+func (h *Handler) Refresh(c *gin.Context) {
 	type tokenReqBody struct {
 		RefreshToken string `json:"refresh_token"`
 	}
@@ -99,7 +98,7 @@ func (h *handler) refresh(c *gin.Context) {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		newTokenPair, err := auth.GenerateTokenPair(claims["identitykey"].(string))
+		newTokenPair, err := GenerateTokenPair(claims["identitykey"].(string))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"token": "signing error"})
 			return
@@ -112,14 +111,14 @@ func (h *handler) refresh(c *gin.Context) {
 	c.JSON(http.StatusUnauthorized, gin.H{"token": err.Error()})
 }
 
-func (h *handler) login(c *gin.Context) {
+func (h *Handler) Login(c *gin.Context) {
 	if c.Request.Method == "GET" {
 		q := c.Query("redirect")
 		if q == "" {
 			c.String(405, "405 Method not allowed")
 			return
 		}
-		id, exists := redirectService.VerifyRedirect(c, q)
+		id, exists := h.redirectService.VerifyRedirect(c, q)
 		if exists != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"redirect": "redirect doesn't exist"})
 			return
@@ -129,12 +128,12 @@ func (h *handler) login(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"_id": "invalid hex"})
 			return
 		}
-		res, err := userService.GetUserById(objid.Hex(), c)
+		res, err := h.userService.GetUserById(objid.Hex(), c)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"user": "user not found"})
 		}
 
-		newTokenPair, err := auth.GenerateTokenPair(res.Id.Hex())
+		newTokenPair, err := GenerateTokenPair(res.Id.Hex())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"token": "signing error"})
 			return
@@ -143,7 +142,7 @@ func (h *handler) login(c *gin.Context) {
 		c.JSON(http.StatusOK, newTokenPair)
 
 	} else if c.Request.Method == "POST" {
-		var req_login dto.LoginUser
+		var req_login user.LoginUser
 		if err := c.BindJSON(&req_login); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"user": "invalid request body"})
 			return
@@ -153,12 +152,12 @@ func (h *handler) login(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"user": "validation error"})
 			return
 		}
-		user, user_err := userService.GetUser(&req_login, c)
+		user, user_err := h.userService.GetUser(&req_login, c)
 		if user_err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"login": "invalid email or password"})
 			return
 		}
-		newTokenPair, err := auth.GenerateTokenPair(user.Id.Hex())
+		newTokenPair, err := GenerateTokenPair(user.Id.Hex())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"token": "signing error"})
 			return
@@ -169,6 +168,6 @@ func (h *handler) login(c *gin.Context) {
 	}
 }
 
-func (h *handler) logout(c *gin.Context) {
+func (h *Handler) Logout(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"msg": "success"})
 }

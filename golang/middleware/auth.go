@@ -1,46 +1,25 @@
-package model
+package middleware
 
 import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type AuthHandler struct{}
-
-func (a *AuthHandler) GenerateTokenPair(objectid string) (map[string]string, error) {
-	token := jwt.New(jwt.SigningMethodHS256)
-
-	claims := token.Claims.(jwt.MapClaims)
-	claims["identitykey"] = objectid
-	claims["exp"] = time.Now().Add(time.Hour * 10).Unix()
-	t, err := token.SignedString([]byte("test"))
-	if err != nil {
-		return nil, err
-	}
-
-	refreshToken := jwt.New(jwt.SigningMethodHS256)
-	rtClaims := refreshToken.Claims.(jwt.MapClaims)
-	rtClaims["exp"] = time.Now().Add(time.Hour * 10).Unix()
-	rtClaims["identitykey"] = objectid
-
-	rt, err := refreshToken.SignedString([]byte("test"))
-	if err != nil {
-		return nil, err
-	}
-
-	return map[string]string{
-		"access_token":  t,
-		"refresh_token": rt,
-	}, nil
+type AuthMiddleware struct {
 }
 
-func (auth *AuthHandler) TokenValid(r *http.Request) error {
+//factory
+func NewAuthMiddleware() AuthMiddleware {
+	return AuthMiddleware{}
+}
+
+//methods
+func (auth *AuthMiddleware) TokenValid(r *http.Request) error {
 	token, err := auth.VerifyToken(r)
 	if err != nil {
 		return err
@@ -51,7 +30,7 @@ func (auth *AuthHandler) TokenValid(r *http.Request) error {
 	return nil
 }
 
-func (auth *AuthHandler) VerifyToken(r *http.Request) (*jwt.Token, error) {
+func (auth *AuthMiddleware) VerifyToken(r *http.Request) (*jwt.Token, error) {
 	tokenString := ExtractToken(r)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -65,7 +44,7 @@ func (auth *AuthHandler) VerifyToken(r *http.Request) (*jwt.Token, error) {
 	return token, nil
 }
 
-func (auth *AuthHandler) TokenAuthMiddleware() gin.HandlerFunc {
+func (auth *AuthMiddleware) TokenAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		err := auth.TokenValid(c.Request)
 		if err != nil {
