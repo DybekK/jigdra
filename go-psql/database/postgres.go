@@ -8,13 +8,7 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-type PostgresDatabase struct {
-	Connection *pgx.Conn
-}
-
-//factory
-
-func NewPostgresDatabase() PostgresDatabase {
+func InitPostgresDatabase() *pgx.Conn {
 	username := os.Getenv("POSTGRES_USER")
 	passwd := os.Getenv("POSTGRES_PASSWORD")
 	db := os.Getenv("POSTGRES_DB")
@@ -24,6 +18,5 @@ func NewPostgresDatabase() PostgresDatabase {
 	if err != nil {
 		panic(err)
 	}
-
-	return PostgresDatabase{Connection: connection}
+	return connection
 }

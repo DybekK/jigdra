@@ -3,20 +3,19 @@
 package main
 
 import (
-	"go-psql/database"
 	"go-psql/database/repository"
 	"go-psql/handler"
 	"go-psql/service"
 
 	"github.com/google/wire"
+	"github.com/jackc/pgx/v4"
 )
 
-func InitializeWorkspaceUserHandler() handler.WorkspaceUserHandler {
+func InitializeWorkspaceUserHandler(postgresDatabase *pgx.Conn) handler.WorkspaceUserHandler {
 	wire.Build(
 		handler.NewWorkspaceUserHandler,
 		service.NewWorkspaceUserService,
 		repository.NewWorkspaceUserRepo,
-		database.NewPostgresDatabase,
 	)
 	return handler.WorkspaceUserHandler{}
 }

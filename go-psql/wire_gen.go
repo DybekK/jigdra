@@ -6,7 +6,7 @@
 package main
 
 import (
-	"go-psql/database"
+	"github.com/jackc/pgx/v4"
 	"go-psql/database/repository"
 	"go-psql/handler"
 	"go-psql/service"
@@ -14,8 +14,7 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeWorkspaceUserHandler() handler.WorkspaceUserHandler {
-	postgresDatabase := database.NewPostgresDatabase()
+func InitializeWorkspaceUserHandler(postgresDatabase *pgx.Conn) handler.WorkspaceUserHandler {
 	workspaceUserRepository := repository.NewWorkspaceUserRepo(postgresDatabase)
 	workspaceUserService := service.NewWorkspaceUserService(workspaceUserRepository)
 	workspaceUserHandler := handler.NewWorkspaceUserHandler(workspaceUserService)

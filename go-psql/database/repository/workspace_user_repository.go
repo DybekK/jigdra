@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"go-psql/database"
 	"go-psql/dto"
 
 	"github.com/google/uuid"
@@ -10,19 +9,19 @@ import (
 )
 
 type WorkspaceUserRepository struct {
-	posgresDatabase *database.PostgresDatabase
+	posgresDatabase *pgx.Conn
 }
 
 //factory
 
-func NewWorkspaceUserRepo(posgresDatabase database.PostgresDatabase) WorkspaceUserRepository {
-	return WorkspaceUserRepository{posgresDatabase: &posgresDatabase}
+func NewWorkspaceUserRepo(posgresDatabase *pgx.Conn) WorkspaceUserRepository {
+	return WorkspaceUserRepository{posgresDatabase: posgresDatabase}
 }
 
 //methods
 
 func (wur *WorkspaceUserRepository) Create(user dto.WorkspaceUser) error {
-	tx, err := wur.posgresDatabase.Connection.Begin(context.Background())
+	tx, err := wur.posgresDatabase.Begin(context.Background())
 	if err != nil {
 		return err
 	}
@@ -40,7 +39,7 @@ func (wur *WorkspaceUserRepository) Read(id string) *dto.WorkspaceUser {
 	var uuid uuid.UUID
 	var userid string
 	var nickname string
-	err := wur.posgresDatabase.Connection.QueryRow(context.Background(), `SELECT * FROM workspaceusers 
+	err := wur.posgresDatabase.QueryRow(context.Background(), `SELECT * FROM workspaceusers 
 														WHERE user_id=$1`, id).Scan(&uuid, &userid, &nickname)
 	if err == pgx.ErrNoRows {
 		return nil
