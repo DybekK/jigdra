@@ -111,61 +111,59 @@ func (h *Handler) Refresh(c *gin.Context) {
 	c.JSON(http.StatusUnauthorized, gin.H{"token": err.Error()})
 }
 
-func (h *Handler) Login(c *gin.Context) {
-	if c.Request.Method == "GET" {
-		q := c.Query("redirect")
-		if q == "" {
-			c.String(405, "405 Method not allowed")
-			return
-		}
-		id, exists := h.redirectService.VerifyRedirect(c, q)
-		if exists != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"redirect": "redirect doesn't exist"})
-			return
-		}
-		objid, err := primitive.ObjectIDFromHex(id)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"_id": "invalid hex"})
-			return
-		}
-		res, err := h.userService.GetUserById(objid.Hex(), c)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"user": "user not found"})
-		}
-
-		newTokenPair, err := GenerateTokenPair(res.Id.Hex())
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"token": "signing error"})
-			return
-		}
-
-		c.JSON(http.StatusOK, newTokenPair)
-
-	} else if c.Request.Method == "POST" {
-		var req_login user.LoginUser
-		if err := c.BindJSON(&req_login); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"user": "invalid request body"})
-			return
-		}
-		validation_error := validate.Struct(req_login)
-		if validation_error != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"user": "validation error"})
-			return
-		}
-		user, user_err := h.userService.GetUser(&req_login, c)
-		if user_err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"login": "invalid email or password"})
-			return
-		}
-		newTokenPair, err := GenerateTokenPair(user.Id.Hex())
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"token": "signing error"})
-			return
-		}
-
-		c.JSON(http.StatusOK, newTokenPair)
+func (h *Handler) Redirect(c *gin.Context) {
+	q := c.Query("redirect")
+	if q == "" {
+		c.String(405, "405 Method not allowed")
 		return
 	}
+	id, exists := h.redirectService.VerifyRedirect(c, q)
+	if exists != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"redirect": "redirect doesn't exist"})
+		return
+	}
+	objid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"_id": "invalid hex"})
+		return
+	}
+	res, err := h.userService.GetUserById(objid.Hex(), c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"user": "user not found"})
+	}
+
+	newTokenPair, err := GenerateTokenPair(res.Id.Hex())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"token": "signing error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, newTokenPair)
+}
+
+func (h *Handler) Login(c *gin.Context) {
+	var req_login user.LoginUser
+	if err := c.BindJSON(&req_login); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"user": "invalid request body"})
+		return
+	}
+	validation_error := validate.Struct(req_login)
+	if validation_error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"user": "validation error"})
+		return
+	}
+	user, user_err := h.userService.GetUser(&req_login, c)
+	if user_err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"login": "invalid email or password"})
+		return
+	}
+	newTokenPair, err := GenerateTokenPair(user.Id.Hex())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"token": "signing error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, newTokenPair)
 }
 
 func (h *Handler) Logout(c *gin.Context) {

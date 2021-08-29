@@ -23,7 +23,7 @@ func main() {
 	v1 := r.Group("/v1")
 	{
 		v1.POST("/register", h.AddUser)
-		v1.GET("/login", h.Login)
+		v1.GET("/login", h.Redirect)
 		v1.POST("/login", h.Login)
 		v1.GET("/user/:id", h.GetUserById)
 		//These endpoints require Authorization header with valid Bearer token
