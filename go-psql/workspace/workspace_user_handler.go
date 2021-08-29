@@ -1,19 +1,18 @@
-package handler
+package workspace
 
 import (
-	"go-psql/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type WorkspaceUserHandler struct {
-	workspaceUserService service.WorkspaceUserService
+	workspaceUserService WorkspaceUserService
 }
 
 //factory
 
-func NewWorkspaceUserHandler(workspaceUserService service.WorkspaceUserService) WorkspaceUserHandler {
+func NewWorkspaceUserHandler(workspaceUserService WorkspaceUserService) WorkspaceUserHandler {
 	return WorkspaceUserHandler{workspaceUserService: workspaceUserService}
 }
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go-psql/database"
+	"go-psql/sql"
 	"log"
 	"net/http"
 
@@ -14,17 +14,17 @@ func main() {
 	r := gin.Default()
 
 	//initialize postgres connection
-	postgresDatabase := database.InitPostgresDatabase()
+	postgresDatabase := sql.InitPostgresDatabase()
 
 	//initialize services
 	authMiddleware := InitializeAuthMiddleware(postgresDatabase)
-	handler := InitializeWorkspaceUserHandler(postgresDatabase)
+	workspaceUserHandler := InitializeWorkspaceUserHandler(postgresDatabase)
 
 	//initialize middleware
 	r.Use(authMiddleware.TokenAuthMiddleware())
 
 	//initialize routing
-	r.Handle("GET", "/v1/workuser/:id", handler.GetUser)
+	r.Handle("GET", "/v1/workuser/:id", workspaceUserHandler.GetUser)
 
 	//catch errors
 	log.Fatal(http.ListenAndServe(":8080", r))

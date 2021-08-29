@@ -1,9 +1,8 @@
-package repository
+package workspace
 
 import (
 	"context"
 	"fmt"
-	"go-psql/dto"
 
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -21,7 +20,7 @@ func NewWorkspaceUserRepo(posgresDatabase *pgxpool.Pool) WorkspaceUserRepository
 
 //methods
 
-func (wur *WorkspaceUserRepository) Create(user dto.WorkspaceUser) error {
+func (wur *WorkspaceUserRepository) Create(user WorkspaceUser) error {
 	tx, err := wur.posgresDatabase.Begin(context.Background())
 	if err != nil {
 		return err
@@ -36,8 +35,8 @@ func (wur *WorkspaceUserRepository) Create(user dto.WorkspaceUser) error {
 	return err
 }
 
-func (wur *WorkspaceUserRepository) Read(id string) *dto.WorkspaceUser {
-	var user dto.WorkspaceUser
+func (wur *WorkspaceUserRepository) Read(id string) *WorkspaceUser {
+	var user WorkspaceUser
 	fmt.Println(id)
 	row, err := wur.posgresDatabase.Query(context.Background(), `SELECT * FROM workspaceusers WHERE user_id=$1`, id)
 	if err != nil {

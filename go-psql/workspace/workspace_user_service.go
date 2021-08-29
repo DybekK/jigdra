@@ -1,30 +1,25 @@
-package service
+package workspace
 
-import (
-	"go-psql/database/repository"
-	"go-psql/dto"
-
-	"github.com/google/uuid"
-)
+import "github.com/google/uuid"
 
 type WorkspaceUserService struct {
-	workspaceUserRepository repository.WorkspaceUserRepository
+	workspaceUserRepository WorkspaceUserRepository
 }
 
 //factory
 
-func NewWorkspaceUserService(workspaceUserRepository repository.WorkspaceUserRepository) WorkspaceUserService {
+func NewWorkspaceUserService(workspaceUserRepository WorkspaceUserRepository) WorkspaceUserService {
 	return WorkspaceUserService{workspaceUserRepository: workspaceUserRepository}
 }
 
 //methods
 
-func (wus *WorkspaceUserService) GetUser(id string) *dto.WorkspaceUser {
+func (wus *WorkspaceUserService) GetUser(id string) *WorkspaceUser {
 	return wus.workspaceUserRepository.Read(id)
 }
 
 func (wus *WorkspaceUserService) CreateUser(mongo_id, nickname string) error {
-	var user dto.WorkspaceUser
+	var user WorkspaceUser
 	user.Id = uuid.New()
 	user.UserId = mongo_id
 	user.Nickname = nickname

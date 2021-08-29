@@ -6,25 +6,24 @@
 package main
 
 import (
-	"github.com/jackc/pgx/v4/pgxpool"
-	"go-psql/database/repository"
-	"go-psql/handler"
 	"go-psql/middleware"
-	"go-psql/service"
+	"go-psql/workspace"
+
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 // Injectors from wire.go:
 
 func InitializeAuthMiddleware(postgresDatabase *pgxpool.Pool) middleware.AuthMiddleware {
-	workspaceUserRepository := repository.NewWorkspaceUserRepo(postgresDatabase)
-	workspaceUserService := service.NewWorkspaceUserService(workspaceUserRepository)
+	workspaceUserRepository := workspace.NewWorkspaceUserRepo(postgresDatabase)
+	workspaceUserService := workspace.NewWorkspaceUserService(workspaceUserRepository)
 	authMiddleware := middleware.NewAuthMiddleware(workspaceUserService)
 	return authMiddleware
 }
 
-func InitializeWorkspaceUserHandler(postgresDatabase *pgxpool.Pool) handler.WorkspaceUserHandler {
-	workspaceUserRepository := repository.NewWorkspaceUserRepo(postgresDatabase)
-	workspaceUserService := service.NewWorkspaceUserService(workspaceUserRepository)
-	workspaceUserHandler := handler.NewWorkspaceUserHandler(workspaceUserService)
+func InitializeWorkspaceUserHandler(postgresDatabase *pgxpool.Pool) workspace.WorkspaceUserHandler {
+	workspaceUserRepository := workspace.NewWorkspaceUserRepo(postgresDatabase)
+	workspaceUserService := workspace.NewWorkspaceUserService(workspaceUserRepository)
+	workspaceUserHandler := workspace.NewWorkspaceUserHandler(workspaceUserService)
 	return workspaceUserHandler
 }

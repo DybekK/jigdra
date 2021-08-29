@@ -3,7 +3,7 @@ package middleware
 import (
 	"encoding/json"
 	"fmt"
-	"go-psql/service"
+	"go-psql/workspace"
 	"net/http"
 	"strings"
 
@@ -13,12 +13,12 @@ import (
 )
 
 type AuthMiddleware struct {
-	workspaceUserService service.WorkspaceUserService
+	workspaceUserService workspace.WorkspaceUserService
 }
 
 //factory
 
-func NewAuthMiddleware(workspaceUserService service.WorkspaceUserService) AuthMiddleware {
+func NewAuthMiddleware(workspaceUserService workspace.WorkspaceUserService) AuthMiddleware {
 	return AuthMiddleware{workspaceUserService: workspaceUserService}
 }
 
