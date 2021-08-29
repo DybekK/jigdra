@@ -2,19 +2,20 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"go-psql/dto"
 
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v4"
+	"github.com/georgysavva/scany/pgxscan"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type WorkspaceUserRepository struct {
-	posgresDatabase *pgx.Conn
+	posgresDatabase *pgxpool.Pool
 }
 
 //factory
 
-func NewWorkspaceUserRepo(posgresDatabase *pgx.Conn) WorkspaceUserRepository {
+func NewWorkspaceUserRepo(posgresDatabase *pgxpool.Pool) WorkspaceUserRepository {
 	return WorkspaceUserRepository{posgresDatabase: posgresDatabase}
 }
 
@@ -36,21 +37,17 @@ func (wur *WorkspaceUserRepository) Create(user dto.WorkspaceUser) error {
 }
 
 func (wur *WorkspaceUserRepository) Read(id string) *dto.WorkspaceUser {
-	var uuid uuid.UUID
-	var userid string
-	var nickname string
-	err := wur.posgresDatabase.QueryRow(context.Background(), `SELECT * FROM workspaceusers 
-														WHERE user_id=$1`, id).Scan(&uuid, &userid, &nickname)
-	if err == pgx.ErrNoRows {
+	var user dto.WorkspaceUser
+	fmt.Println(id)
+	row, err := wur.posgresDatabase.Query(context.Background(), `SELECT * FROM workspaceusers WHERE user_id=$1`, id)
+	if err != nil {
+		fmt.Println(err.Error())
 		return nil
 	}
-	// var uuid uuid.UUID
-	// row.Scan(&uuid)
-	// user.Id = uuid
-	user := dto.WorkspaceUser{
-		Id:       uuid,
-		UserId:   userid,
-		Nickname: nickname,
+	err = pgxscan.ScanOne(&user, row)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil
 	}
 	return &user
 }

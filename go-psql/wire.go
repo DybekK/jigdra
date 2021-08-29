@@ -9,10 +9,10 @@ import (
 	"go-psql/service"
 
 	"github.com/google/wire"
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-func InitializeAuthMiddleware(postgresDatabase *pgx.Conn) middleware.AuthMiddleware {
+func InitializeAuthMiddleware(postgresDatabase *pgxpool.Pool) middleware.AuthMiddleware {
 	wire.Build(
 		middleware.NewAuthMiddleware,
 		service.NewWorkspaceUserService,
@@ -21,7 +21,7 @@ func InitializeAuthMiddleware(postgresDatabase *pgx.Conn) middleware.AuthMiddlew
 	return middleware.AuthMiddleware{}
 }
 
-func InitializeWorkspaceUserHandler(postgresDatabase *pgx.Conn) handler.WorkspaceUserHandler {
+func InitializeWorkspaceUserHandler(postgresDatabase *pgxpool.Pool) handler.WorkspaceUserHandler {
 	wire.Build(
 		handler.NewWorkspaceUserHandler,
 		service.NewWorkspaceUserService,
