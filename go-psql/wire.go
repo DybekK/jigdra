@@ -18,7 +18,7 @@ func InitializeAuthMiddleware(postgresDatabase *pgxpool.Pool) middleware.AuthMid
 	return middleware.AuthMiddleware{}
 }
 
-func InitializeWorkspaceUserHandler(postgresDatabase *pgxpool.Pool) handler.WorkspaceUserHandler {
+func InitializeWorkspaceUserHandler(postgresDatabase *pgxpool.Pool) workspace.WorkspaceUserHandler {
 	wire.Build(
 		workspace.NewWorkspaceUserHandler,
 		workspace.NewWorkspaceUserService,

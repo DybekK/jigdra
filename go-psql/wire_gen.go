@@ -6,10 +6,9 @@
 package main
 
 import (
+	"github.com/jackc/pgx/v4/pgxpool"
 	"go-psql/middleware"
 	"go-psql/workspace"
-
-	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 // Injectors from wire.go:
