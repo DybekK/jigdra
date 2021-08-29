@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"encoding/json"
 	"fmt"
 	"go-psql/service"
 	"net/http"
@@ -45,7 +46,7 @@ func (auth *AuthMiddleware) tokenValid(r *http.Request) error {
 		return err
 	}
 	id := claims["identitykey"].(string)
-	fmt.Println(id)
+	//fmt.Println(id)
 	user := auth.workspaceUserService.GetUser(id)
 	if user != nil {
 		return nil
@@ -58,6 +59,16 @@ func (auth *AuthMiddleware) tokenValid(r *http.Request) error {
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("user does not exist")
 	}
+	type respBody struct {
+		Username string
+	}
+	var rB respBody
+	err = json.NewDecoder(resp.Body).Decode(&rB)
+	if err != nil {
+		return err
+	}
+	err = auth.workspaceUserService.CreateUser(id, rB.Username)
+
 	return err
 }
 

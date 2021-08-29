@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"go-psql/service"
 	"net/http"
 
@@ -22,10 +21,9 @@ func NewWorkspaceUserHandler(workspaceUserService service.WorkspaceUserService) 
 
 func (wuh *WorkspaceUserHandler) GetUser(c *gin.Context) {
 	id := c.Param("id")
-	fmt.Println("uga booga?")
 	user := wuh.workspaceUserService.GetUser(id)
 	if user == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err": "shit broke???"})
+		c.JSON(http.StatusBadRequest, gin.H{"err": "user not found"})
 		return
 	}
 	c.JSON(http.StatusOK, user)
