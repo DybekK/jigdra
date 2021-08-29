@@ -9,19 +9,19 @@ import (
 )
 
 type WorkspaceUserRepository struct {
-	posgresDatabase *pgxpool.Pool
+	postgresDatabase *pgxpool.Pool
 }
 
 //factory
 
 func NewWorkspaceUserRepo(posgresDatabase *pgxpool.Pool) WorkspaceUserRepository {
-	return WorkspaceUserRepository{posgresDatabase: posgresDatabase}
+	return WorkspaceUserRepository{postgresDatabase: posgresDatabase}
 }
 
 //methods
 
 func (wur *WorkspaceUserRepository) Create(user WorkspaceUser) error {
-	tx, err := wur.posgresDatabase.Begin(context.Background())
+	tx, err := wur.postgresDatabase.Begin(context.Background())
 	if err != nil {
 		return err
 	}
@@ -38,7 +38,7 @@ func (wur *WorkspaceUserRepository) Create(user WorkspaceUser) error {
 func (wur *WorkspaceUserRepository) Read(id string) *WorkspaceUser {
 	var user WorkspaceUser
 	fmt.Println(id)
-	row, err := wur.posgresDatabase.Query(context.Background(), `SELECT * FROM workspaceusers WHERE user_id=$1`, id)
+	row, err := wur.postgresDatabase.Query(context.Background(), `SELECT * FROM workspaceusers WHERE user_id=$1`, id)
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil
