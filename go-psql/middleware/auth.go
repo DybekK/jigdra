@@ -97,3 +97,20 @@ func (auth *AuthMiddleware) extractToken(r *http.Request) string {
 	}
 	return ""
 }
+
+func (auth *AuthMiddleware) GetWorkspaceUserFromRequest(r *http.Request) (*workspace.WorkspaceUser, error) {
+	token, err := auth.verifyToken(r)
+	if err != nil {
+		return nil, err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok && !token.Valid {
+		return nil, err
+	}
+	id := claims["identitykey"].(string)
+	user, err := auth.workspaceUserService.GetUserByMongoId(id)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
