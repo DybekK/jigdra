@@ -1,7 +1,6 @@
 package workspace
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -23,7 +22,6 @@ func (wuh *WorkspaceUserHandler) GetUser(c *gin.Context) {
 	id := c.Param("id")
 	user, err := wuh.workspaceUserService.GetUser(id)
 	if err != nil {
-		fmt.Println(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"err": "user not found"})
 		return
 	}

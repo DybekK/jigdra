@@ -48,31 +48,29 @@ func (auth *AuthMiddleware) tokenValid(r *http.Request) error {
 		return err
 	}
 	id := claims["identitykey"].(string)
-	//fmt.Println(id)
 	_, err = auth.workspaceUserService.GetUser(id)
-	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			resp, err := http.Get("http://localhost:4201/v1/user/" + id)
-			if err != nil {
-				return err
-			}
-			defer resp.Body.Close()
-			if resp.StatusCode != 200 {
-				return fmt.Errorf("user does not exist")
-			}
-			type respBody struct {
-				Username string
-			}
-			var rB respBody
-			err = json.NewDecoder(resp.Body).Decode(&rB)
-			if err != nil {
-				return err
-			}
-			err = auth.workspaceUserService.CreateUser(id, rB.Username)
+
+	if errors.Is(err, pgx.ErrNoRows) {
+		resp, err := http.Get("http://localhost:4201/v1/user/" + id)
+		if err != nil {
 			return err
 		}
-		return nil
+		defer resp.Body.Close()
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("user does not exist")
+		}
+		type respBody struct {
+			Username string
+		}
+		var rB respBody
+		err = json.NewDecoder(resp.Body).Decode(&rB)
+		if err != nil {
+			return err
+		}
+		err = auth.workspaceUserService.CreateUser(id, rB.Username)
+		return err
 	}
+
 	return nil
 }
 

@@ -2,7 +2,6 @@ package workspace
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -37,15 +36,12 @@ func (wur *WorkspaceUserRepository) Create(user WorkspaceUser) error {
 
 func (wur *WorkspaceUserRepository) Read(id string) (*WorkspaceUser, error) {
 	var user WorkspaceUser
-	fmt.Println(id)
 	row, err := wur.postgresDatabase.Query(context.Background(), `SELECT * FROM workspaceusers WHERE user_id=$1`, id)
 	if err != nil {
-		//fmt.Println(err.Error())
 		return nil, err
 	}
 	err = pgxscan.ScanOne(&user, row)
 	if err != nil {
-		//fmt.Println(err.Error())
 		return nil, err
 	}
 	return &user, nil
