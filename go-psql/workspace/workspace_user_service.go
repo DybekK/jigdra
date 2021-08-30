@@ -1,7 +1,5 @@
 package workspace
 
-import "github.com/google/uuid"
-
 type WorkspaceUserService struct {
 	workspaceUserRepository WorkspaceUserRepository
 }
@@ -14,14 +12,10 @@ func NewWorkspaceUserService(workspaceUserRepository WorkspaceUserRepository) Wo
 
 //methods
 
-func (wus *WorkspaceUserService) GetUser(id string) (*WorkspaceUser, error) {
-	return wus.workspaceUserRepository.Read(id)
+func (w *WorkspaceUserService) GetUser(id string) (*WorkspaceUser, error) {
+	return w.workspaceUserRepository.Read(id)
 }
 
-func (wus *WorkspaceUserService) CreateUser(mongo_id, nickname string) error {
-	var user WorkspaceUser
-	user.Id = uuid.New()
-	user.UserId = mongo_id
-	user.Nickname = nickname
-	return wus.workspaceUserRepository.Create(user)
+func (w *WorkspaceUserService) CreateUser(userId string, nickname string) (*WorkspaceUser, error) {
+	return w.workspaceUserRepository.Create(userId, nickname)
 }

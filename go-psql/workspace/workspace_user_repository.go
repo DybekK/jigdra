@@ -2,8 +2,8 @@ package workspace
 
 import (
 	"context"
-
 	"github.com/georgysavva/scany/pgxscan"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
@@ -13,33 +13,40 @@ type WorkspaceUserRepository struct {
 
 //factory
 
-func NewWorkspaceUserRepo(posgresDatabase *pgxpool.Pool) WorkspaceUserRepository {
+func NewWorkspaceUserRepository(posgresDatabase *pgxpool.Pool) WorkspaceUserRepository {
 	return WorkspaceUserRepository{postgresDatabase: posgresDatabase}
 }
 
 //methods
 
-func (wur *WorkspaceUserRepository) Create(user WorkspaceUser) error {
-	tx, err := wur.postgresDatabase.Begin(context.Background())
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback(context.Background())
-	_, err = tx.Exec(context.Background(), `INSERT INTO workspaceusers (id, user_id, nickname) 
-											VALUES ($1, $2, $3)`, user.Id, user.UserId, user.Nickname)
-	if err != nil {
-		return err
-	}
-	err = tx.Commit(context.Background())
-	return err
-}
-
-func (wur *WorkspaceUserRepository) Read(id string) (*WorkspaceUser, error) {
-	var user WorkspaceUser
-	row, err := wur.postgresDatabase.Query(context.Background(), `SELECT * FROM workspaceusers WHERE user_id=$1`, id)
+func (w *WorkspaceUserRepository) Create(userId string, nickname string) (*WorkspaceUser, error) {
+	tx, err := w.postgresDatabase.Begin(context.Background())
 	if err != nil {
 		return nil, err
 	}
+	defer tx.Rollback(context.Background())
+
+	generatedId := uuid.NewString()
+	_, err = tx.Exec(context.Background(), `INSERT INTO workspace_user (id, user_id, nickname) VALUES ($1, $2, $3)`, generatedId, userId, nickname)
+	if err != nil {
+		return nil, err
+	}
+
+	workspaceUser := WorkspaceUser{Id: generatedId, UserId: userId, Nickname: nickname}
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	return &workspaceUser, nil
+}
+
+func (w *WorkspaceUserRepository) Read(id string) (*WorkspaceUser, error) {
+	row, err := w.postgresDatabase.Query(context.Background(), `SELECT * FROM workspace_user WHERE user_id=$1`, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var user WorkspaceUser
 	err = pgxscan.ScanOne(&user, row)
 	if err != nil {
 		return nil, err

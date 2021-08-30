@@ -18,13 +18,14 @@ func main() {
 
 	//initialize services
 	authMiddleware := InitializeAuthMiddleware(postgresDatabase)
-	workspaceUserHandler := InitializeWorkspaceUserHandler(postgresDatabase)
+	workspaceFacadeHandler := InitializeWorkspaceFacadeHandler(postgresDatabase)
 
 	//initialize middleware
 	r.Use(authMiddleware.TokenAuthMiddleware())
 
 	//initialize routing
-	r.Handle("GET", "/v1/workuser/:id", workspaceUserHandler.GetUser)
+	r.Handle("GET", "/v1/workspace_user/:id", workspaceFacadeHandler.GetUser)
+	r.Handle("POST", "/v1/workspace_facade", workspaceFacadeHandler.CreateUserAndWorkspace)
 
 	//catch errors
 	log.Fatal(http.ListenAndServe(":8080", r))

@@ -67,7 +67,7 @@ func (auth *AuthMiddleware) tokenValid(r *http.Request) error {
 		if err != nil {
 			return err
 		}
-		err = auth.workspaceUserService.CreateUser(id, rB.Username)
+		_, err = auth.workspaceUserService.CreateUser(id, rB.Username)
 		return err
 	}
 

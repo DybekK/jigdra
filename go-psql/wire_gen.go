@@ -14,15 +14,18 @@ import (
 // Injectors from wire.go:
 
 func InitializeAuthMiddleware(postgresDatabase *pgxpool.Pool) middleware.AuthMiddleware {
-	workspaceUserRepository := workspace.NewWorkspaceUserRepo(postgresDatabase)
+	workspaceUserRepository := workspace.NewWorkspaceUserRepository(postgresDatabase)
 	workspaceUserService := workspace.NewWorkspaceUserService(workspaceUserRepository)
 	authMiddleware := middleware.NewAuthMiddleware(workspaceUserService)
 	return authMiddleware
 }
 
-func InitializeWorkspaceUserHandler(postgresDatabase *pgxpool.Pool) workspace.WorkspaceUserHandler {
-	workspaceUserRepository := workspace.NewWorkspaceUserRepo(postgresDatabase)
+func InitializeWorkspaceFacadeHandler(postgresDatabase *pgxpool.Pool) workspace.WorkspaceFacadeHandler {
+	workspaceRepository := workspace.NewWorkspaceRepository(postgresDatabase)
+	workspaceService := workspace.NewWorkspaceService(workspaceRepository)
+	workspaceUserRepository := workspace.NewWorkspaceUserRepository(postgresDatabase)
 	workspaceUserService := workspace.NewWorkspaceUserService(workspaceUserRepository)
-	workspaceUserHandler := workspace.NewWorkspaceUserHandler(workspaceUserService)
-	return workspaceUserHandler
+	workspaceFacade := workspace.NewWorkspaceFacade(workspaceService, workspaceUserService)
+	workspaceFacadeHandler := workspace.NewWorkspaceFacadeHandler(workspaceFacade, workspaceUserService)
+	return workspaceFacadeHandler
 }
