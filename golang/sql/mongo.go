@@ -1,4 +1,4 @@
-package repository
+package sql
 
 import (
 	"context"
@@ -14,20 +14,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-type database struct{}
-
-type DatabaseService interface {
-	Initialize() *mongo.Client
-	GetCollection(*mongo.Client, string) *mongo.Collection
-}
-
-var (
-	DBService DatabaseService = &database{}
-	client    *mongo.Client
-)
-
 func getConnection(uri string) (*mongo.Client, error) {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		panic(err)
@@ -40,7 +29,7 @@ func getConnection(uri string) (*mongo.Client, error) {
 	return client, nil
 }
 
-func (d *database) Initialize() *mongo.Client {
+func InitMongoDatabase() *mongo.Client {
 	if strings.HasSuffix(os.Args[0], ".test") {
 		_ = godotenv.Load("tests.env")
 	}
@@ -52,11 +41,11 @@ func (d *database) Initialize() *mongo.Client {
 	if err != nil {
 		panic(err)
 	}
-	createIndex(d.GetCollection(client, "users"))
+	createIndex(GetCollection(client, "users"))
 	return client
 }
 
-func (d *database) GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
+func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
 	var collection *mongo.Collection = (*mongo.Collection)(client.Database(os.Getenv("MONGO_INITDB_DATABASE")).Collection(collectionName))
 	return collection
 }

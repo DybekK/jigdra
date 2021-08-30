@@ -1,4 +1,4 @@
-package dto
+package user
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
