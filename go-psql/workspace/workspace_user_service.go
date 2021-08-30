@@ -12,6 +12,10 @@ func NewWorkspaceUserService(workspaceUserRepository WorkspaceUserRepository) Wo
 
 //methods
 
+func (w *WorkspaceUserService) GetUserByMongoId(mongo_id string) (*WorkspaceUser, error) {
+	return w.workspaceUserRepository.ReadByMongoId(mongo_id)
+}
+
 func (w *WorkspaceUserService) GetUser(id string) (*WorkspaceUser, error) {
 	return w.workspaceUserRepository.Read(id)
 }
