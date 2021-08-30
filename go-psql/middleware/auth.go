@@ -71,7 +71,7 @@ func (auth *AuthMiddleware) tokenValid(r *http.Request) error {
 		return err
 	}
 
-	return nil
+	return err
 }
 
 func (auth *AuthMiddleware) verifyToken(r *http.Request) (*jwt.Token, error) {
