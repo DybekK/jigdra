@@ -14,9 +14,12 @@ import (
 // Injectors from wire.go:
 
 func InitializeAuthMiddleware(postgresDatabase *pgxpool.Pool) middleware.AuthMiddleware {
+	workspaceRepository := workspace.NewWorkspaceRepository(postgresDatabase)
+	workspaceService := workspace.NewWorkspaceService(workspaceRepository)
 	workspaceUserRepository := workspace.NewWorkspaceUserRepository(postgresDatabase)
 	workspaceUserService := workspace.NewWorkspaceUserService(workspaceUserRepository)
-	authMiddleware := middleware.NewAuthMiddleware(workspaceUserService)
+	workspaceFacade := workspace.NewWorkspaceFacade(workspaceService, workspaceUserService)
+	authMiddleware := middleware.NewAuthMiddleware(workspaceFacade, workspaceUserService)
 	return authMiddleware
 }
 

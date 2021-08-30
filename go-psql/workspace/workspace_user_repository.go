@@ -19,7 +19,7 @@ func NewWorkspaceUserRepository(posgresDatabase *pgxpool.Pool) WorkspaceUserRepo
 
 //methods
 
-func (w *WorkspaceUserRepository) Create(userId string, nickname string) (*WorkspaceUser, error) {
+func (w *WorkspaceUserRepository) Create(userId string, workspaceId string, nickname string) (*WorkspaceUser, error) {
 	tx, err := w.postgresDatabase.Begin(context.Background())
 	if err != nil {
 		return nil, err
@@ -27,12 +27,13 @@ func (w *WorkspaceUserRepository) Create(userId string, nickname string) (*Works
 	defer tx.Rollback(context.Background())
 
 	generatedId := uuid.NewString()
-	_, err = tx.Exec(context.Background(), `INSERT INTO workspace_user (id, user_id, nickname) VALUES ($1, $2, $3)`, generatedId, userId, nickname)
+	query := "INSERT INTO workspace_user (id, user_id, workspace_id, nickname) VALUES ($1, $2, $3, $4)"
+	_, err = tx.Exec(context.Background(), query, generatedId, userId, workspaceId, nickname)
 	if err != nil {
 		return nil, err
 	}
 
-	workspaceUser := WorkspaceUser{Id: generatedId, UserId: userId, Nickname: nickname}
+	workspaceUser := WorkspaceUser{Id: generatedId, UserId: userId, WorkspaceId: workspaceId, Nickname: nickname}
 	err = tx.Commit(context.Background())
 	if err != nil {
 		return nil, err
@@ -41,7 +42,7 @@ func (w *WorkspaceUserRepository) Create(userId string, nickname string) (*Works
 }
 
 func (w *WorkspaceUserRepository) Read(id string) (*WorkspaceUser, error) {
-	row, err := w.postgresDatabase.Query(context.Background(), `SELECT * FROM workspace_user WHERE user_id=$1`, id)
+	row, err := w.postgresDatabase.Query(context.Background(), `SELECT * FROM workspace_user WHERE id=$1`, id)
 	if err != nil {
 		return nil, err
 	}

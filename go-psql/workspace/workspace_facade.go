@@ -11,8 +11,14 @@ func NewWorkspaceFacade(workspaceService WorkspaceService, workspaceUserService 
 	return WorkspaceFacade{workspaceService: workspaceService, workspaceUserService: workspaceUserService}
 }
 
-func (w *WorkspaceFacade) CreateUserAndWorkspace(userId string, nickname string) (*WorkspaceUser, *Workspace) {
-	workspaceUser, _ := w.workspaceUserService.CreateUser(userId, nickname)
-	workspace, _ := w.workspaceService.CreateWorkspace(workspaceUser.Id)
-	return workspaceUser, workspace
+func (w *WorkspaceFacade) CreateUserAndWorkspace(userId string, nickname string) (*WorkspaceUser, *Workspace, error) {
+	workspace, err := w.workspaceService.CreateWorkspace()
+	if err != nil {
+		return nil, nil, err
+	}
+	workspaceUser, err := w.workspaceUserService.CreateUser(userId, workspace.Id, nickname)
+	if err != nil {
+		return nil, nil, err
+	}
+	return workspaceUser, workspace, err
 }

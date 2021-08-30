@@ -15,13 +15,14 @@ import (
 )
 
 type AuthMiddleware struct {
+	workspaceFacade      workspace.WorkspaceFacade
 	workspaceUserService workspace.WorkspaceUserService
 }
 
 //factory
 
-func NewAuthMiddleware(workspaceUserService workspace.WorkspaceUserService) AuthMiddleware {
-	return AuthMiddleware{workspaceUserService: workspaceUserService}
+func NewAuthMiddleware(workspaceFacade workspace.WorkspaceFacade, workspaceUserService workspace.WorkspaceUserService) AuthMiddleware {
+	return AuthMiddleware{workspaceFacade: workspaceFacade, workspaceUserService: workspaceUserService}
 }
 
 //methods
@@ -67,7 +68,7 @@ func (auth *AuthMiddleware) tokenValid(r *http.Request) error {
 		if err != nil {
 			return err
 		}
-		_, err = auth.workspaceUserService.CreateUser(id, rB.Username)
+		_, _, err = auth.workspaceFacade.CreateUserAndWorkspace(id, rB.Username)
 		return err
 	}
 

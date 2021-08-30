@@ -37,9 +37,9 @@ func (w *WorkspaceFacadeHandler) CreateUserAndWorkspace(c *gin.Context) {
 	var body Body
 	c.BindJSON(&body)
 
-	workspaceUser, workspace := w.workspaceFacade.CreateUserAndWorkspace(body.UserId, body.Nickname)
-	if workspaceUser == nil || workspace == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "something went wrong"})
+	_, _, err := w.workspaceFacade.CreateUserAndWorkspace(body.UserId, body.Nickname)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"success": "workspace and user have been created"})

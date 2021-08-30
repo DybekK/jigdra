@@ -16,6 +16,6 @@ func (w *WorkspaceUserService) GetUser(id string) (*WorkspaceUser, error) {
 	return w.workspaceUserRepository.Read(id)
 }
 
-func (w *WorkspaceUserService) CreateUser(userId string, nickname string) (*WorkspaceUser, error) {
-	return w.workspaceUserRepository.Create(userId, nickname)
+func (w *WorkspaceUserService) CreateUser(userId string, workspaceId string, nickname string) (*WorkspaceUser, error) {
+	return w.workspaceUserRepository.Create(userId, workspaceId, nickname)
 }

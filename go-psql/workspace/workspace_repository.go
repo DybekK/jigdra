@@ -19,7 +19,7 @@ func NewWorkspaceRepository(postgresDatabase *pgxpool.Pool) WorkspaceRepository 
 
 //methods
 
-func (w *WorkspaceRepository) Create(workspaceUserId string) (*Workspace, error) {
+func (w *WorkspaceRepository) Create() (*Workspace, error) {
 	tx, err := w.postgresDatabase.Begin(context.Background())
 	if err != nil {
 		return nil, err
@@ -27,12 +27,12 @@ func (w *WorkspaceRepository) Create(workspaceUserId string) (*Workspace, error)
 	defer tx.Rollback(context.Background())
 
 	generatedId := uuid.NewString()
-	_, err = tx.Exec(context.Background(), `INSERT INTO workspace (id, workspace_user_id) VALUES ($1, $2)`, generatedId, workspaceUserId)
+	_, err = tx.Exec(context.Background(), `INSERT INTO workspace (id) VALUES ($1)`, generatedId)
 	if err != nil {
 		return nil, err
 	}
 
-	workspace := Workspace{Id: generatedId, WorkspaceUserId: workspaceUserId}
+	workspace := Workspace{Id: generatedId}
 	err = tx.Commit(context.Background())
 	if err != nil {
 		return nil, err
@@ -41,7 +41,7 @@ func (w *WorkspaceRepository) Create(workspaceUserId string) (*Workspace, error)
 }
 
 func (w *WorkspaceRepository) Read(id string) (*Workspace, error) {
-	row, err := w.postgresDatabase.Query(context.Background(), `SELECT * FROM workspace WHERE user_id=$1`, id)
+	row, err := w.postgresDatabase.Query(context.Background(), `SELECT * FROM workspace WHERE id=$1`, id)
 	if err != nil {
 		return nil, err
 	}

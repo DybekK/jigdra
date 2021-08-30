@@ -12,7 +12,10 @@ import (
 func InitializeAuthMiddleware(postgresDatabase *pgxpool.Pool) middleware.AuthMiddleware {
 	wire.Build(
 		middleware.NewAuthMiddleware,
+		workspace.NewWorkspaceFacade,
 		workspace.NewWorkspaceUserService,
+		workspace.NewWorkspaceService,
+		workspace.NewWorkspaceRepository,
 		workspace.NewWorkspaceUserRepository,
 	)
 	return middleware.AuthMiddleware{}

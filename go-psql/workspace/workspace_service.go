@@ -14,6 +14,6 @@ func (w *WorkspaceService) GetWorkspace(id string) (*Workspace, error) {
 	return w.workspaceRepository.Read(id)
 }
 
-func (w *WorkspaceService) CreateWorkspace(workspaceUserId string) (*Workspace, error) {
-	return w.workspaceRepository.Create(workspaceUserId)
+func (w *WorkspaceService) CreateWorkspace() (*Workspace, error) {
+	return w.workspaceRepository.Create()
 }
