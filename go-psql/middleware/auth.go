@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"go-psql/workspace"
 	"net/http"
@@ -50,8 +51,7 @@ func (auth *AuthMiddleware) tokenValid(r *http.Request) error {
 	//fmt.Println(id)
 	_, err = auth.workspaceUserService.GetUser(id)
 	if err != nil {
-		fmt.Println(err.Error())
-		if err.Error() == pgx.ErrNoRows.Error() {
+		if errors.Is(err, pgx.ErrNoRows) {
 			resp, err := http.Get("http://localhost:4201/v1/user/" + id)
 			if err != nil {
 				return err
