@@ -13,17 +13,17 @@ import (
 )
 
 type UserService struct {
-	repo UserRepository
+	Repo UserRepository
 }
 
 //factory
 func NewUserService(repo UserRepository) UserService {
-	return UserService{repo: repo}
+	return UserService{Repo: repo}
 }
 
 //methods
 func (us *UserService) GetUser(login *LoginUser, ctx context.Context) (*User, error) {
-	user, err := us.repo.GetUser(login, ctx)
+	user, err := us.Repo.GetUser(login, ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -46,11 +46,11 @@ func (us *UserService) CreateUser(req_user *User, ctx context.Context) (string, 
 		return "", errors.New("hashing error")
 	}
 
-	if availible := us.repo.IsUsernameAvailable(req_user.Username, ctx); !availible {
+	if availible := us.Repo.IsUsernameAvailable(req_user.Username, ctx); !availible {
 		return "", errors.New("username taken")
 	}
 	req_user.Password = hash
-	res, err := us.repo.CreateUser(req_user, ctx)
+	res, err := us.Repo.CreateUser(req_user, ctx)
 	if err != nil {
 		matched := mongo.IsDuplicateKeyError(err)
 		if matched {
@@ -67,11 +67,11 @@ func (us *UserService) CreateUser(req_user *User, ctx context.Context) (string, 
 
 func (us *UserService) GetUserById(id string, ctx context.Context) (*GetUserStruct, error) {
 	objid, _ := primitive.ObjectIDFromHex(id)
-	return us.repo.GetUserById(objid, ctx)
+	return us.Repo.GetUserById(objid, ctx)
 }
 
 func (us *UserService) IsUsernameAvailable(username string, ctx context.Context) bool {
-	return us.repo.IsUsernameAvailable(username, ctx)
+	return us.Repo.IsUsernameAvailable(username, ctx)
 }
 
 func hashPassword(password string) (string, error) {
