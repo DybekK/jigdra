@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS workspace_user
 (
     id uuid,
     nickname varchar,
-    user_id uuid NOT NULL,
+    user_id varchar NOT NULL,
     workspace_id uuid NOT NULL,
     FOREIGN KEY (workspace_id) REFERENCES workspace(id) ON DELETE CASCADE,
     PRIMARY KEY (id)
