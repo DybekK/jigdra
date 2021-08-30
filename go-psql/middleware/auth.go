@@ -49,7 +49,7 @@ func (auth *AuthMiddleware) tokenValid(r *http.Request) error {
 		return err
 	}
 	id := claims["identitykey"].(string)
-	_, err = auth.workspaceUserService.GetUser(id)
+	_, err = auth.workspaceUserService.GetUserByMongoId(id)
 
 	if errors.Is(err, pgx.ErrNoRows) {
 		resp, err := http.Get("http://localhost:4201/v1/user/" + id)

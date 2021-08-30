@@ -2,6 +2,7 @@ package workspace
 
 import (
 	"context"
+
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -39,6 +40,20 @@ func (w *WorkspaceUserRepository) Create(userId string, workspaceId string, nick
 		return nil, err
 	}
 	return &workspaceUser, nil
+}
+
+func (w *WorkspaceUserRepository) ReadByMongoId(mongo_id string) (*WorkspaceUser, error) {
+	row, err := w.postgresDatabase.Query(context.Background(), `SELECT * FROM workspace_user WHERE user_id=$1`, mongo_id)
+	if err != nil {
+		return nil, err
+	}
+
+	var user WorkspaceUser
+	err = pgxscan.ScanOne(&user, row)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 
 func (w *WorkspaceUserRepository) Read(id string) (*WorkspaceUser, error) {
