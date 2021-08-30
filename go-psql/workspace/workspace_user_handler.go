@@ -20,8 +20,8 @@ func NewWorkspaceUserHandler(workspaceUserService WorkspaceUserService) Workspac
 
 func (wuh *WorkspaceUserHandler) GetUser(c *gin.Context) {
 	id := c.Param("id")
-	user := wuh.workspaceUserService.GetUser(id)
-	if user == nil {
+	user, err := wuh.workspaceUserService.GetUser(id)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"err": "user not found"})
 		return
 	}

@@ -1,11 +1,9 @@
-package model
+package user
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"golang/model/dto"
-	"golang/model/repository"
 	"strings"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,22 +12,18 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserService interface {
-	CreateUser(*dto.User, context.Context) (string, error)
-	GetUser(*dto.LoginUser, context.Context) (*dto.User, error)
-	GetUserById(string, context.Context) (*dto.GetUserStruct, error)
-	IsUsernameAvailable(string, context.Context) bool
+type UserService struct {
+	Repo UserRepository
 }
 
-type userService struct {
-	repo repository.UserRepository
+//factory
+func NewUserService(repo UserRepository) UserService {
+	return UserService{Repo: repo}
 }
 
-func NewUserService(repo repository.UserRepository) UserService {
-	return &userService{repo: repo}
-}
-func (u *userService) GetUser(login *dto.LoginUser, ctx context.Context) (*dto.User, error) {
-	user, err := u.repo.GetUser(login, ctx)
+//methods
+func (us *UserService) GetUser(login *LoginUser, ctx context.Context) (*User, error) {
+	user, err := us.Repo.GetUser(login, ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +34,7 @@ func (u *userService) GetUser(login *dto.LoginUser, ctx context.Context) (*dto.U
 	}
 }
 
-func (u *userService) CreateUser(req_user *dto.User, ctx context.Context) (string, error) {
+func (us *UserService) CreateUser(req_user *User, ctx context.Context) (string, error) {
 	req_user.Id = primitive.NewObjectID()
 	email_err := validateEmail(req_user.Email)
 	if email_err != nil {
@@ -52,11 +46,11 @@ func (u *userService) CreateUser(req_user *dto.User, ctx context.Context) (strin
 		return "", errors.New("hashing error")
 	}
 
-	if availible := u.repo.IsUsernameAvailable(req_user.Username, ctx); !availible {
+	if availible := us.Repo.IsUsernameAvailable(req_user.Username, ctx); !availible {
 		return "", errors.New("username taken")
 	}
 	req_user.Password = hash
-	res, err := u.repo.CreateUser(req_user, ctx)
+	res, err := us.Repo.CreateUser(req_user, ctx)
 	if err != nil {
 		matched := mongo.IsDuplicateKeyError(err)
 		if matched {
@@ -71,13 +65,13 @@ func (u *userService) CreateUser(req_user *dto.User, ctx context.Context) (strin
 	return id, nil
 }
 
-func (u *userService) GetUserById(id string, ctx context.Context) (*dto.GetUserStruct, error) {
+func (us *UserService) GetUserById(id string, ctx context.Context) (*GetUserStruct, error) {
 	objid, _ := primitive.ObjectIDFromHex(id)
-	return u.repo.GetUserById(objid, ctx)
+	return us.Repo.GetUserById(objid, ctx)
 }
 
-func (u *userService) IsUsernameAvailable(username string, ctx context.Context) bool {
-	return u.repo.IsUsernameAvailable(username, ctx)
+func (us *UserService) IsUsernameAvailable(username string, ctx context.Context) bool {
+	return us.Repo.IsUsernameAvailable(username, ctx)
 }
 
 func hashPassword(password string) (string, error) {
@@ -91,7 +85,7 @@ func verifyPassword(password, hash string) bool {
 }
 
 func validateEmail(email string) error {
-	match := dto.Email_regex.MatchString(email)
+	match := Email_regex.MatchString(email)
 	if match {
 		return nil
 	} else {

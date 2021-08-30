@@ -14,7 +14,7 @@ func NewWorkspaceUserService(workspaceUserRepository WorkspaceUserRepository) Wo
 
 //methods
 
-func (wus *WorkspaceUserService) GetUser(id string) *WorkspaceUser {
+func (wus *WorkspaceUserService) GetUser(id string) (*WorkspaceUser, error) {
 	return wus.workspaceUserRepository.Read(id)
 }
 

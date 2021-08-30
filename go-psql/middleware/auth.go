@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"go-psql/workspace"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v4"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -46,28 +48,28 @@ func (auth *AuthMiddleware) tokenValid(r *http.Request) error {
 		return err
 	}
 	id := claims["identitykey"].(string)
-	//fmt.Println(id)
-	user := auth.workspaceUserService.GetUser(id)
-	if user != nil {
-		return nil
-	}
-	resp, err := http.Get("http://localhost:4201/v1/user/" + id)
-	if err != nil {
+	_, err = auth.workspaceUserService.GetUser(id)
+
+	if errors.Is(err, pgx.ErrNoRows) {
+		resp, err := http.Get("http://localhost:4201/v1/user/" + id)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("user does not exist")
+		}
+		type respBody struct {
+			Username string
+		}
+		var rB respBody
+		err = json.NewDecoder(resp.Body).Decode(&rB)
+		if err != nil {
+			return err
+		}
+		err = auth.workspaceUserService.CreateUser(id, rB.Username)
 		return err
 	}
-	defer resp.Body.Close()
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("user does not exist")
-	}
-	type respBody struct {
-		Username string
-	}
-	var rB respBody
-	err = json.NewDecoder(resp.Body).Decode(&rB)
-	if err != nil {
-		return err
-	}
-	err = auth.workspaceUserService.CreateUser(id, rB.Username)
 
 	return err
 }

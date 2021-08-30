@@ -1,4 +1,4 @@
-package dto
+package redirect
 
 type Security struct {
 	Id  string `json:"id"`
