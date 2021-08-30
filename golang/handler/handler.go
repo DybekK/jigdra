@@ -20,7 +20,7 @@ type Handler struct {
 
 //factory
 func NewHandler(userService user.UserService, redirectService redirect.RedirectService) Handler {
-	return Handler{userService: userService}
+	return Handler{userService: userService, redirectService: redirectService}
 }
 
 var validate = validator.New()
