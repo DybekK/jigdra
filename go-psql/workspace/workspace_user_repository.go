@@ -35,18 +35,18 @@ func (wur *WorkspaceUserRepository) Create(user WorkspaceUser) error {
 	return err
 }
 
-func (wur *WorkspaceUserRepository) Read(id string) *WorkspaceUser {
+func (wur *WorkspaceUserRepository) Read(id string) (*WorkspaceUser, error) {
 	var user WorkspaceUser
 	fmt.Println(id)
 	row, err := wur.postgresDatabase.Query(context.Background(), `SELECT * FROM workspaceusers WHERE user_id=$1`, id)
 	if err != nil {
-		fmt.Println(err.Error())
-		return nil
+		//fmt.Println(err.Error())
+		return nil, err
 	}
 	err = pgxscan.ScanOne(&user, row)
 	if err != nil {
-		fmt.Println(err.Error())
-		return nil
+		//fmt.Println(err.Error())
+		return nil, err
 	}
-	return &user
+	return &user, nil
 }
