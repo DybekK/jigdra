@@ -10,6 +10,8 @@ func NewWorkspaceService(workspaceRepository WorkspaceRepository) WorkspaceServi
 	return WorkspaceService{workspaceRepository: workspaceRepository}
 }
 
+//methods
+
 func (w *WorkspaceService) GetWorkspace(id string) (*Workspace, error) {
 	return w.workspaceRepository.Read(id)
 }

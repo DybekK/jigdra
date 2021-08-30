@@ -11,6 +11,8 @@ func NewWorkspaceFacade(workspaceService WorkspaceService, workspaceUserService 
 	return WorkspaceFacade{workspaceService: workspaceService, workspaceUserService: workspaceUserService}
 }
 
+//methods
+
 func (w *WorkspaceFacade) CreateUserAndWorkspace(userId string, nickname string) (*WorkspaceUser, *Workspace, error) {
 	workspace, err := w.workspaceService.CreateWorkspace()
 	if err != nil {
