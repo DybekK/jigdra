@@ -48,7 +48,7 @@ func (auth *AuthMiddleware) tokenValid(r *http.Request) error {
 	if !ok && !token.Valid {
 		return err
 	}
-	id := claims["identitykey"].(string)
+	id := claims["identityKey"].(string)
 	_, err = auth.workspaceUserService.GetUserByMongoId(id)
 
 	if errors.Is(err, pgx.ErrNoRows) {
