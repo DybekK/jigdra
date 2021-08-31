@@ -8,6 +8,7 @@ package main
 import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"go-psql/middleware"
+	"go-psql/task"
 	"go-psql/workspace"
 )
 
@@ -31,4 +32,11 @@ func InitializeWorkspaceFacadeHandler(postgresDatabase *pgxpool.Pool) workspace.
 	workspaceFacade := workspace.NewWorkspaceFacade(workspaceService, workspaceUserService)
 	workspaceFacadeHandler := workspace.NewWorkspaceFacadeHandler(workspaceFacade, workspaceUserService)
 	return workspaceFacadeHandler
+}
+
+func InitializeTaskHandler(postgresDatabase *pgxpool.Pool, auth middleware.AuthMiddleware) task.TaskHandler {
+	taskRepository := task.NewTaskRepository(postgresDatabase)
+	taskService := task.NewTaskService(taskRepository)
+	taskHandler := task.NewTaskHandler(taskService, auth)
+	return taskHandler
 }

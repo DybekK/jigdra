@@ -6,6 +6,7 @@ import (
 	"github.com/google/wire"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"go-psql/middleware"
+	"go-psql/task"
 	"go-psql/workspace"
 )
 
@@ -31,4 +32,13 @@ func InitializeWorkspaceFacadeHandler(postgresDatabase *pgxpool.Pool) workspace.
 		workspace.NewWorkspaceUserRepository,
 	)
 	return workspace.WorkspaceFacadeHandler{}
+}
+
+func InitializeTaskHandler(postgresDatabase *pgxpool.Pool, auth middleware.AuthMiddleware) task.TaskHandler {
+	wire.Build(
+		task.NewTaskRepository,
+		task.NewTaskService,
+		task.NewTaskHandler,
+	)
+	return task.TaskHandler{}
 }
