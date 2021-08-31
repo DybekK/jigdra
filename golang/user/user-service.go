@@ -36,23 +36,23 @@ func (us *UserService) GetUser(login *LoginUser, ctx context.Context) (*User, er
 	}
 }
 
-func (us *UserService) CreateUser(req_user *User, ctx context.Context) (string, error) {
-	req_user.Id = primitive.NewObjectID()
-	email_err := validateEmail(req_user.Email)
-	if email_err != nil {
-		return "", email_err
+func (us *UserService) CreateUser(reqUser *User, ctx context.Context) (string, error) {
+	reqUser.Id = primitive.NewObjectID()
+	emailErr := validateEmail(reqUser.Email)
+	if emailErr != nil {
+		return "", emailErr
 	}
 
-	var hash, hash_error = hashPassword(req_user.Password)
-	if hash_error != nil {
+	var hash, hashError = hashPassword(reqUser.Password)
+	if hashError != nil {
 		return "", errors.New("hashing error")
 	}
 
-	if availible := us.Repo.IsUsernameAvailable(req_user.Username, ctx); !availible {
+	if available := us.Repo.IsUsernameAvailable(reqUser.Username, ctx); !available {
 		return "", errors.New("username taken")
 	}
-	req_user.Password = hash
-	res, err := us.Repo.CreateUser(req_user, ctx)
+	reqUser.Password = hash
+	res, err := us.Repo.CreateUser(reqUser, ctx)
 	if err != nil {
 		matched := mongo.IsDuplicateKeyError(err)
 		if matched {
@@ -68,8 +68,8 @@ func (us *UserService) CreateUser(req_user *User, ctx context.Context) (string, 
 }
 
 func (us *UserService) GetUserById(id string, ctx context.Context) (*GetUserStruct, error) {
-	objid, _ := primitive.ObjectIDFromHex(id)
-	return us.Repo.GetUserById(objid, ctx)
+	objId, _ := primitive.ObjectIDFromHex(id)
+	return us.Repo.GetUserById(objId, ctx)
 }
 
 func (us *UserService) IsUsernameAvailable(username string, ctx context.Context) bool {
@@ -87,7 +87,7 @@ func verifyPassword(password, hash string) bool {
 }
 
 func validateEmail(email string) error {
-	match := Email_regex.MatchString(email)
+	match := EmailRegex.MatchString(email)
 	if match {
 		return nil
 	} else {

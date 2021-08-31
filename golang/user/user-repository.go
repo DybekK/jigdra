@@ -28,25 +28,25 @@ func (ur *UserRepository) GetUser(login *LoginUser, ctx context.Context) (*User,
 		"email": login.Email,
 	})
 	var result User
-	decode_err := res.Decode(&result)
-	if decode_err != nil {
-		return nil, decode_err
+	decodeErr := res.Decode(&result)
+	if decodeErr != nil {
+		return nil, decodeErr
 	}
 	return &result, nil
 
 }
 
-func (ur *UserRepository) CreateUser(req_user *User, ctx context.Context) (interface{}, error) {
-	result, insertError := ur.coll.InsertOne(ctx, &req_user)
+func (ur *UserRepository) CreateUser(reqUser *User, ctx context.Context) (interface{}, error) {
+	result, insertError := ur.coll.InsertOne(ctx, &reqUser)
 	return result.InsertedID, insertError
 }
 
 func (ur *UserRepository) GetUserById(id primitive.ObjectID, ctx context.Context) (*GetUserStruct, error) {
 	res := ur.coll.FindOne(ctx, bson.M{"_id": id})
 	var user GetUserStruct
-	decode_err := res.Decode(&user)
-	if decode_err != nil {
-		return nil, decode_err
+	decodeErr := res.Decode(&user)
+	if decodeErr != nil {
+		return nil, decodeErr
 	}
 
 	return &user, nil

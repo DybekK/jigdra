@@ -33,10 +33,10 @@ func InitMongoDatabase() *mongo.Client {
 	if strings.HasSuffix(os.Args[0], ".test") {
 		_ = godotenv.Load("tests.env")
 	}
-	db_user := os.Getenv("MONGO_INITDB_ROOT_USERNAME")
-	db_passwd := os.Getenv("MONGO_INITDB_ROOT_PASSWORD")
-	db_host := os.Getenv("MONGO_HOST")
-	uri := fmt.Sprintf("mongodb://%s:%s@%s:27017", db_user, db_passwd, db_host)
+	dbUser := os.Getenv("MONGO_INITDB_ROOT_USERNAME")
+	dbPasswd := os.Getenv("MONGO_INITDB_ROOT_PASSWORD")
+	dbHost := os.Getenv("MONGO_HOST")
+	uri := fmt.Sprintf("mongodb://%s:%s@%s:27017", dbUser, dbPasswd, dbHost)
 	client, err := getConnection(uri)
 	if err != nil {
 		panic(err)

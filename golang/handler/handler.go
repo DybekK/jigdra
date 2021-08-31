@@ -21,25 +21,28 @@ type Handler struct {
 }
 
 //factory
+
 func NewHandler(userService user.UserService, redirectService redirect.RedirectService) Handler {
 	return Handler{userService: userService, redirectService: redirectService}
 }
 
 var validate = validator.New()
 
+//methods
+
 func (h *Handler) AddUser(c *gin.Context) {
-	var req_user user.User
-	if err := c.BindJSON(&req_user); err != nil {
+	var reqUser user.User
+	if err := c.BindJSON(&reqUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"user": "invalid request body"})
 		return
 	}
 
-	validationError := validate.Struct(req_user)
+	validationError := validate.Struct(reqUser)
 	if validationError != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"user": "invalid request body"})
 		return
 	}
-	res, err := h.userService.CreateUser(&req_user, c)
+	res, err := h.userService.CreateUser(&reqUser, c)
 	if err != nil {
 		if err.Error() == "409" {
 			c.JSON(http.StatusConflict, gin.H{
@@ -67,7 +70,7 @@ func (h *Handler) AddUser(c *gin.Context) {
 func (h *Handler) GetUserById(c *gin.Context) {
 
 	id := c.Param("id")
-	user, err := h.userService.GetUserById(id, c)
+	_user, err := h.userService.GetUserById(id, c)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -75,7 +78,7 @@ func (h *Handler) GetUserById(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, _user)
 
 }
 
@@ -124,12 +127,12 @@ func (h *Handler) Redirect(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"redirect": "redirect doesn't exist"})
 		return
 	}
-	objid, err := primitive.ObjectIDFromHex(id)
+	objId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"_id": "invalid hex"})
 		return
 	}
-	res, err := h.userService.GetUserById(objid.Hex(), c)
+	res, err := h.userService.GetUserById(objId.Hex(), c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"user": "user not found"})
 	}
@@ -144,22 +147,22 @@ func (h *Handler) Redirect(c *gin.Context) {
 }
 
 func (h *Handler) Login(c *gin.Context) {
-	var req_login user.LoginUser
-	if err := c.BindJSON(&req_login); err != nil {
+	var reqLogin user.LoginUser
+	if err := c.BindJSON(&reqLogin); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"user": "invalid request body"})
 		return
 	}
-	validation_error := validate.Struct(req_login)
-	if validation_error != nil {
+	validationError := validate.Struct(reqLogin)
+	if validationError != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"user": "validation error"})
 		return
 	}
-	user, user_err := h.userService.GetUser(&req_login, c)
-	if user_err != nil {
+	_user, userErr := h.userService.GetUser(&reqLogin, c)
+	if userErr != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"login": "invalid email or password"})
 		return
 	}
-	newTokenPair, err := GenerateTokenPair(user.Id.Hex())
+	newTokenPair, err := GenerateTokenPair(_user.Id.Hex())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"token": "signing error"})
 		return
