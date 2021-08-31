@@ -24,8 +24,11 @@ func main() {
 	r.Use(authMiddleware.TokenAuthMiddleware())
 
 	//initialize routing
-	r.Handle("GET", "/v1/workspace_user/:id", workspaceFacadeHandler.GetUser)
-	r.Handle("POST", "/v1/workspace_facade", workspaceFacadeHandler.CreateUserAndWorkspace)
+	v1 := r.Group("/v1")
+	{
+		v1.Handle("GET", "/workspace_user/:id", workspaceFacadeHandler.GetUser)
+		v1.Handle("POST", "/workspace_facade", workspaceFacadeHandler.CreateUserAndWorkspace)
+	}
 
 	//catch errors
 	log.Fatal(http.ListenAndServe(":8080", r))
