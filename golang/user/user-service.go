@@ -17,11 +17,13 @@ type UserService struct {
 }
 
 //factory
+
 func NewUserService(repo UserRepository) UserService {
 	return UserService{Repo: repo}
 }
 
 //methods
+
 func (us *UserService) GetUser(login *LoginUser, ctx context.Context) (*User, error) {
 	user, err := us.Repo.GetUser(login, ctx)
 	if err != nil {

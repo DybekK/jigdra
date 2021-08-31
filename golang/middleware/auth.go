@@ -14,11 +14,13 @@ type AuthMiddleware struct {
 }
 
 //factory
+
 func NewAuthMiddleware() AuthMiddleware {
 	return AuthMiddleware{}
 }
 
 //methods
+
 func (auth *AuthMiddleware) TokenValid(r *http.Request) error {
 	token, err := auth.VerifyToken(r)
 	if err != nil {

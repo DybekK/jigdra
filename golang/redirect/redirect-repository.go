@@ -14,6 +14,7 @@ type RedirectRepository struct {
 }
 
 //factory
+
 func NewRedirectRepository(client *mongo.Client) RedirectRepository {
 
 	coll := client.Database(os.Getenv("MONGO_INITDB_DATABASE")).Collection("redirects")
@@ -21,6 +22,7 @@ func NewRedirectRepository(client *mongo.Client) RedirectRepository {
 }
 
 //methods
+
 func (rr *RedirectRepository) SecureRedirect(ctx context.Context, sec Security) (string, error) {
 	_, err := rr.coll.InsertOne(ctx, sec)
 	if err != nil {

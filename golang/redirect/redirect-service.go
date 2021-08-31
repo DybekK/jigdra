@@ -11,11 +11,13 @@ type RedirectService struct {
 }
 
 //factory
+
 func NewRedirectService(repo RedirectRepository) RedirectService {
 	return RedirectService{repo: repo}
 }
 
 //methods
+
 func (rs *RedirectService) SecureRedirect(ctx context.Context, id string) (string, error) {
 	var sec Security
 	sec.Id = id

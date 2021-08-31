@@ -15,12 +15,14 @@ type UserRepository struct {
 }
 
 //factory
+
 func NewUserRepository(client *mongo.Client) UserRepository {
 	coll := client.Database(os.Getenv("MONGO_INITDB_DATABASE")).Collection("users")
 	return UserRepository{client: client, coll: coll}
 }
 
 //methods
+
 func (ur *UserRepository) GetUser(login *LoginUser, ctx context.Context) (*User, error) {
 	res := ur.coll.FindOne(ctx, bson.M{
 		"email": login.Email,
