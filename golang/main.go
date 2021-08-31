@@ -2,7 +2,7 @@ package main
 
 import (
 	"golang/middleware"
-	"golang/sql"
+	"golang/nosql"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +14,7 @@ func main() {
 	r := gin.Default()
 
 	//initialize mongo connection
-	mongoDatabase := sql.InitMongoDatabase()
+	mongoDatabase := nosql.InitMongoDatabase()
 
 	//initialize services
 	handler := InitializeHandler(mongoDatabase)

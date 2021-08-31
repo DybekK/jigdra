@@ -1,18 +1,15 @@
 package handler
 
 import (
-	"context"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang/redirect"
 	"golang/user"
 	"net/http"
 	"net/url"
-
-	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator"
-	"github.com/go-redis/redis/v8"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Handler struct {
@@ -103,7 +100,7 @@ func (h *Handler) Refresh(c *gin.Context) {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		newTokenPair, err := GenerateTokenPair(claims["identitykey"].(string))
+		newTokenPair, err := user.GenerateTokenPair(claims["identityKey"].(string))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"token": "signing error"})
 			return
@@ -137,7 +134,7 @@ func (h *Handler) Redirect(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"user": "user not found"})
 	}
 
-	newTokenPair, err := GenerateTokenPair(res.Id.Hex())
+	newTokenPair, err := user.GenerateTokenPair(res.Id.Hex())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"token": "signing error"})
 		return
@@ -162,23 +159,10 @@ func (h *Handler) Login(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"login": "invalid email or password"})
 		return
 	}
-	newTokenPair, err := GenerateTokenPair(_user.Id.Hex())
+	newTokenPair, err := user.GenerateTokenPair(_user.Id.Hex())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"token": "signing error"})
 		return
-	}
-
-	var ctx = context.Background()
-
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
-
-	err = rdb.Set(ctx, "key", "value", 0).Err()
-	if err != nil {
-		panic(err)
 	}
 
 	c.JSON(http.StatusOK, newTokenPair)

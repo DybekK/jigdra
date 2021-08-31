@@ -1,4 +1,4 @@
-package sql
+package nosql
 
 import (
 	"context"
@@ -36,7 +36,8 @@ func InitMongoDatabase() *mongo.Client {
 	dbUser := os.Getenv("MONGO_INITDB_ROOT_USERNAME")
 	dbPasswd := os.Getenv("MONGO_INITDB_ROOT_PASSWORD")
 	dbHost := os.Getenv("MONGO_HOST")
-	uri := fmt.Sprintf("mongodb://%s:%s@%s:27017", dbUser, dbPasswd, dbHost)
+	dbPort := os.Getenv("MONGO_PORT")
+	uri := fmt.Sprintf("mongodb://%s:%s@%s:%s", dbUser, dbPasswd, dbHost, dbPort)
 	client, err := getConnection(uri)
 	if err != nil {
 		panic(err)
