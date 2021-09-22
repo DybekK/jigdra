@@ -5,6 +5,8 @@ import {NzUploadFile} from "ng-zorro-antd/upload";
 import {BehaviorSubject, Observable, Observer, of} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {catchError, debounceTime, map, switchMap} from "rxjs/operators";
+import {hexColorRegExp} from "../../../../../shared/regexps/regexps";
+
 
 @Component({
   selector: 'app-project-create',
@@ -49,32 +51,50 @@ import {catchError, debounceTime, map, switchMap} from "rxjs/operators";
             </div>
           </div>
 
-          <!--tag block-->
           <div nz-row nzJustify="center" nzAlign="middle" [nzGutter]="[vGutter, hGutter]">
             <div nz-col [nzSpan]="24">
               <nz-form-item>
-                <nz-form-control nzErrorTip="Wrong tag name">
-                  <nz-input-group nzAddOnBefore="Tag">
-                    <nz-select formControlName="tagName" nzMode="tags" nzPlaceHolder="Tag Mode" nzSize="default"
-                               [nzDropdownStyle]="dropDownStyle">
-                      <!--                      <nz-option *ngFor="let option of listOfOption" [nzLabel]="option.label"-->
-                      <!--                                 [nzValue]="option.value" nzCustomContent>-->
-                      <!--                        <i nz-icon nzType="user"></i>{{option.value}}-->
-                      <!--                      </nz-option>-->
-                      <nz-option nzCustomContent nzLabel="Dybek" nzValue="dybek">
-                        <i nz-icon nzType="user"></i>Dybek
-                      </nz-option>
-                      <nz-option nzCustomContent nzLabel="Rychu" nzValue="rychu">
-                        <i nz-icon nzType="user"></i>Rychu
-                      </nz-option>
+                <nz-form-label>
+                  <span>Select color</span>
+                </nz-form-label>
 
-                    </nz-select>
+                <button nz-button nzShape="circle" class="color-sample" style="background-color: rgba(255,0,0,0.5)">R
+                </button>
+                <button nz-button nzShape="circle" class="color-sample" style="background-color: rgba(0,255,0,0.5)">G
+                </button>
+                <button nz-button nzShape="circle" class="color-sample" style="background-color: rgba(0,0,255,0.5)">B
+                </button>
+                <button nz-button nzShape="circle" class="color-sample" style="background-color: rgba(255,255,0,0.5)">Y
+                </button>
+                <button nz-button id="personalColor" nzShape="circle" class="color-sample"
+                        [ngStyle]="{'background-color': personalColor}">
+                  P
+                </button>
+                <nz-form-control nzErrorTip="Incorrect hex number">
+                  <nz-input-group style="width: 100px" nzAddOnBefore="Personal">
+                    <input nz-input style="width: 100px" formControlName="hexColor" placeholder="#00000000"
+                           (ngModelChange)="setPersonalColor($event)">
                   </nz-input-group>
                 </nz-form-control>
               </nz-form-item>
             </div>
           </div>
+
           <!--tag block-->
+          <div nz-row nzJustify="center" nzAlign="middle">
+            <div nz-col [nzSpan]="24">
+              <nz-form-item class="box-holder">
+                <nz-tag *ngFor="let tag of tags"
+                        nzMode="checkable"
+                        [nzChecked]="tag.checked"
+                        (nzCheckedChange)="checkChange($event)">
+                  {{tag.tagName}}
+                </nz-tag>
+              </nz-form-item>
+            </div>
+          </div>
+          <!--tag block-->
+
           <div nz-row nzJustify="center" nzAlign="middle" [nzGutter]="[vGutter, hGutter]">
             <div nz-col [nzSpan]="24">
               <nz-form-item>
@@ -126,6 +146,29 @@ export class ProjectCreateComponent implements OnInit {
   optionList: string[] = [];
   selectedUser?: string;
   isLoading = false;
+  personalColor: string;
+
+  checkChange(e: boolean): void {
+    console.log(e);
+  }
+
+  tags = [
+    {
+      nzColor: 'magenta',
+      tagName: 'Work',
+      checked: false
+    },
+    {
+      nzColor: 'gold',
+      tagName: 'Bonus',
+      checked: false
+    },
+    {
+      nzColor: 'red',
+      tagName: 'Deadline',
+      checked: false
+    }
+  ]
 
   onSearch(value: string): void {
     this.isLoading = true;
@@ -133,6 +176,7 @@ export class ProjectCreateComponent implements OnInit {
   }
 
   constructor(private fb: FormBuilder, private msg: NzMessageService, private http: HttpClient) {
+    this.personalColor = "#00000000"
   }
 
   ngOnInit(): void {
@@ -171,7 +215,8 @@ export class ProjectCreateComponent implements OnInit {
     this.validateForm = this.fb.group({
       projectName: [null, [Validators.required]],
       tagName: [null],
-      selectedUser: [null]
+      selectedUser: [null],
+      hexColor: [null, [Validators.pattern(hexColorRegExp)]]
     })
 
   }
@@ -224,4 +269,12 @@ export class ProjectCreateComponent implements OnInit {
   submitTask() {
   }
 
+  setPersonalColor(color: any) {
+    if (color.length > 8) {
+
+      this.personalColor = color;
+    }
+
+    console.log(color);
+  }
 }

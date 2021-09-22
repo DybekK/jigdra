@@ -2,10 +2,6 @@ nz-select {
   width: 100% !important;
 }
 
-.ant-select-selection-item {
-  background-color: #ff91af !important;
-}
-
 .loading-icon {
   margin-right: 8px;
 }
@@ -19,6 +15,12 @@ nz-select {
   height: 128px;
 }
 
-:hover {
+.box-holder {
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  padding: 2px;
+}
 
+.color-sample {
+  margin-right: 2px;
 }

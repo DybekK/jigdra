@@ -45,6 +45,9 @@ import {UserTasksComponent} from './components/organisms/user-tasks/user-tasks.c
 import {UserProfileComponent} from './components/organisms/user-profile/user-profile.component';
 import {NzUploadModule} from "ng-zorro-antd/upload";
 import {NzSelectModule} from "ng-zorro-antd/select";
+import {NzTableModule} from "ng-zorro-antd/table";
+import {DragDropModule} from "@angular/cdk/drag-drop";
+import {NzTagModule} from "ng-zorro-antd/tag";
 
 
 const icons: IconDefinition[] = [
@@ -98,7 +101,10 @@ const icons: IconDefinition[] = [
     NzFormModule,
     NzButtonModule,
     NzUploadModule,
-    NzSelectModule
+    NzSelectModule,
+    NzTableModule,
+    DragDropModule,
+    NzTagModule
   ]
 })
 export class UserModule {
